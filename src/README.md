@@ -1,4 +1,4 @@
-# @senzing/sdk-components-ng
+# sz-sdk-components-grpc-web
 
 If you are beginning your journey with
 [Senzing](https://senzing.com/),
@@ -14,23 +14,22 @@ Heck, it may not even be appropriate for your application of Senzing!
 
 ## Overview
 
-This project is for the Senzing&reg; SDK components that can be used in other projects. There are two flavors that the components come in. The [@senzing/sdk-components-ng](https://www.npmjs.com/package/@senzing/sdk-components-ng) package which is based around the Angular 13.x.x framework, and the [@senzing/sdk-components-web](https://www.npmjs.com/package/@senzing/sdk-components-web) package which is framework agnostic and based around the [Web Components](https://developers.google.com/web/fundamentals/web-components/) standard. The usage for both packages is noted in the [documentation examples](http://hub.senzing.com/sdk-components-ng/).
+This project is for the Senzing&reg; SDK components that can be used in other projects. There are two flavors that the components come in. The [@senzing/sz-sdk-components-grpc-web](https://www.npmjs.com/package/@senzing/sz-sdk-components-grpc-web) package which is based around the Angular 13.x.x framework, and the [@senzing/sdk-components-web](https://www.npmjs.com/package/@senzing/sdk-components-web) package which is framework agnostic and based around the [Web Components](https://developers.google.com/web/fundamentals/web-components/) standard. The usage for both packages is noted in the [documentation examples](http://hub.senzing.com/sz-sdk-components-grpc-web/).
 
-For information on the Web Components version see the [sdk-components-web guide](https://github.com/senzing-garage/sdk-components-ng/tree/master/sdk-components-web). 
+For information on the Web Components version see the [sdk-components-web guide](https://github.com/senzing-garage/sz-sdk-components-grpc-web/tree/master/sdk-components-web).
 
-
-[![Build Status](https://travis-ci.com/Senzing/sdk-components-ng.svg?branch=master)](https://travis-ci.com/Senzing/sdk-components-ng)
-[![npm version](https://badge.fury.io/js/%40senzing%2Fsdk-components-ng.svg)](https://badge.fury.io/js/%40senzing%2Fsdk-components-ng)
-![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/senzing/sdk-components-ng?color=%2300c4ff&logo=latest%20tag)
-![GitHub package.json version](https://img.shields.io/github/package-json/v/senzing/sdk-components-ng?color=orange&logo=latest&logoColor=blue)
+[![npm build](https://github.com/senzing-garage/sz-sdk-components-grpc-web/actions/workflows/npm-build.yaml/badge.svg)](https://github.com/senzing-garage/sz-sdk-components-grpc-web/actions/workflows/npm-build.yaml)
+[![npm version](https://badge.fury.io/js/%40senzing%2Fsz-sdk-components-grpc-web.svg)](https://badge.fury.io/js/%40senzing%2Fsz-sdk-components-grpc-web)
+![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/senzing/sz-sdk-components-grpc-web?color=%2300c4ff&logo=latest%20tag)
+![GitHub package.json version](https://img.shields.io/github/package-json/v/senzing/sz-sdk-components-grpc-web?color=orange&logo=latest&logoColor=blue)
 
 ## Dependencies
 
 For building from Source:
 
-* [Node/NPM](https://nodejs.org/).
-* [Angular CLI](https://cli.angular.io/)
-* [TypeScript](https://www.typescriptlang.org/)
+- [Node/NPM](https://nodejs.org/).
+- [Angular CLI](https://cli.angular.io/)
+- [TypeScript](https://www.typescriptlang.org/)
 
 Please see the installation instructions for each of these for how to install and setup each one properly.
 
@@ -39,16 +38,16 @@ Please see the installation instructions for each of these for how to install an
 #### Shortcuts
 
 If you're developing on Windows or macOS, you can make use of the [Senzing app](https://senzing.com/#download)
-to help populate an entity repository to test with.  It also gives you an easy way to load and browse data
-outside of the [Senzing POC API Server](https://github.com/senzing-garage/senzing-poc-server).  See the instructions
+to help populate an entity repository to test with. It also gives you an easy way to load and browse data
+outside of the [Senzing POC API Server](https://github.com/senzing-garage/senzing-poc-server). See the instructions
 for using the [Senzing App Integration Scripts](https://github.com/senzing-garage/senzing-api-server/tree/master/app-scripts)
 to start the Senzing REST API Server using your existing projects in the Senzing app.
 
 #### REST API Server
 
 These components require an implementation of the [Senzing REST API](https://github.com/senzing-garage/senzing-rest-api-specification)
-to function.  You can use the [Senzing REST API Server](https://github.com/senzing-garage/senzing-api-server) as a default
-implementation in Java.  Follow [the instructions](https://github.com/senzing-garage/senzing-api-server) to check out and
+to function. You can use the [Senzing REST API Server](https://github.com/senzing-garage/senzing-api-server) as a default
+implementation in Java. Follow [the instructions](https://github.com/senzing-garage/senzing-api-server) to check out and
 build the [Senzing POC API Server](https://github.com/senzing-garage/senzing-poc-server) from source or download a pre-built
 version when available.
 
@@ -56,12 +55,12 @@ version when available.
 
 Open a terminal window to the location of your project and type:
 `ng add @angular/material`
-`ng add @senzing/sdk-components-ng`
+`ng add @senzing/sz-sdk-components-grpc-web`
 
-The components package, along with any missing dependencies will be added to your project. 
+The components package, along with any missing dependencies will be added to your project.
 
 Alternatively you can install the components and dependencies without the angular-cli via npm individually:
-`npm i @angular/material @angular/cdk @senzing/sdk-components-ng --save`
+`npm i @angular/material @angular/cdk @senzing/sz-sdk-components-grpc-web --save`
 
 Please take note that all the same [interfaces](https://senzing-garage.github.io/rest-api-client-ng/), and [services](https://senzing-garage.github.io/rest-api-client-ng/) from the [@senzing/rest-api-client-ng package](https://www.npmjs.com/package/@senzing/rest-api-client-ng) will also be available for convenience.
 
@@ -70,10 +69,7 @@ Please take note that all the same [interfaces](https://senzing-garage.github.io
 Just add the import statement for the particular component, service, or model that you want to use.
 
 ```typescript
-import {
-  SzEntitySearchParams,
-  SzAttributeSearchResult
-} from '@senzing/sdk-components-ng';
+import { SzEntitySearchParams, SzAttributeSearchResult } from "@senzing/sz-sdk-components-grpc-web";
 ```
 
 ### Quick Start
@@ -87,24 +83,19 @@ to start the Senzing REST API Server on the command line or with Docker.
 **2)** Add the SenzingSDKModule to your angular app's app.module.ts
 
 ```typescript
-import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
-import { SenzingSdkModule } from '@senzing/sdk-components-ng';
+import { BrowserModule } from "@angular/platform-browser";
+import { NgModule } from "@angular/core";
+import { SenzingSdkModule } from "@senzing/sz-sdk-components-grpc-web";
 
-import { AppComponent } from './app.component';
+import { AppComponent } from "./app.component";
 
 @NgModule({
-  declarations: [
-    AppComponent
-  ],
-  imports: [
-    BrowserModule,
-    SenzingSdkModule.forRoot()
-  ],
+  declarations: [AppComponent],
+  imports: [BrowserModule, SenzingSdkModule.forRoot()],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}
 ```
 
 **3)** Check that components can be rendered correctly. Add the following to your app.component.html (or any template) and verify the result:
@@ -119,7 +110,7 @@ The result should be a powered by logo like the following:
 
 If not then double check that step 2 is correct, and that you remembered to include the
 import statement as well.
-  
+
 **4)** Check that components can communicate with rest api gateway sucessfully. Add the following to your app.component.html(or any template):
 
 ```html
@@ -129,47 +120,41 @@ import statement as well.
 The result should be a list of service configuration parameters and values.
 
 **5)** Load the engine with data to resolve. The easiest way to do this currently is to load a CSV using the
-[Senzing app](https://senzing.com/#download).  This can also be done through the
+[Senzing app](https://senzing.com/#download). This can also be done through the
 [Senzing REST API](https://github.com/senzing-garage/senzing-rest-api-specification) using the [Senzing POC API Server](https://github.com/senzing-garage/senzing-poc-server).
 
 **6)** Verify that the components are working properly. The easiest way to do this is to is to just implement a search box, and a result list. Copy the following to your app.component.html file
 
 ```html
-<sz-search (resultsChange)="onSearchResults($event)"></sz-search>
-<sz-search-results
-[results]="currentSearchResults"
-(resultClick)="onSearchResultClick($event)"></sz-search-results>
+<sz-search (resultsChange)="onSearchResults($event)"></sz-search> <sz-search-results [results]="currentSearchResults" (resultClick)="onSearchResultClick($event)"></sz-search-results>
 ```
 
-now in your controller class (app.component.ts) add the *onSearchResults* and *onSearchResultClick* methods we just referenced above:
+now in your controller class (app.component.ts) add the _onSearchResults_ and _onSearchResultClick_ methods we just referenced above:
 
 ```typescript
-import { Component } from '@angular/core';
-import {
-  SzEntitySearchParams,
-  SzAttributeSearchResult
-} from '@senzing/sdk-components-ng';
+import { Component } from "@angular/core";
+import { SzEntitySearchParams, SzAttributeSearchResult } from "@senzing/sz-sdk-components-grpc-web";
 
 @Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  selector: "app-root",
+  templateUrl: "./app.component.html",
+  styleUrls: ["./app.component.css"],
 })
 export class AppComponent {
-  title = 'senzing-sdk-consumer';
+  title = "senzing-sdk-consumer";
   public currentSearchResults: SzAttributeSearchResult[];
   public currentlySelectedEntityId: number;
   public currentSearchParameters: SzEntitySearchParams;
 
   onSearchResults(evt: SzAttributeSearchResult[]) {
-    console.log('@senzing/sz-search-results: ', evt);
+    console.log("@senzing/sz-search-results: ", evt);
     // store on current scope
     this.currentSearchResults = evt;
     // results module is bound to this property
   }
 
   public onSearchResultClick(entityData: SzAttributeSearchResult) {
-    console.log('@senzing/sz-search-results-click: ', entityData);
+    console.log("@senzing/sz-search-results-click: ", entityData);
 
     if (entityData && entityData.entityId > 0) {
       this.currentlySelectedEntityId = entityData.entityId;
@@ -193,32 +178,27 @@ The SenzingSDKModule accepts a factory method that returns an instance of the
 The following tells any components to turn on CORS functionality and make all api requests to localhost port 8080 (i.e.: http://localhost:8080/).
 
 ```typescript
-import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
-import { SenzingSdkModule, SzRestConfiguration } from '@senzing/sdk-components-ng';
-import { AppComponent } from './app.component';
+import { BrowserModule } from "@angular/platform-browser";
+import { NgModule } from "@angular/core";
+import { SenzingSdkModule, SzRestConfiguration } from "@senzing/sz-sdk-components-grpc-web";
+import { AppComponent } from "./app.component";
 
-// create exportable factory  
+// create exportable factory
 // for AOT compilation
 export function SzRestConfigurationFactory() {
   return new SzRestConfiguration({
-    basePath: 'http://localhost:8080',
-    withCredentials: true
+    basePath: "http://localhost:8080",
+    withCredentials: true,
   });
 }
 
 @NgModule({
-  declarations: [
-    AppComponent
-  ],
-  imports: [
-    BrowserModule,
-    SenzingSdkModule.forRoot( SzRestConfigurationFactory )
-  ],
+  declarations: [AppComponent],
+  imports: [BrowserModule, SenzingSdkModule.forRoot(SzRestConfigurationFactory)],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}
 ```
 
 ### Parameters
@@ -228,11 +208,11 @@ See [online documentation](https://senzing-garage.github.io/rest-api-client-ng/c
 ## Documentation
 
 Installation contains a statically generated API and component references. They can be found in
-node_modules/@senzing/sdk-components-ng/docs or [Online here](https://senzing-garage.github.io/sdk-components-ng/).
+node_modules/@senzing/sz-sdk-components-grpc-web/docs or [Online here](https://senzing-garage.github.io/sz-sdk-components-grpc-web/).
 
 ## Examples
 
-When you check out the source for this repository there is a directory of Angular project examples. Please see the [Examples Readme](https://github.com/senzing-garage/sdk-components-ng/tree/master/examples) for more information on how these work.
+When you check out the source for this repository there is a directory of Angular project examples. Please see the [Examples Readme](https://github.com/senzing-garage/sz-sdk-components-grpc-web/tree/master/examples) for more information on how these work.
 
 ## Troubleshooting
 
@@ -252,7 +232,7 @@ Occasionally something does go wrong (I know, I know right?). Here are some comm
       showing up in the developer console</td>
       <td style="padding: 10px 5px;">
         Set the api configuration to the address and port your rest server is running at by
-        passing in an instance of <a href="https://senzing-garage.github.io/rest-api-client-ng/classes/Configuration.html">SzRestConfiguration</a> to the <a href="https://senzing-garage.github.io/sdk-components-ng/modules/SenzingSdkModule.html">SenzingSdkModule.forRoot method</a>.
+        passing in an instance of <a href="https://senzing-garage.github.io/rest-api-client-ng/classes/Configuration.html">SzRestConfiguration</a> to the <a href="https://senzing-garage.github.io/sz-sdk-components-grpc-web/modules/SenzingSdkModule.html">SenzingSdkModule.forRoot method</a>.
         <br/><br/>
         Double check and make sure you can connect to your rest server via
         <code>curl -i http://localhost:8080/heartbeat</code>
