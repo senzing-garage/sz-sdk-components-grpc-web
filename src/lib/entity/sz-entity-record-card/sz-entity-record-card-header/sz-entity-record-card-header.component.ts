@@ -134,7 +134,7 @@ export class SzEntityRecordCardHeaderComponent implements OnInit, OnDestroy {
 
   /** proxy handler for when prefs have changed externally */
   private onPrefsChange(prefs: any) {
-    //console.warn('@senzing/sdk-components-ng/sz-entity-record-card-header.onPrefsChange(): ', prefs);
+    //console.warn('@senzing/sdk-components-grpc-web/sz-entity-record-card-header.onPrefsChange(): ', prefs);
     this.showRecordIdWhenSingleRecord = prefs.showTopEntityRecordIdsWhenSingular;
     // update view manually (for web components redraw reliability)
     this.cd.detectChanges();

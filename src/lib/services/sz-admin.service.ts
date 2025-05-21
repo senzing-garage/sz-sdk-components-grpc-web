@@ -28,7 +28,7 @@ export class SzAdminService {
   public apiServerVersion: string;
   /** version of the OAS senzing-rest-api spec being used */
   public restApiVersion: string;
-  /** release version of the @senzing/sdk-components-ng package*/
+  /** release version of the @senzing/sdk-components-grpc-web package*/
   public sdkComponentsVersion: string;
   /** version of the @senzing/sdk-graph-components package being used */
   public graphComponentsVersion: string;

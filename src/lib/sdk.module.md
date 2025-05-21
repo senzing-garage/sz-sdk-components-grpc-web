@@ -2,7 +2,7 @@
 
 ## Installation
 
-Open up a terminal to your application root and type `npm install @senzing/sdk-components-ng --save`.
+Open up a terminal to your application root and type `npm install @senzing/sdk-components-grpc-web --save`.
 
 ## Add to app.module.ts
 
@@ -11,7 +11,7 @@ Now open up your applications main module file, in most cases this will be app.m
 ```typescript
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { SenzingSdkModule } from '@senzing/sdk-components-ng';
+import { SenzingSdkModule } from '@senzing/sdk-components-grpc-web';
 
 import { AppComponent } from './app.component';
 

@@ -278,7 +278,7 @@ export class SzGraphComponent implements OnInit, OnDestroy {
   @Input() public set showCoreMatchKeyTokenChips(value: boolean | string){
     this._showCoreMatchKeyTokenChips = parseBool(value);
     if (value === true) {
-      //console.log('@senzing/sdk-components-ng/sz-graph-component.showCoreMatchKeyTokenChips = '+ value);
+      //console.log('@senzing/sdk-components-grpc-web/sz-graph-component.showCoreMatchKeyTokenChips = '+ value);
       this.matchKeyTokenSelectionScope = SzMatchKeyTokenFilterScope.CORE;
     }
   }
@@ -302,7 +302,7 @@ export class SzGraphComponent implements OnInit, OnDestroy {
   @Input() public set showExtraneousMatchKeyTokenChips(value: boolean | string) {
     this._showExtraneousMatchKeyTokenChips = parseBool(value);
     if (value === true) {
-      //console.log('@senzing/sdk-components-ng/sz-graph-component.showExtraneousMatchKeyTokenChips = '+ value);
+      //console.log('@senzing/sdk-components-grpc-web/sz-graph-component.showExtraneousMatchKeyTokenChips = '+ value);
       this.matchKeyTokenSelectionScope = SzMatchKeyTokenFilterScope.EXTRANEOUS;
     }
   }
@@ -335,7 +335,7 @@ export class SzGraphComponent implements OnInit, OnDestroy {
     } else {
       this._matchKeyTokenSelectionScope = (value as SzMatchKeyTokenFilterScope);
     }
-    //console.log(`@senzing/sdk-components-ng/sz-graph-component.matchKeyTokenSelectionScope(${value} | ${(this._matchKeyTokenSelectionScope as unknown as string)})`, this._matchKeyTokenSelectionScope);
+    //console.log(`@senzing/sdk-components-grpc-web/sz-graph-component.matchKeyTokenSelectionScope(${value} | ${(this._matchKeyTokenSelectionScope as unknown as string)})`, this._matchKeyTokenSelectionScope);
   }
   /**
    * get the value of match key token filterings scope. possible values are 
@@ -896,7 +896,7 @@ export class SzGraphComponent implements OnInit, OnDestroy {
 
   /** proxy handler for when prefs have changed externally */
   private onPrefsChange(prefs: SzGraphPrefs) {
-    //console.log('@senzing/sdk-components-ng/sz-graph-component.onPrefsChange(): ', prefs, this.prefs.graph.toJSONObject());
+    //console.log('@senzing/sdk-components-grpc-web/sz-graph-component.onPrefsChange(): ', prefs, this.prefs.graph.toJSONObject());
     let queryParamChanged       = false;
     let queryParametersChanged  = [];
     let _oldQueryParams = {maxDegrees: this.maxDegrees, maxEntities: this.maxEntities, buildOut: this.buildOut, unlimitedMaxEntities: this.unlimitedMaxEntities, unlimitedMaxScope: this.unlimitedMaxScope};
@@ -934,7 +934,7 @@ export class SzGraphComponent implements OnInit, OnDestroy {
       queryParamChanged = true;
 
       /*
-      console.warn('@senzing/sdk-components-ng/sz-graph-component.onPrefsChange(): query parameter changed!!!',
+      console.warn('@senzing/sdk-components-grpc-web/sz-graph-component.onPrefsChange(): query parameter changed!!!',
       this.maxDegrees != prefs.maxDegreesOfSeparation,
       this.maxEntities != prefs.maxEntities, // it's this one triggering when it shouldn't
       this.maxEntities, 
@@ -1306,12 +1306,12 @@ export class SzGraphComponent implements OnInit, OnDestroy {
   }
   /** can a specific entity node be removed from canvas */
   public canRemoveNode(entityId: SzEntityIdentifier) {
-    //console.log(`@senzing/sdk-components-ng/sz-graph-component.canRemoveNode: `, entityId);
+    //console.log(`@senzing/sdk-components-grpc-web/sz-graph-component.canRemoveNode: `, entityId);
     return this.graph.canRemoveNode(entityId);
   }
   /** does a specific entity have hidden relationships and are they collapsed */
   public canExpandNode(entityId: SzEntityIdentifier) {
-    //console.log(`@senzing/sdk-components-ng/sz-graph-component.canExpandNode: `, entityId);
+    //console.log(`@senzing/sdk-components-grpc-web/sz-graph-component.canExpandNode: `, entityId);
     return this.graph.canExpandNode(entityId);
   }
   /** 
@@ -1319,21 +1319,21 @@ export class SzGraphComponent implements OnInit, OnDestroy {
    * only related to the entity specified.
    */
   public removeNode(entityId: SzEntityIdentifier) {
-    console.log(`@senzing/sdk-components-ng/sz-graph-component.removeNode: `, entityId);
+    console.log(`@senzing/sdk-components-grpc-web/sz-graph-component.removeNode: `, entityId);
     this.graph.removeNode(entityId);
   }
   /** hide all visible(expanded) entities related to a specific entity
    * that are themselves not related to any other visible entities
    */
   public collapseNode(entityId: SzEntityIdentifier) {
-    console.log(`@senzing/sdk-components-ng/sz-graph-component.collapseNode: `, entityId);
+    console.log(`@senzing/sdk-components-grpc-web/sz-graph-component.collapseNode: `, entityId);
     this.graph.collapseNode(entityId);
   }
   /** show any entities that are related to a specific entity that are 
    * currently not on the canvas
    */
   public expandNode(entityId: SzEntityIdentifier) {
-    console.log(`@senzing/sdk-components-ng/sz-graph-component.expandNode: `, entityId);
+    console.log(`@senzing/sdk-components-grpc-web/sz-graph-component.expandNode: `, entityId);
     this.graph.expandNode(entityId);
   }
 }

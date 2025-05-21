@@ -1129,7 +1129,7 @@ export class SzCrossSourceResultsDataTable extends SzDataTable implements OnInit
           }
         }
       });
-      console.warn(`@senzing/sdk-components-ng/sz-cross-source-results.onSampleSetDataChange()`, data, transformed);
+      console.warn(`@senzing/sdk-components-grpc-web/sz-cross-source-results.onSampleSetDataChange()`, data, transformed);
       this.data     = transformed;
       this._loading.next({inflight: false, source: 'SzCrossSourceResultsDataTable.onSampleSetDataChange'});
       this.cd.markForCheck();

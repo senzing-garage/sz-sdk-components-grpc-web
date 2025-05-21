@@ -1,14 +1,14 @@
 {
-  "name": "@senzing/sdk-components-ng",
-  "version": "9.0.0",
+  "name": "@senzing/sdk-components-grpc-web",
+  "version": "0.0.1",
   "private": false,
   "keywords" :["Angular","Library","Senzing"],
   "license" : "SEE LICENSE IN LICENSE",
   "repository": {
     "type" : "git",
-    "url" : "https://github.com/senzing-garage/sdk-components-ng"
+    "url" : "https://github.com/senzing-garage/sz-sdk-components-grpc-web"
   },
-  "homepage" :"https://senzing.github.io/sdk-components-ng/",
+  "homepage" :"https://senzing.github.io/sz-sdk-components-grpc-web/",
   "dependencies": {
     "@types/d3": "^7.4.0",
     "d3": "^7.8.0",

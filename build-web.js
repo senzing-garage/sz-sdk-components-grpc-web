@@ -30,9 +30,9 @@ const packageDir        = `${distDirBasePath}package/`;
   // concat all files together
   await concat(files, `${packageDir}senzing-components-web.js`);
   // copy styles
-  if(fs.existsSync('./node_modules/@senzing/sdk-components-ng/styles')){
+  if(fs.existsSync('./node_modules/@senzing/sdk-components-grpc-web/styles')){
     await fs.copy(
-      './node_modules/@senzing/sdk-components-ng/styles',
+      './node_modules/@senzing/sdk-components-grpc-web/styles',
       `${packageDir}styles`
     ).catch(()=>{ console.log('build error #1'); });
   }

@@ -1,7 +1,7 @@
 import { AppPage } from './app.po';
 import { browser, logging } from 'protractor';
 
-describe('@senzing/sdk-components-ng', () => {
+describe('@senzing/sdk-components-grpc-web', () => {
   let page: AppPage;
 
   beforeEach(() => {

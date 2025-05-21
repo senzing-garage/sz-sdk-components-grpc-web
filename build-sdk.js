@@ -9,17 +9,17 @@ var sass = require('sass');
     quietDeps: true
   }).then((result) => {
       // make styles dir
-      fs.mkdir('./dist/@senzing/sdk-components-ng/styles', { recursive: true }, (err) => {
+      fs.mkdir('./dist/@senzing/sdk-components-grpc-web/styles', { recursive: true }, (err) => {
         if(!(err)){
           // was able to create styles dir
 
           // now write file to it
-          fs.writeFile('./dist/@senzing/sdk-components-ng/styles/styles.css', result.css, function(err){
+          fs.writeFile('./dist/@senzing/sdk-components-grpc-web/styles/styles.css', result.css, function(err){
             if(!err){
               //file written on disk
-              console.log('wrote ./dist/@senzing/sdk-components-ng/styles.css');
+              console.log('wrote ./dist/@senzing/sdk-components-grpc-web/styles.css');
             } else {
-              console.log('could not write ./dist/@senzing/sdk-components-ng/styles.css ',err);
+              console.log('could not write ./dist/@senzing/sdk-components-grpc-web/styles.css ',err);
             }
           });
 
@@ -34,7 +34,7 @@ var sass = require('sass');
   // documentation
   await fs.copy(
     './docs',
-    './dist/@senzing/sdk-components-ng/docs'
+    './dist/@senzing/sdk-components-grpc-web/docs'
   ).catch((err)=>{
     console.log('build err #1: could not copy documentation to package.');
   });
@@ -42,7 +42,7 @@ var sass = require('sass');
   // now themes
   await fs.copy(
     './src/lib/scss/themes',
-    './dist/@senzing/sdk-components-ng/styles/themes'
+    './dist/@senzing/sdk-components-grpc-web/styles/themes'
   ).catch((err)=>{
     console.log('build err #2: could not copy themes to package.');
   });
@@ -58,14 +58,14 @@ var sass = require('sass');
   // do readme and markdown files
   await fs.copyFile(
     './src/README.md',
-    './dist/@senzing/sdk-components-ng/README.md'
+    './dist/@senzing/sdk-components-grpc-web/README.md'
   ).catch((err)=>{
     console.log('build err #4: could not copy README.md to package.');
   });
 
   await fs.copyFile(
     './src/LICENSE',
-    './dist/@senzing/sdk-components-ng/LICENSE'
+    './dist/@senzing/sdk-components-grpc-web/LICENSE'
   ).catch((err)=>{
     console.log('build err #5: could not copy LICENSE to package.');
   });
