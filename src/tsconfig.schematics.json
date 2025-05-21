@@ -2,7 +2,7 @@
   "compileOnSave": false,
   "compilerOptions": {
     "baseUrl": ".",
-    "outDir": "../dist/@senzing/sdk-components-ng/schematics",
+    "outDir": "../dist/@senzing/sdk-components-grpc-web/schematics",
     "forceConsistentCasingInFileNames": true,
     "strict": false,
     "noImplicitOverride": true,

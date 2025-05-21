@@ -9,7 +9,7 @@ lets bind the output of the search component to the input of the search results 
 first two methods to your component(or app.component.ts) that will handle the output of our search component:
 ```typescript
   public onSearchResults(evt: SzSearchResults) {
-    console.log('@senzing/sdk-components-ng/sz-search/searchResults: ', evt);
+    console.log('@senzing/sdk-components-grpc-web/sz-search/searchResults: ', evt);
     // store on current scope
     this.currentSearchResults = evt;
   }
@@ -30,7 +30,7 @@ import {
   SzAttributeSearchResult,
   SzEntitySearchParams,
   SzSearchComponent
-} from '@senzing/sdk-components-ng';
+} from '@senzing/sdk-components-grpc-web';
 
 @Component({
   selector: 'app-root',

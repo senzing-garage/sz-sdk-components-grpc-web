@@ -6,7 +6,7 @@ import { HttpClient, provideHttpClient, withInterceptorsFromDi } from '@angular/
 import { HttpClientInMemoryWebApiModule } from 'angular-in-memory-web-api';
 import { InMemoryDataService } from '../../../data/services/in-memory-data.service';
 
-import { SenzingSdkModule, SzRestConfiguration, SzPoweredByComponent } from '@senzing/sdk-components-ng';
+import { SenzingSdkModule, SzRestConfiguration, SzPoweredByComponent } from '@senzing/sdk-components-grpc-web';
 import { AppComponent } from './app.component';
 import { SzSearchComponentTest } from './search/sz-search/sz-search.component';
 

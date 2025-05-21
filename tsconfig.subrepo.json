@@ -21,9 +21,9 @@
         "dist/@senzing/rest-client-ng/rest-client-ng",
         "dist/@senzing/rest-client-ng"
       ],
-      "@senzing/sdk-components-ng": [
-        "dist/@senzing/sdk-components-ng/senzing-sdk-components-ng",
-        "dist/@senzing/sdk-components-ng"
+      "@senzing/sdk-components-grpc-web": [
+        "dist/@senzing/sdk-components-grpc-web/senzing-sdk-components-grpc-web",
+        "dist/@senzing/sdk-components-grpc-web"
       ],
       "@senzing/sdk-components-web": [
         "dist/@senzing/sdk-components-web/senzing-sdk-components-web",

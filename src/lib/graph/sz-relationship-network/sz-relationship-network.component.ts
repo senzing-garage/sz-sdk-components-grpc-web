@@ -285,12 +285,12 @@ export class SzRelationshipNetworkComponent implements AfterViewInit, OnDestroy 
     /*
     if(value && this.linkLabel) {
       this.linkLabel.style("opacity", 1);
-      // console.log('@senzing/sdk-components-ng:sz-relationship-network.setShowLinkLabels: ', value, 1);
+      // console.log('@senzing/sdk-components-grpc-web:sz-relationship-network.setShowLinkLabels: ', value, 1);
     } else if(this.linkLabel) {
       this.linkLabel.style("opacity", 0);
-      // console.log('@senzing/sdk-components-ng:sz-relationship-network.setShowLinkLabels: ', value, 0);
+      // console.log('@senzing/sdk-components-grpc-web:sz-relationship-network.setShowLinkLabels: ', value, 0);
     } else {
-      // console.log('@senzing/sdk-components-ng:sz-relationship-network.setShowLinkLabels: UNKNOWN!', this._showLinkLabels, this.linkLabel);
+      // console.log('@senzing/sdk-components-grpc-web:sz-relationship-network.setShowLinkLabels: UNKNOWN!', this._showLinkLabels, this.linkLabel);
     }
     */
   }
@@ -1754,7 +1754,7 @@ export class SzRelationshipNetworkComponent implements AfterViewInit, OnDestroy 
       }catch(err){}
     }
     this._renderStarted.next(true);
-    //console.log('@senzing/sdk-components-ng/sz-relationship-network.render(): ', gdata, this._filterFn);
+    //console.log('@senzing/sdk-components-grpc-web/sz-relationship-network.render(): ', gdata, this._filterFn);
     this.loadedData = gdata;
     this.addSvg(gdata);
     // publish out event
@@ -1797,7 +1797,7 @@ export class SzRelationshipNetworkComponent implements AfterViewInit, OnDestroy 
       this._dataRequested.next(true);
       let _maxEntities      = this._unlimitedMaxEntities ? 40000 : this._maxEntities;
       let _maxEntitiesLimit = this._unlimitedMaxEntities ? (this._maxEntitiesPreflightLimit !== undefined ? this._maxEntitiesPreflightLimit : 40000) : this.maxEntities;
-      //console.warn('@senzing/sdk-components-ng/sz-relationship-network.reload(): ', this._entityIds, _maxEntitiesLimit, this._unlimitedMaxEntities);
+      //console.warn('@senzing/sdk-components-grpc-web/sz-relationship-network.reload(): ', this._entityIds, _maxEntitiesLimit, this._unlimitedMaxEntities);
 
       this.getNetworkComposite(this._entityIds[0], this._maxDegrees, this._buildOut, _maxEntities).pipe(
         takeUntil(this.unsubscribe$),
@@ -1857,7 +1857,7 @@ export class SzRelationshipNetworkComponent implements AfterViewInit, OnDestroy 
     this.svgZoom  = d3.select( this.svgZoomElement );
     var hiddenNodes; // this has to be a var outside of fn's so they can hoist value
 
-    //console.log('@senzing/sdk-components-ng:sz-relationship-network.addSvg', gdata, graph);
+    //console.log('@senzing/sdk-components-grpc-web:sz-relationship-network.addSvg', gdata, graph);
 
     // ------------------------------------- start utility functions -------------------------------------
     let getNodeVisibilityClass = (_d) => {

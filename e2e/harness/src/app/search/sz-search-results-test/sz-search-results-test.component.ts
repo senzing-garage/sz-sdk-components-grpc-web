@@ -8,7 +8,7 @@ import {
   EntityDataService,
   SzAttributeSearchResult
 } from '@senzing/rest-api-client-ng';
-import { SzEntitySearchParams, SzSearchService, JSONScrubber } from '@senzing/sdk-components-ng';
+import { SzEntitySearchParams, SzSearchService, JSONScrubber } from '@senzing/sdk-components-grpc-web';
 
 
 @Component({
