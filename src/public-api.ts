@@ -120,6 +120,9 @@ export { SzHowNavComponent } from './lib/how/sz-how-nav.component';
 export { SzHowVirtualEntityCardComponent } from './lib/how/cards/sz-how-virtual-entity-card.component';
 export { SzHowVirtualEntityDialog } from './lib/how/sz-how-virtual-entity-dialog.component';
 
+/** gRPC Web */
+export * from './lib/configuration/sz-product-info/sz-product-info.component'
+
 /** export some members of rest client to ease type use */
 export {
   Configuration as SzRestConfiguration,
