@@ -1,3 +1,12 @@
 <h2>SzProductInfoComponent</h2>
-
-<sz-grpc-web-client-about></sz-grpc-web-client-about>
+<main class="main">
+    <div class="content">
+      <button (click)="getVersion($event)">Get Version</button>
+      <button (click)="getLicense($event)">Get License</button>
+      <button (click)="getDataSources($event)">Get DataSources</button>
+    </div>
+    <div>
+      <h2>Result</h2>
+      <textarea class="result" #resultResponse [value]="result"></textarea>
+    </div>
+</main>

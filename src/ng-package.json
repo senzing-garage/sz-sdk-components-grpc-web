@@ -10,6 +10,7 @@
   ],
   "allowedNonPeerDependencies": [
     "@senzing/rest-api-client-ng",
+    "@senzing/sz-sdk-typescript-grpc-web",
     "@angular/material",
     "ngx-json-viewer",
     "d3",

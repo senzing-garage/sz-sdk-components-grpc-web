@@ -4,9 +4,7 @@ import { SzGrpcWebEnvironment, SzGrpcWebEnvironmentOptions } from '@senzing/sz-s
 @Injectable({
   providedIn: 'root'
 })
-export class SzSdkGrpcWebProductService {
-  private szEnvironment: SzGrpcWebEnvironment | undefined;
-  
+export class SzGrpcProductService { 
   getVersion() {
     console.log(`getting version from grpc...`);
     if(this.szEnvironment && this.szEnvironment.product) {
@@ -26,8 +24,8 @@ export class SzSdkGrpcWebProductService {
 
   constructor(
     // Make recaptchaContainerId an injection token
-    @Inject('GRPC_PARAMETERS') private grpcParameters: SzGrpcWebEnvironmentOptions
+    @Inject('GRPC_ENVIRONMENT') private szEnvironment: SzGrpcWebEnvironment
   ) { 
-    this.szEnvironment = new SzGrpcWebEnvironment(this.grpcParameters);
+
   }
 }

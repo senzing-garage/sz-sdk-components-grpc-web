@@ -109,6 +109,7 @@ import { SzHowUIService } from './services/sz-how-ui.service';
 import { SzHowVirtualEntityCardComponent } from './how/cards/sz-how-virtual-entity-card.component';
 import { SzHowVirtualEntityDialog } from './how/sz-how-virtual-entity-dialog.component';
 import { SzHowStepNodeComponent } from './how/sz-how-step-node.component';
+import { SzGrpcWebEnvironment } from '@senzing/sz-sdk-typescript-grpc-web';
 
 /**
  * Sets up a default set of service parameters for use
@@ -125,10 +126,31 @@ export function SzDefaultRestConfigurationFactory(): SzRestConfiguration {
   });
 }
 /**
+ * Sets up a grpc web sdk environment with default connection parameters for use
+ * by the SDK Components.
+ *
+ * this is only used when no configuration parameters are set
+ * via the forRoot static method.
+ * @internal
+ */
+export function SzDefaultGrpcEnvFactory(): SzGrpcWebEnvironment {
+  return new SzGrpcWebEnvironment({
+    connectionString: `http://localhost:8262/grpc`
+  });
+}
+
+/**
  * Injection Token for the rest configuration class
  * @internal
  */
 const SzRestConfigurationInjector = new InjectionToken<SzRestConfiguration>("SzRestConfiguration");
+
+/**
+ * Injection Token for the grpc configuration class
+ * @internal
+ */
+const SzGrpcEnvInjector = new InjectionToken<SzGrpcWebEnvironment>("SzGrpcWebEnvironment");
+
 
 /**
  * Senzing SDK Components Module.
@@ -290,13 +312,17 @@ export class SenzingSdkModule {
    SenzingSdkModule.forRoot( SzRestConfigurationFactory )
    *
    */
-  public static forRoot(apiConfigFactory?: () => SzRestConfiguration): ModuleWithProviders<SenzingSdkModule> {
+  public static forRoot(apiConfigFactory?: () => SzRestConfiguration, grpcEnvFactory?: () => SzGrpcWebEnvironment): ModuleWithProviders<SenzingSdkModule> {
     return {
         ngModule: SenzingSdkModule,
         providers: [
           {
             provide: SzRestConfiguration,
             useFactory: apiConfigFactory ? apiConfigFactory : SzDefaultRestConfigurationFactory
+          },
+          {
+            provide: 'GRPC_ENVIRONMENT',
+            useFactory: grpcEnvFactory ? grpcEnvFactory : SzDefaultGrpcEnvFactory
           },
           {provide: LocationStrategy, useClass: PathLocationStrategy}
         ]
