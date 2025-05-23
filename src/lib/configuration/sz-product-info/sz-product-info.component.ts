@@ -1,5 +1,4 @@
 import { Component, Inject, inject, OnDestroy, OnInit } from "@angular/core";
-import { SzGrpcWebClientAboutComponent, SzSdkGrpcWebProductService } from "@senzing/sdk-grpc-web-client-ng";
 import { SzGrpcWebEnvironment, SzGrpcWebEnvironmentOptions } from "@senzing/sz-sdk-typescript-grpc-web";
 import { Subject } from "rxjs";
 import { SzGrpcProductService } from "../../services/grpc/product.service";
@@ -10,9 +9,6 @@ import { SzGrpcProductService } from "../../services/grpc/product.service";
     templateUrl: 'sz-product-info.component.html',
     providers:[
         { provide: SzGrpcProductService, useClass: SzGrpcProductService}
-    ],
-    imports: [
-        SzGrpcWebClientAboutComponent
     ]
 })
 export class SzProductInfoComponent implements OnInit, OnDestroy {

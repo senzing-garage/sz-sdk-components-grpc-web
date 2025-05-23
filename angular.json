@@ -43,39 +43,6 @@
         }
       }
     },
-    "@senzing/sdk-grpc-web-client-ng": {
-      "projectType": "library",
-      "root": "sdk-grpc-web-client-ng",
-      "sourceRoot": "sdk-grpc-web-client-ng/src",
-      "prefix": "Sz",
-      "architect": {
-        "build": {
-          "builder": "@angular-devkit/build-angular:ng-packagr",
-          "options": {
-            "project": "sdk-grpc-web-client-ng/ng-package.json"
-          },
-          "configurations": {
-            "production": {
-              "tsConfig": "sdk-grpc-web-client-ng/tsconfig.lib.prod.json"
-            },
-            "development": {
-              "tsConfig": "sdk-grpc-web-client-ng/tsconfig.lib.json"
-            }
-          },
-          "defaultConfiguration": "production"
-        },
-        "test": {
-          "builder": "@angular-devkit/build-angular:karma",
-          "options": {
-            "tsConfig": "sdk-grpc-web-client-ng/tsconfig.spec.json",
-            "polyfills": [
-              "zone.js",
-              "zone.js/testing"
-            ]
-          }
-        }
-      }
-    },
     "@senzing/sdk-components-grpc-web/examples/search-with-results-and-details": {
       "projectType": "application",
       "schematics": {

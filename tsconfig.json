@@ -24,9 +24,6 @@
       "@senzing/sdk-components-web": [
         "dist/@senzing/sdk-components-web/senzing-sdk-components-web",
         "dist/@senzing/sdk-components-web"
-      ],
-      "@senzing/sdk-grpc-web-client-ng": [
-        "./dist/@senzing/sdk-grpc-web-client-ng"
       ]
     },
     "target": "ES2022",

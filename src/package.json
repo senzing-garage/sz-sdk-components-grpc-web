@@ -21,7 +21,6 @@
     "@angular/core": "^19.0.0",
     "@angular/material": "^19.0.0",
     "@senzing/rest-api-client-ng": "^8.0.0",
-    "@senzing/sz-sdk-typescript-grpc-web": "4.x.x || 4.0.0-beta.2.1",
-    "@senzing/sdk-grpc-web-client-ng": "x.x.x"
+    "@senzing/sz-sdk-typescript-grpc-web": "4.x.x || 4.0.0-beta.2.1"
   }
 }
