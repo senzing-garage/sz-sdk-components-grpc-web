@@ -1,7 +1,8 @@
 import { Component, Inject, inject, OnDestroy, OnInit } from "@angular/core";
 import { SzGrpcWebEnvironment, SzGrpcWebEnvironmentOptions } from "@senzing/sz-sdk-typescript-grpc-web";
-import { Subject } from "rxjs";
+import { Subject, take } from "rxjs";
 import { SzGrpcProductService } from "../../services/grpc/product.service";
+import { SzAdminService } from "../../services/sz-admin.service";
 
 @Component({
     selector: 'sz-product-info',
@@ -11,37 +12,34 @@ import { SzGrpcProductService } from "../../services/grpc/product.service";
         { provide: SzGrpcProductService, useClass: SzGrpcProductService}
     ]
 })
-export class SzProductInfoComponent implements OnInit, OnDestroy {
+export class SzProductInfoComponent implements OnDestroy {
     /** subscription to notify subscribers to unbind */
     public unsubscribe$ = new Subject<void>();
-    //private szEnvironment: SzGrpcWebEnvironment | undefined;
-    //private szProduct: SzGrpcWebProduct | undefined;
-    //private szDiagnostic: SzGrpcWebDiagnostic | undefined;
-    //private grpcParameters: SzGrpcWebEnvironmentOptions = {connectionString: `http://localhost:8260/grpc`}
     public result: string | undefined;
 
     getVersion(event: MouseEvent) {
       console.log(`getting version from grpc...`);
-      this.productService.getVersion()?.then((result) => {
+      this.productService.getVersion().pipe(take(1)).subscribe((result) => {
         console.log(`got info`, result);
         this.result = JSON.stringify(result, undefined, 4);
       })
-      /*this.szEnvironment?.product?.getVersion().then((result) => {
+    }
+    getRestVersion(event: MouseEvent) {
+      console.log(`getting version from grpc...`);
+      this.adminService.getVersionInfo().pipe(
+        take(1)
+      ).subscribe((result) => {
         console.log(`got info`, result);
         this.result = JSON.stringify(result, undefined, 4);
-      })*/
+      })
     }
   
     getLicense(event: MouseEvent) {
       console.log(`getting license from grpc...`);
-      this.productService.getLicense()?.then((result) => {
+      this.productService.getLicense().pipe(take(1)).subscribe((result) => {
         console.log(`got info`, result);
         this.result = JSON.stringify(result, undefined, 4);
       })
-      /*this.szEnvironment?.product?.getLicense().then((result) => {
-        console.log(`got info`, result);
-        this.result = JSON.stringify(result, undefined, 4);
-      })*/
     }
   
     getDataSources(event: MouseEvent) {
@@ -58,22 +56,17 @@ export class SzProductInfoComponent implements OnInit, OnDestroy {
 
     constructor(
       @Inject('GRPC_ENVIRONMENT') private SdkEnvironment: SzGrpcWebEnvironment,
-      private productService: SzGrpcProductService
+      private productService: SzGrpcProductService,
+      private adminService: SzAdminService
     ) {
 
     }
-
-    ngOnInit(): void {    
-        // set up grpc web product
-        //this.szProduct    = new SzGrpcWebProduct(this.grpcParameters);
-        //this.szDiagnostic = new SzGrpcWebDiagnostic(this.grpcParameters);
-
-    }
-    ngAfterInit(): void {
-
-    }
     
-    ngOnDestroy(): void {
-        
+    /**
+     * unsubscribe when component is destroyed
+     */
+    ngOnDestroy() {
+      this.unsubscribe$.next();
+      this.unsubscribe$.complete();
     }
 }

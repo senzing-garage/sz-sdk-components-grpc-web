@@ -1893,6 +1893,11 @@
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "port": 4200,
+            "proxyConfig": "proxy.conf.json",
+            "buildTarget": "examples/grpc/product:build"
+          },
           "configurations": {
             "production": {
               "buildTarget": "examples/grpc/product:build:production"
