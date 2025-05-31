@@ -8,6 +8,7 @@ import { SzAdminService } from '../../services/sz-admin.service';
 import { SzDataMartService } from '../../services/sz-datamart.service';
 import { SzLicenseUpgradeType } from '../../models/data-license';
 import { SzLicenseUpgradeMouseEvent } from '../../models/event-license';
+import { SzProductLicenseResponse } from 'src/lib/models/grpc/product';
 /**
  * A simple "license info" component.
  * Used for displaying the current senzing license info.
@@ -32,7 +33,7 @@ export class SzLicenseInfoComponent implements OnInit {
   /** this brings in the enum to local scrope for html template access */
   readonly SzLicenseUpgradeType = SzLicenseUpgradeType;
 
-  private _licenseInfo: SzLicenseInfo = {};
+  private _licenseInfo: SzProductLicenseResponse = {};
   private _countStats: SzLoadedStats;
   private _recordCount: number;
   private _showUpgradeButton: boolean = true;
@@ -58,13 +59,13 @@ export class SzLicenseInfoComponent implements OnInit {
     return this.licenseLimitRatio;
   }
   public get expirationDate(): Date {
-    return this._licenseInfo.expirationDate;
+    return this._licenseInfo.expireDate;
   }
   public get recordLimit() {
     return this.licenseInfo.recordLimit;
   }
 
-  public get licenseInfo() : SzLicenseInfo {
+  public get licenseInfo() : SzProductLicenseResponse {
     return this._licenseInfo;
   }
 
@@ -83,7 +84,7 @@ export class SzLicenseInfoComponent implements OnInit {
 
   public get expirationInvalid() : boolean {
     if (!this.licenseInfo) return false;
-    const expDate = this.licenseInfo.expirationDate;
+    const expDate = this.licenseInfo.expireDate;
     if (expDate === null || expDate === undefined) return true;
     return false;
   }
@@ -113,7 +114,7 @@ export class SzLicenseInfoComponent implements OnInit {
 
   public get licenseDays() : number | null {
     if (!this.licenseInfo) return 0;
-    const expDate = this.licenseInfo.expirationDate;
+    const expDate = this.licenseInfo.expireDate;
     if (!expDate) return null;
     const exp = expDate.getTime() - (1000 * 60 * 60 * 24);
     const now = (new Date()).getTime();
@@ -127,7 +128,7 @@ export class SzLicenseInfoComponent implements OnInit {
 
   public get expired() : boolean {
     if (!this.licenseInfo) return false;
-    const expDate = this.licenseInfo.expirationDate;
+    const expDate = this.licenseInfo.expireDate;
     if (!expDate) return false;
     const expYear  = expDate.getFullYear();
     const expMonth = expDate.getMonth();

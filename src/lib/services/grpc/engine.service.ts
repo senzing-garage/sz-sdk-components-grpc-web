@@ -1,0 +1,101 @@
+import { Inject, Injectable, signal } from '@angular/core';
+import { SzEngineFlags, SzError, SzGrpcWebConfig, SzGrpcWebEnvironment, SzGrpcWebEnvironmentOptions } from '@senzing/sz-sdk-typescript-grpc-web';
+import { Observable, Subject, take, takeUntil } from 'rxjs';
+import { SzProductLicenseResponse, SzProductVersionResponse } from '../../models/grpc/product';
+import { SzGrpcConfig } from './config';
+import { isNotNull } from '../../common/utils';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class SzGrpcEngineService {
+    /** subscription to notify subscribers to unbind */
+    public unsubscribe$ = new Subject<void>();
+    
+    public addRecords(recordsAsJson: Array<{[key: string]: any}>) {
+        let retVal      = new Subject();
+        let requests    = [];
+        let ignoredRecs = [];
+        let errors      = [];
+        recordsAsJson.forEach((record)=>{
+            let dsCode      = record['DATA_SOURCE'];
+            let recordId    = record['RECORD_ID'];
+            if(isNotNull(dsCode)) {
+                let _p = new Promise((resolve, reject)=>{
+                    try{
+                        this.addRecord(dsCode, recordId, record).then((result)=>{
+                            resolve(result);
+                        }).catch((err)=>{
+                            errors.push(err);
+                        })
+                    } catch(err) {
+                        errors.push(err);
+                    }
+                })
+                requests.push( _p );
+            } else {
+                ignoredRecs.push(record);
+            }
+        });
+        Promise.all(requests).then((p)=> {
+            console.log(`SzGrpcEngineService.addRecords: `, p, errors);
+            retVal.next(p)
+        })
+        return retVal.asObservable();
+    }
+
+    /**
+     * data_as_json = '{"ADDR_LINE1":"123 Main Street, Las Vegas NV 89132","ADDR_TYPE":"MAILING","AMOUNT":"100","DATE":"1/2/18","DATE_OF_BIRTH":"12/11/1978","EMAIL_ADDRESS":"bsmith@work.com","PHONE_NUMBER":"702-919-1300","PHONE_TYPE":"HOME","PRIMARY_NAME_FIRST":"Robert","PRIMARY_NAME_LAST":"Smith","RECORD_TYPE":"PERSON","STATUS":"Active","DATA_SOURCE":"CUSTOMERS"}'
+     */
+    public addRecord(dataSourceCode: string, recordId: string | number, recordDefinition: any) {
+        return this.szEnvironment.engine.addRecord(dataSourceCode, recordId, recordDefinition)
+    }
+
+    public getActiveConfigId() {
+        let retVal = new Subject<number | SzError>();
+        console.log(`getting license from grpc...`);
+        if(this.szEnvironment && this.szEnvironment.engine) {
+          this.szEnvironment?.engine?.getActiveConfigId().then((resp) => {
+            retVal.next(resp);
+          })
+        }
+        return retVal;
+    }
+    public getEntityByEntityId(entityId: number): Observable<string | SzError> {
+        let retVal = new Subject<string | SzError>();
+        console.log(`getting license from grpc...`);
+        if(this.szEnvironment && this.szEnvironment.engine) {
+          this.szEnvironment?.engine?.getEntityByEntityId(entityId).then((resp) => {
+            retVal.next(resp);
+          })
+        }
+        return retVal.asObservable();
+    }
+    public searchByAttributes(attributes: string | Map<any, any> | {[key: string] : any}, flags: BigInt | number = SzEngineFlags.SZ_SEARCH_BY_ATTRIBUTES_DEFAULT_FLAGS, searchProfile: string = ""): Observable<string | SzError> {
+        let retVal = new Subject<string | SzError>();
+        console.log(`getting license from grpc...`);
+        if(this.szEnvironment && this.szEnvironment.engine) {
+          this.szEnvironment?.engine?.searchByAttributes(attributes, flags, searchProfile).then((resp) => {
+            retVal.next(resp);
+          })
+        }
+        return retVal.asObservable();
+    }
+    public reinitialize(configId: number) {
+        let retVal = new Subject<unknown>();
+        console.log(`reinitialize engine with #${configId}...`);
+        if(this.szEnvironment && this.szEnvironment.engine) {
+          this.szEnvironment?.engine?.reinitialize(configId).then((resp) => {
+            retVal.next(resp);
+          })
+        }
+        return retVal.asObservable();
+    }
+    
+    constructor(
+        // Make GRPC Environment an injection token
+        @Inject('GRPC_ENVIRONMENT') private szEnvironment: SzGrpcWebEnvironment
+    ) {
+
+    }
+}

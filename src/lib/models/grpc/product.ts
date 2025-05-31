@@ -2,7 +2,7 @@ export interface SzProductVersionResponse {
     "PRODUCT_NAME": string;
     "VERSION": string;
     "BUILD_VERSION": string;
-    "BUILD_DATE": string;
+    "BUILD_DATE": Date;
     "BUILD_NUMBER": string;
     "COMPATIBILITY_VERSION": {
       "CONFIG_VERSION": string
@@ -17,10 +17,10 @@ export interface SzProductVersionResponse {
 export interface SzProductLicenseResponse {
     "customer"?: string,
     "contract"?: string,
-    "issueDate"?: string,
+    "issueDate"?: Date,
     "licenseType"?: string,
     "licenseLevel"?: string,
     "billing"?: string,
-    "expireDate"?: string,
-    "recordLimit"?: string
-}
+    "expireDate"?: Date,
+    "recordLimit"?: number
+  }

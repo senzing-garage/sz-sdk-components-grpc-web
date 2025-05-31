@@ -72,7 +72,7 @@ export { SzCrossSourceResultsDataTable } from './lib/statistics/cross-source/sz-
 /** components */
 export * from './lib/sz-powered-by/sz-powered-by.component';
 export * from './lib/statistics/cross-source/sz-cross-source-select.component';
-export * from './lib/configuration/sz-configuration/sz-configuration.component';
+export * from './lib/configuration/sz-rest-configuration/sz-rest-configuration.component';
 export * from './lib/configuration/sz-configuration-about/sz-configuration-about.component';
 export { SzLicenseInfoComponent } from './lib/configuration/sz-license/sz-license.component';
 export { SzPreferencesComponent } from './lib/configuration/sz-preferences/sz-preferences.component';
@@ -121,7 +121,8 @@ export { SzHowVirtualEntityCardComponent } from './lib/how/cards/sz-how-virtual-
 export { SzHowVirtualEntityDialog } from './lib/how/sz-how-virtual-entity-dialog.component';
 
 /** gRPC Web */
-export * from './lib/configuration/sz-product-info/sz-product-info.component'
+export * from './lib/configuration/sz-product-info/sz-product-info.component';
+export * from './lib/import/sz-import-files.component';
 
 /** export some members of rest client to ease type use */
 export {

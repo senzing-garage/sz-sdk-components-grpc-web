@@ -51,7 +51,7 @@ import { SzCrossSourceSummaryMatchKeyPickerDialog } from './summary/cross-source
 /** components */
 import { SzAlertMessageDialog } from './shared/alert-dialog/sz-alert-dialog.component';
 import { SzConfigurationAboutComponent } from './configuration/sz-configuration-about/sz-configuration-about.component';
-import { SzConfigurationComponent } from './configuration/sz-configuration/sz-configuration.component';
+import { SzRestConfigurationComponent } from './configuration/sz-rest-configuration/sz-rest-configuration.component';
 import { SzCrossSourceSelectComponent } from './statistics/cross-source/sz-cross-source-select.component';
 import { SzLicenseInfoComponent } from './configuration/sz-license/sz-license.component';
 import { SzMultiSelectButtonComponent } from './shared/multi-select-button/multi-select-button.component';
@@ -159,7 +159,7 @@ const SzGrpcEnvInjector = new InjectionToken<SzGrpcWebEnvironment>("SzGrpcWebEnv
 @NgModule({ declarations: [
         SzAlertMessageDialog,
         SzConfigurationAboutComponent,
-        SzConfigurationComponent,
+        SzRestConfigurationComponent,
         SzDataTable,
         SzCrossSourcePagingComponent,
         SzCrossSourceResultsDataTable,
@@ -229,7 +229,7 @@ const SzGrpcEnvInjector = new InjectionToken<SzGrpcWebEnvironment>("SzGrpcWebEnv
     ],
     exports: [
         SzAlertMessageDialog,
-        SzConfigurationComponent,
+        SzRestConfigurationComponent,
         SzConfigurationAboutComponent,
         SzDataTable,
         SzCrossSourceResultsDataTable,

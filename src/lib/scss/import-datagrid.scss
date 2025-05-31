@@ -1,0 +1,16 @@
+@import '_datagrid.scss';
+
+:host-context .sz-import-files {
+    border: 2px solid blue;
+
+    .import-analysis-table {
+        border: 1px solid orange;
+    }
+}
+
+tr.mat-mdc-header-row {
+    @include datagrid-header;
+}
+tr.mat-mdc-row {
+    @include datagrid-row;
+}

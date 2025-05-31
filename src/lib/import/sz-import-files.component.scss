@@ -1,0 +1,54 @@
+@use '@angular/material' as mat;
+@import '../scss/import-datagrid.scss';
+
+:host-context {
+  @include mat.theme((
+    color: (
+      primary: mat.$blue-palette,
+      tertiary: mat.$azure-palette,
+      theme-type: light,
+    ),
+    typography: Roboto,
+    density: 0
+  ));
+}
+
+:host {
+    .definition {
+        width: 600px;
+        height: 300px;
+    }
+
+    .file-input {
+        display: none;
+    }
+    .drop-zone {
+        cursor: pointer;
+        display: flex;
+        width: 200px;
+        height: 200px;
+        color: #687c7a;
+        border: 1px solid #363636;
+        justify-content: center;
+        flex-wrap: wrap;
+        align-content: center;
+
+        &:hover {
+            color: #363636;
+        }
+        mat-icon {
+            font-size: 48px;
+            width: 48px;
+            height: 48px;
+        }
+    }
+    .badge {
+        background-color: orange;
+        border-radius: 50%;
+        padding: 4px 6px;
+        font-size: 10px;
+        margin-left: 2px;
+        top: -3px;
+        position: relative;
+    }
+}

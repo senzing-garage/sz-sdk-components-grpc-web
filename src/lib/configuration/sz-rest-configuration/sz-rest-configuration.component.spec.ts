@@ -1,11 +1,11 @@
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { SzConfigurationComponent } from './sz-configuration.component';
+import { SzRestConfigurationComponent } from './sz-rest-configuration.component';
 import { SenzingSdkModule } from '../../sdk.module';
 
-describe('SzConfigurationComponent', () => {
-  let component: SzConfigurationComponent;
-  let fixture: ComponentFixture<SzConfigurationComponent>;
+describe('SzRestConfigurationComponent', () => {
+  let component: SzRestConfigurationComponent;
+  let fixture: ComponentFixture<SzRestConfigurationComponent>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
@@ -15,7 +15,7 @@ describe('SzConfigurationComponent', () => {
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(SzConfigurationComponent);
+    fixture = TestBed.createComponent(SzRestConfigurationComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

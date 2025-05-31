@@ -1,0 +1,76 @@
+
+<div *ngIf="!showAnalysis && !showResults" class="drop-zone" (click)="fileInput.click()">
+    <ng-content>
+        <mat-icon aria-hidden="false" aria-label="Import Files" fontIcon="post_add"></mat-icon>
+        Click here to Import Files.
+    </ng-content>
+</div>
+<input class="file-input" type="file" #fileInput 
+    (change)="onFilesChanged($event)" id="fileInput" multiple>
+<div *ngIf="showAnalysis">
+    <table *ngIf="analysis && analysis.dataSources && analysis.dataSources.length > 0 && !currentError" mat-table 
+        [dataSource]="analysis.dataSources" 
+        class="mat-table-full-width import-analysis-table mat-elevation-z8">
+        <!--- Note that these columns can be defined in any order.
+              The actual rendered columns are set as a property on the row definition" -->
+        <!-- Id Column -->
+        <ng-container matColumnDef="originalName">
+          <th mat-header-cell *matHeaderCellDef>Record Data Source</th>
+          <td mat-cell *matCellDef="let element">
+            {{ element.name && element.name.trim().length > 0 ? element.name : '[NONE]' }}
+            <span *ngIf="!element.exists" class="mat-badge-ds-new-tag badge"
+              >new</span>
+          </td>
+        </ng-container>
+      
+        <!-- number of records Column -->
+        <ng-container matColumnDef="recordCount">
+          <th mat-header-cell *matHeaderCellDef > Number of Records </th>
+          <td mat-cell *matCellDef="let element"> {{element.recordCount}} </td>
+        </ng-container>
+        <!-- Records with Record ID Column -->
+        <ng-container matColumnDef="recordsWithRecordIdCount">
+          <th mat-header-cell *matHeaderCellDef > Records with Record ID </th>
+          <td mat-cell *matCellDef="let element"> {{element.recordsWithRecordIdCount}} </td>
+        </ng-container>
+        <!-- Map to Data Source Column -->
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef > Map to Data Source </th>
+          <td mat-cell *matCellDef="let element;">
+            <div *ngIf="element && !element.exists">
+              <mat-form-field class="example-full-width">
+                <input
+                matInput
+                type="text" placeholder="Data Source to map to" #targetDS
+                [value]="element.name"
+                [attr.list]="getDataSourceInputName(element.originalName)"
+                [disabled]="isInProgress"
+                matBadgeOverlap="true"
+                (change)="handleDataSourceChange(element.name, targetDS.value)">
+              </mat-form-field>
+              <datalist #dataSourceOptions [id]="getDataSourceInputName(element.originalName)">
+                <option *ngFor="let dataSource of dataSourcesForPulldown" [value]="dataSource.DSRC_CODE" (click)="handleDataSourceChange(element.name,  dataSource.DSRC_CODE)">{{dataSource.DSRC_CODE}}</option>
+              </datalist>
+
+              <span class="badge"
+              *ngIf="!isNewDataSource( targetDS.value )">new</span>
+            </div>
+          </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; let l = dataIndex; columns: displayedColumns;"></tr>
+    </table>
+</div>
+<!--<hr>
+<div>
+    <button (click)="reinitEnvironment()">reinit Environment</button>
+    <button (click)="reinitEngine()">reinit Engine</button>
+</div>
+<hr>
+<div>
+    <h3>default config id: {{defaultConfigId}}</h3>
+</div>
+<div>
+    <h3>config definition:</h3>
+    <textarea class="definition" #resultResponse [value]="configDefinition"></textarea>
+</div>-->

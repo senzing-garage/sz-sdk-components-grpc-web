@@ -11,22 +11,22 @@ import { SzConfigurationService } from '../../services/sz-configuration.service'
  * provides the more robust solution.
  *
  * @example 
- * <!-- (WC) SzConfigurationComponent Example - javascript -->
- * <sz-wc-configuration id="sz-api-conf"></sz-wc-configuration>
+ * <!-- (WC) SzRestConfigurationComponent Example - javascript -->
+ * <sz-wc-rest-configuration id="sz-api-conf"></sz-wc-rest-configuration>
  * document.getElementById('sz-api-conf').basePath = 'http://apis.mydomain.com';
  *
  * @example 
- * <!-- (WC) SzConfigurationComponent Example - By attribute -->
- * <sz-wc-configuration base-path="http://apis.mydomain.com/api"></sz-wc-configuration>
+ * <!-- (WC) SzRestConfigurationComponent Example - By attribute -->
+ * <sz-wc-rest-configuration base-path="http://apis.mydomain.com/api"></sz-wc-rest-configuration>
  *
  * @export
  */
 @Component({
-    selector: 'sz-configuration',
+    selector: 'sz-rest-configuration',
     template: ``,
     standalone: false
 })
-export class SzConfigurationComponent {
+export class SzRestConfigurationComponent {
   /**
    * emmitted when a property has been changed.
    * used mostly for diagnostics.
