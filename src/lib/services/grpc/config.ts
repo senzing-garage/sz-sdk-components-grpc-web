@@ -22,7 +22,7 @@ export class SzGrpcConfig {
     }
 
     addDataSource(dataSourceCode: string) {
-        let retVal  = new Subject<any>();
+        let retVal  = new Subject<string>();
         console.log(`adding datasource through grpc...`);
 
         this.config.addDataSource(dataSourceCode).then((configResp) => {
@@ -31,7 +31,7 @@ export class SzGrpcConfig {
         return retVal;
     }
     addDataSources(dataSourceCodes: string[]) {
-        let retVal  = new Subject<any>();
+        let retVal  = new Subject<string[]>();
         console.log(`adding datasources through grpc...`);
 
         this.config.addDataSources(dataSourceCodes).then((configResp) => {

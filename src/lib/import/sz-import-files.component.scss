@@ -51,4 +51,11 @@
         top: -3px;
         position: relative;
     }
+    .action-bar {
+        display: flex;
+        flex-direction: column;
+        background-color: #fff;
+        align-content: flex-end;
+        align-items: flex-end;
+    }
 }

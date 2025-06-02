@@ -13,6 +13,7 @@ import { MatBadgeModule } from '@angular/material/badge';
 import { MatInputModule } from '@angular/material/input';
 import { MatTableModule } from '@angular/material/table';
 import { CommonModule } from '@angular/common';
+import { E } from '@angular/material/error-options.d-CGdTZUYk';
 
 export interface SzImportedFilesAnalysisDataSource {
   name: string,
@@ -49,6 +50,13 @@ export interface SzImportedFilesAnalysis {
   dataSources: SzImportedFilesAnalysisDataSource[]
 }
 
+export interface SzImportedFilesLoaded {
+  loaded: number,
+  notLoaded: number,
+  failures: number,
+  errors?: Error[]
+}
+
 /**
  * A component that allows a user to drag and drop, or choose a file
  * to load in to a configuration. The file will be parsed, the datasources
@@ -73,23 +81,12 @@ export class SzImportFileComponent implements OnInit, OnDestroy {
   /** subscription to notify subscribers to unbind */
   public unsubscribe$   = new Subject<void>();
   private _dataSources: SzSdkDataSource[];
-  public get dataSourcesForPulldown() {
-    let retVal = this._dataSources;
-    return retVal;
-  }
-  private get dataSourcesAsMap() : Map<string, number> {
-    let retVal = new Map<string, number>();
-    this._dataSources?.forEach((dsItem) => {
-      retVal.set(dsItem.DSRC_CODE, dsItem.DSRC_ID);
-    })
-    return retVal;
-  }
   public defaultConfigId: number;
   public configDefinition: string;
-  
   public isInProgress = false;
   private _results;
   public analysis: SzImportedFilesAnalysis;
+  public dataSourcesToRemap = new Map<string, string>;
   public results;
   public currentError: Error;
   
@@ -108,10 +105,10 @@ export class SzImportFileComponent implements OnInit, OnDestroy {
   }
   public get displayedColumns(): string[] {
     const retVal = [];
-    retVal.push('name', 'recordCount', 'recordsWithRecordIdCount');
     if( this.hasBlankDataSource) {
-      retVal.push('originalName');
+      retVal.push('name');
     }
+    retVal.push('recordCount', 'recordsWithRecordIdCount','originalName');
     return retVal;
   }
   public get hasBlankDataSource() {
@@ -127,6 +124,25 @@ export class SzImportFileComponent implements OnInit, OnDestroy {
   public get showResults() : boolean {
     return this.results !== undefined;
   }
+  public get dataSourcesForPulldown() {
+    let retVal = this._dataSources;
+    return retVal;
+  }
+  private get dataSourcesAsMap() : Map<string, number> {
+    let retVal = new Map<string, number>();
+    this._dataSources?.forEach((dsItem) => {
+      retVal.set(dsItem.DSRC_CODE, dsItem.DSRC_ID);
+    })
+    return retVal;
+  }
+  public get dataCanBeLoaded(): boolean {
+    let retVal = !this.isInProgress && (this.analysis ? true : false);
+    if(this.hasBlankDataSource) {
+      retVal = retVal && this.dataSourcesToRemap.has('NONE');
+    }
+    return retVal;
+  }
+
   
 
   constructor(
@@ -172,11 +188,21 @@ export class SzImportFileComponent implements OnInit, OnDestroy {
   }
 
   public addRecords(records: Array<{[key: string]: any}>){
-
+    let retVal = new Subject<any>()
+    this.engineService.addRecords(records).pipe(
+      takeUntil(this.unsubscribe$)
+    ).subscribe((result)=> {
+      retVal.next(result);
+    });
+    return retVal.asObservable();
   }
 
   /** when user changes the destination for a datasource */
   public handleDataSourceChange(fromDataSource: string, toDataSource: string) {
+    console.log(`handleDataSourceChange: "${fromDataSource}" => ${toDataSource}`);
+    let _srcKey   = fromDataSource && fromDataSource.trim() !== '' ? fromDataSource : 'NONE';
+    let _destKey  = toDataSource;
+    this.dataSourcesToRemap.set(_srcKey, _destKey);
     //this.adminBulkDataService.changeDataSourceName(fromDataSource, toDataSource);
   }
 
@@ -186,6 +212,92 @@ export class SzImportFileComponent implements OnInit, OnDestroy {
     ).subscribe((response)=> {
       this.analysis    = response;
     })
+  }
+
+  public loadRecords(): Observable<SzImportedFilesLoaded> {
+    let retVal = new Subject<SzImportedFilesLoaded>()
+    if(this.analysis){
+      const dataSourcesToCreate = this.analysis.dataSources.filter((ds)=> { return !ds.exists; });
+      let recordsToLoad = this.analysis.records;
+
+      console.log(`loadRecords: `, this.analysis);
+      if(this.hasBlankDataSource) {
+        // update records with no DATA_SOURCE value to mapped value
+        let newDsName     = this.dataSourcesToRemap.get('NONE');
+        let blankDsIndex  = dataSourcesToCreate.findIndex((ds)=> {
+          return ds.originalName === '';
+        });
+        if(blankDsIndex > -1 && dataSourcesToCreate[blankDsIndex]) {
+          dataSourcesToCreate[blankDsIndex].name = newDsName;
+        }
+      }
+      if(dataSourcesToCreate && dataSourcesToCreate.length > 0) {
+        // first create datasources
+        console.log('creating datasources..', dataSourcesToCreate)
+        this.addDataSources(dataSourcesToCreate).pipe(
+          takeUntil(this.unsubscribe$)
+        ).subscribe((dataSources)=>{
+          this.addRecords(recordsToLoad).pipe(
+            takeUntil(this.unsubscribe$)
+          ).subscribe((resp)=> {
+            console.log('added records: ', resp);
+          });
+        });
+      } else {
+        // first create datasources
+        console.log('loading records..')
+        this.addRecords(recordsToLoad).pipe(
+          takeUntil(this.unsubscribe$)
+        ).subscribe((resp)=> {
+          console.log('added records: ', resp);
+          this.results = resp;
+        });
+      }
+
+      let report = {
+        loaded: 0,
+        notLoaded: 0,
+        failures: 0
+      }
+    }
+    return retVal.asObservable();
+  }
+
+  public reset() {
+    this.isInProgress = false;
+    this.analysis     = undefined;
+    this.results      = undefined;
+  }
+
+  public addDataSources(dataSources: SzImportedFilesAnalysisDataSource[]) {
+    let retVal = new Subject<string[]>();
+    let _dataSourcesToAdd = dataSources.filter((dsItem) => {
+      return !dsItem.exists && isNotNull(dsItem.name);
+    }).map((dsItem) => {
+      return dsItem.name;
+    });
+    
+
+    if(_dataSourcesToAdd.length > 0) {
+      this.configManagerService.config.then((conf)=>{
+        conf.addDataSources(_dataSourcesToAdd).pipe(
+          takeUntil(this.unsubscribe$)
+        ).subscribe((resp) => {
+          console.log(`added datasources: `, resp);
+          console.log(`conf: `, conf.definition);
+          this.configManagerService.setDefaultConfig(conf.definition).pipe(
+            takeUntil(this.unsubscribe$)
+          ).subscribe((newConfigId)=>{
+            console.log(`new config Id: #${newConfigId}`);
+            this.SdkEnvironment.reinitialize(newConfigId);
+            this.configDefinition = conf.definition;
+            retVal.next(resp);
+          });
+        });
+      })
+      
+    }
+    return retVal.asObservable();
   }
 
   public analyzeFiles(): Observable<SzImportedFilesAnalysis> {
@@ -207,15 +319,6 @@ export class SzImportFileComponent implements OnInit, OnDestroy {
       if(!isJSON || isCSV) {
         // try and figure out if it's "text/plain" if it's actually 
         // a csv or json file masquerading as a plain text file
-      }
-
-      const addJSONRecords = (records: any[]) => {
-        console.log(`adding records: `, records);
-        this.engineService.addRecords(records).pipe(
-          takeUntil(this.unsubscribe$)
-        ).subscribe((result)=> {
-          console.log(`added records: `, result);
-        })
       }
 
       const reader  = new FileReader();
@@ -242,7 +345,9 @@ export class SzImportFileComponent implements OnInit, OnDestroy {
           let dsIndex     = columns.indexOf('DATA_SOURCE');
           let linesAsJSON = [];
           
-          lines.forEach((_l, index) => {
+          lines.filter((_l, index)=>{
+            return isNotNull(_l);
+          }).forEach((_l, index) => {
             let _dsName   = _l.split(',')[dsIndex];
             let _existingDataSource = _dataSources.has(_dsName) ? _dataSources.get(_dsName) : undefined;
             let _recordCount      = _existingDataSource ? _existingDataSource.recordCount : 0;

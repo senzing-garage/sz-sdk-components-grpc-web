@@ -46,7 +46,7 @@
                 [attr.list]="getDataSourceInputName(element.originalName)"
                 [disabled]="isInProgress"
                 matBadgeOverlap="true"
-                (change)="handleDataSourceChange(element.name, targetDS.value)">
+                (change)="handleDataSourceChange(element.originalName, targetDS.value)">
               </mat-form-field>
               <datalist #dataSourceOptions [id]="getDataSourceInputName(element.originalName)">
                 <option *ngFor="let dataSource of dataSourcesForPulldown" [value]="dataSource.DSRC_CODE" (click)="handleDataSourceChange(element.name,  dataSource.DSRC_CODE)">{{dataSource.DSRC_CODE}}</option>
@@ -60,6 +60,16 @@
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
         <tr mat-row *matRowDef="let row; let l = dataIndex; columns: displayedColumns;"></tr>
     </table>
+    <div class="action-bar">
+        <button mat-flat-button [disabled]="!dataCanBeLoaded" (click)="loadRecords()">Load Records</button>
+    </div>
+</div>
+<div *ngIf="showResults">
+    <h3>Load Complete</h3>
+    <div>
+        Click <a mat-flat-button [disabled]="isInProgress" (click)="reset()">here</a>
+        to load more records.
+    </div>
 </div>
 <!--<hr>
 <div>
