@@ -13,7 +13,6 @@ import { MatBadgeModule } from '@angular/material/badge';
 import { MatInputModule } from '@angular/material/input';
 import { MatTableModule } from '@angular/material/table';
 import { CommonModule } from '@angular/common';
-import { E } from '@angular/material/error-options.d-CGdTZUYk';
 
 export interface SzImportedFilesAnalysisDataSource {
   name: string,

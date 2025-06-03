@@ -61,25 +61,45 @@ export class SzGrpcEngineService {
         }
         return retVal;
     }
-    public getEntityByEntityId(entityId: number): Observable<string | SzError> {
+    public getEntityByEntityId(entityId: number): Observable<any | SzError> {
         let retVal = new Subject<string | SzError>();
-        console.log(`getting license from grpc...`);
+        console.log(`getting entity by id from grpc...`);
         if(this.szEnvironment && this.szEnvironment.engine) {
           this.szEnvironment?.engine?.getEntityByEntityId(entityId).then((resp) => {
-            retVal.next(resp);
+            retVal.next(JSON.parse(resp as string));
           })
         }
         return retVal.asObservable();
     }
-    public searchByAttributes(attributes: string | Map<any, any> | {[key: string] : any}, flags: BigInt | number = SzEngineFlags.SZ_SEARCH_BY_ATTRIBUTES_DEFAULT_FLAGS, searchProfile: string = ""): Observable<string | SzError> {
+    public searchByAttributes(attributes: string | Map<any, any> | {[key: string] : any}, flags: BigInt | number = SzEngineFlags.SZ_SEARCH_BY_ATTRIBUTES_DEFAULT_FLAGS, searchProfile: string = ""): Observable<any | SzError> {
         let retVal = new Subject<string | SzError>();
-        console.log(`getting license from grpc...`);
+        console.log(`getting search results from grpc...`);
         if(this.szEnvironment && this.szEnvironment.engine) {
           this.szEnvironment?.engine?.searchByAttributes(attributes, flags, searchProfile).then((resp) => {
-            retVal.next(resp);
+            retVal.next(JSON.parse(resp as string));
           })
         }
         return retVal.asObservable();
+    }
+    public getEntityByRecordId(dataSourceCode: string, recordId: string, flags: BigInt | number = SzEngineFlags.SZ_ENTITY_DEFAULT_FLAGS): Observable<any | SzError> {
+      let retVal = new Subject<string | SzError>();
+      console.log(`getting entity by record id from grpc...`);
+      if(this.szEnvironment && this.szEnvironment.engine) {
+        this.szEnvironment?.engine?.getEntityByRecordId(dataSourceCode, recordId, flags).then((resp) => {
+          retVal.next(JSON.parse(resp as string));
+        })
+      }
+      return retVal.asObservable();
+    }
+    public getRecord(dataSourceCode: string, recordId: string, flags: BigInt | number = SzEngineFlags.SZ_RECORD_DEFAULT_FLAGS): Observable<any | SzError> {
+      let retVal = new Subject<string | SzError>();
+      console.log(`getting record from grpc...`);
+      if(this.szEnvironment && this.szEnvironment.engine) {
+        this.szEnvironment?.engine?.getEntityByRecordId(dataSourceCode, recordId, flags).then((resp) => {
+          retVal.next(JSON.parse(resp as string));
+        })
+      }
+      return retVal.asObservable();
     }
     public reinitialize(configId: number) {
         let retVal = new Subject<unknown>();

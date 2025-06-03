@@ -49,6 +49,10 @@ export class SzGrpcConfig {
         }).catch((err)=>{ retVal.error(err); })
         return retVal;
     }
+    getAttributeTypes() {
+        let retVal  = new Subject<any>();
+        return retVal.asObservable();
+    }
     getDataSources() {
         let retVal  = new Subject<SzSdkDataSource[]>();
         console.log(`get datasources from grpc...`);

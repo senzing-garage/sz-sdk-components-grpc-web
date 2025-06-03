@@ -2033,6 +2033,106 @@
           }
         }
       }
+    },
+    "examples/grpc/search": {
+      "projectType": "application",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        }
+      },
+      "root": "examples/grpc/search",
+      "sourceRoot": "examples/grpc/search/src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:application",
+          "options": {
+            "outputPath": "dist/search",
+            "index": "examples/grpc/search/src/index.html",
+            "browser": "examples/grpc/search/src/main.ts",
+            "polyfills": [
+              "zone.js"
+            ],
+            "tsConfig": "examples/grpc/search/tsconfig.app.json",
+            "inlineStyleLanguage": "scss",
+            "assets": [
+              {
+                "glob": "**/*",
+                "input": "examples/grpc/search/public"
+              }
+            ],
+            "styles": [
+              "examples/grpc/search/src/styles.scss"
+            ],
+            "scripts": []
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kB",
+                  "maximumError": "1MB"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "4kB",
+                  "maximumError": "8kB"
+                }
+              ],
+              "outputHashing": "all"
+            },
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "port": 4300,
+            "proxyConfig": "proxy.conf.json",
+            "buildTarget": "examples/grpc/search:build"
+          },
+          "configurations": {
+            "production": {
+              "buildTarget": "examples/grpc/search:build:production"
+            },
+            "development": {
+              "buildTarget": "examples/grpc/search:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n"
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "polyfills": [
+              "zone.js",
+              "zone.js/testing"
+            ],
+            "tsConfig": "examples/grpc/search/tsconfig.spec.json",
+            "inlineStyleLanguage": "scss",
+            "assets": [
+              {
+                "glob": "**/*",
+                "input": "examples/grpc/search/public"
+              }
+            ],
+            "styles": [
+              "examples/grpc/search/src/styles.scss"
+            ],
+            "scripts": []
+          }
+        }
+      }
     }
   },
   "cli": {

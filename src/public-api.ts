@@ -123,6 +123,7 @@ export { SzHowVirtualEntityDialog } from './lib/how/sz-how-virtual-entity-dialog
 /** gRPC Web */
 export * from './lib/configuration/sz-product-info/sz-product-info.component';
 export * from './lib/import/sz-import-files.component';
+export * from './lib/search/sz-search/sz-search-grpc.component';
 
 /** export some members of rest client to ease type use */
 export {
