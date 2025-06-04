@@ -42,7 +42,7 @@
                 <input
                 matInput
                 type="text" placeholder="Data Source to map to" #targetDS
-                [value]="element.name"
+                [value]="ifNotEmpty(element.name)"
                 [attr.list]="getDataSourceInputName(element.originalName)"
                 [disabled]="isInProgress"
                 matBadgeOverlap="true"
@@ -71,7 +71,17 @@
         to load more records.
     </div>
 </div>
-<!--<hr>
+<!--<div>
+  hasBlankDataSource? {{hasBlankDataSource}}
+</div>
+<div>
+  displayedColumns? {{displayedColumns}}
+</div>
+<div>
+  Analysis<br/>
+  <textarea class="definition" #analysisResponse [value]="analysisAsString"></textarea>
+</div>
+<hr>
 <div>
     <button (click)="reinitEnvironment()">reinit Environment</button>
     <button (click)="reinitEngine()">reinit Engine</button>

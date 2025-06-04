@@ -99,6 +99,9 @@ export class SzImportFileComponent implements OnInit, OnDestroy {
 
   @ViewChild('fileInput') public _fileInputElement: ElementRef;
   
+  public get analysisAsString(): string {
+    return this.analysis ? JSON.stringify(this.analysis) : '';
+  }
   private get fileInputElement(): HTMLInputElement {
     return this._fileInputElement.nativeElement as HTMLInputElement;
   }
@@ -141,6 +144,8 @@ export class SzImportFileComponent implements OnInit, OnDestroy {
     }
     return retVal;
   }
+
+
 
   
 
@@ -198,11 +203,17 @@ export class SzImportFileComponent implements OnInit, OnDestroy {
 
   /** when user changes the destination for a datasource */
   public handleDataSourceChange(fromDataSource: string, toDataSource: string) {
-    console.log(`handleDataSourceChange: "${fromDataSource}" => ${toDataSource}`);
+
     let _srcKey   = fromDataSource && fromDataSource.trim() !== '' ? fromDataSource : 'NONE';
     let _destKey  = toDataSource;
     this.dataSourcesToRemap.set(_srcKey, _destKey);
+    console.log(`handleDataSourceChange: "${_srcKey}" => ${_destKey}`, this.dataSourcesToRemap);
+
     //this.adminBulkDataService.changeDataSourceName(fromDataSource, toDataSource);
+  }
+  public ifNotEmpty(value: any) {
+    let retVal = isNotNull(value) ? value : '';
+    return retVal;
   }
 
   public onFilesChanged(event) {
@@ -216,7 +227,7 @@ export class SzImportFileComponent implements OnInit, OnDestroy {
   public loadRecords(): Observable<SzImportedFilesLoaded> {
     let retVal = new Subject<SzImportedFilesLoaded>()
     if(this.analysis){
-      const dataSourcesToCreate = this.analysis.dataSources.filter((ds)=> { return !ds.exists; });
+      let dataSourcesToCreate = this.analysis.dataSources.filter((ds)=> { return !ds.exists; });
       let recordsToLoad = this.analysis.records;
 
       console.log(`loadRecords: `, this.analysis);
@@ -224,12 +235,25 @@ export class SzImportFileComponent implements OnInit, OnDestroy {
         // update records with no DATA_SOURCE value to mapped value
         let newDsName     = this.dataSourcesToRemap.get('NONE');
         let blankDsIndex  = dataSourcesToCreate.findIndex((ds)=> {
-          return ds.originalName === '';
+          return ds.originalName === '' || ds.originalName === undefined;
         });
         if(blankDsIndex > -1 && dataSourcesToCreate[blankDsIndex]) {
           dataSourcesToCreate[blankDsIndex].name = newDsName;
+          // check if it already exists
+          dataSourcesToCreate[blankDsIndex].exists = this.dataSourcesAsMap.has(newDsName);
         }
+        if(this.analysis.records) {
+          this.analysis.records = this.analysis.records.map((rec)=>{
+            if(rec && (!rec['DATA_SOURCE'] || !isNotNull(rec['DATA_SOURCE']))) {
+              rec['DATA_SOURCE'] = dataSourcesToCreate[blankDsIndex].name;
+            }
+            return rec;
+          })
+        }
+        console.log(`hasBlankDataSource: `, blankDsIndex, dataSourcesToCreate[blankDsIndex], this.analysis.records);
       }
+      // filter out any existing ds's
+      dataSourcesToCreate = dataSourcesToCreate.filter((ds)=> { return !ds.exists; });
       if(dataSourcesToCreate && dataSourcesToCreate.length > 0) {
         // first create datasources
         console.log('creating datasources..', dataSourcesToCreate)
@@ -328,10 +352,11 @@ export class SzImportFileComponent implements OnInit, OnDestroy {
       };
       reader.onloadend = () => {
         const lineEndingStyle = detectLineEndings(_fileContents);
-        const lines           = _fileContents.split(detectLineEndings(_fileContents));
+        console.log(`line ending style: "${lineEndingStyle}"`);
+        const lines           = _fileContents.split(lineEndingStyle);
         if(lines && lines.length <= 1) {
           // assume it's one line ???
-          console.warn(`whut? `, lineEndingStyle);
+          console.warn(`whut? "${lineEndingStyle}"`, lineEndingStyle);
           return;
         }
         //console.log(`parseFile: on read end.`, lineEndingStyle, lines);
@@ -390,8 +415,8 @@ export class SzImportFileComponent implements OnInit, OnDestroy {
 
           let retAnalysis: SzImportedFilesAnalysis = { 
             recordCount: topLevelStats.recordCount,
-            recordsWithRecordIdCount: topLevelStats.recordsWithDataSourceCount,
-            recordsWithDataSourceCount: topLevelStats.recordsWithRecordIdCount,
+            recordsWithRecordIdCount: topLevelStats.recordsWithRecordIdCount,
+            recordsWithDataSourceCount: topLevelStats.recordsWithDataSourceCount,
             records: linesAsJSON,
             dataSources: analysisDataSources
           }

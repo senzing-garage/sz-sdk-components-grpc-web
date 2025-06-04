@@ -28,6 +28,7 @@ import { MatBadgeModule } from '@angular/material/badge';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
+import { SzSdkSearchResolvedEntity } from 'src/lib/models/grpc/engine';
 
 /** @internal */
 interface SzSearchFormParams {
@@ -94,7 +95,9 @@ interface SzBoolFieldMapByName {
 @Component({
     selector: 'sz-search-grpc',
     templateUrl: './sz-search-grpc.component.html',
-    imports: [CommonModule, FormsModule, ReactiveFormsModule, MatBadgeModule, MatButtonModule, MatIconModule, MatInputModule],
+    imports: [
+        CommonModule, FormsModule, ReactiveFormsModule, 
+        MatBadgeModule, MatButtonModule, MatIconModule, MatInputModule],
     styleUrls: ['./sz-search-grpc.component.scss']
 
 })
@@ -304,7 +307,7 @@ export class SzSearchGrpcComponent implements OnInit, OnDestroy {
    * emmitted when the search results have been changed.
    * @memberof SzSearchComponent
    */
-  @Output('resultsChange') searchResults: Subject<SzAttributeSearchResult[]> = new Subject<SzAttributeSearchResult[]>();
+  @Output('resultsChange') searchResults: Subject<SzSdkSearchResolvedEntity[]> = new Subject<SzSdkSearchResolvedEntity[]>();
   /**
    * emmitted when parameters of the search have been changed.
    *

@@ -21,10 +21,12 @@ import {
 import { SzEntitySearchParams } from '../models/entity-search';
 import { SzGrpcEngineService } from './grpc/engine.service';
 import { SzGrpcConfigManagerService } from './grpc/configManager.service';
+import { SzEngineFlags } from '@senzing/sz-sdk-typescript-grpc-web';
+import { SzSdkSearchResolvedEntity, SzSdkSearchResponse } from '../models/grpc/engine';
 
 export interface SzSearchEvent {
   params: SzEntitySearchParams,
-  results: SzAttributeSearchResult[]
+  results: SzSdkSearchResolvedEntity[]
 }
 
 @Injectable({
@@ -32,14 +34,15 @@ export interface SzSearchEvent {
 })
 export class SzSearchService {
   private currentSearchParams: SzEntitySearchParams = {};
-  private currentSearchResults: SzAttributeSearchResult[] | null = null;
+  private currentSearchResults: SzSdkSearchResolvedEntity[] | null = null;
   public parametersChanged = new Subject<SzEntitySearchParams>();
-  public resultsChanged = new Subject<SzAttributeSearchResult[]>();
+  public resultsChanged = new Subject<SzSdkSearchResolvedEntity[]>();
   public searchPerformed = new Subject<SzSearchEvent>();
 
   constructor(
     private configManagerService: SzGrpcConfigManagerService,
     private engineService: SzGrpcEngineService,
+    private entityDataService: EntityDataService
     ) {}
 
   /**
@@ -48,22 +51,22 @@ export class SzSearchService {
    *
    * @memberof SzSearchService
    */
-  public searchByAttributes(searchParms: SzEntitySearchParams): Observable<any[]> {
+  public searchByAttributes(searchParms: SzEntitySearchParams): Observable<SzSdkSearchResolvedEntity[]> {
     this.currentSearchParams = searchParms;
     //return this.entityDataService.searchByAttributes(attrs?: string, attr?: Array<string>, withRelationships?: boolean, featureMode?: string, withFeatureStats?: boolean, withDerivedFeatures?: boolean, forceMinimal?: boolean, withRaw?: boolean, observe?: 'body', reportProgress?: boolean): Observable<SzAttributeSearchResponse>;
-    return this.engineService.searchByAttributes(JSON.stringify(searchParms))
+    return this.engineService.searchByAttributes(JSON.stringify(searchParms), SzEngineFlags.SZ_ENTITY_INCLUDE_ALL_RELATIONS)
     .pipe(
       tap((searchRes) => console.log('SzSearchService.searchByAttributes: ', searchParms, searchRes)),
-      map((searchRes) => JSON.parse(searchRes as string))
-      //map((searchRes) => JSON.parse(searchRes).data.searchResults as SzAttributeSearchResult[]),
-      /*tap((searchRes: SzAttributeSearchResult[]) => {
+      map((searchRes) => (JSON.parse(searchRes as string) as SzSdkSearchResponse).RESOLVED_ENTITIES),
+      //map((searchRes) => JSON.parse(searchRes).data.searchResults as SzSdkSearchResolvedEntity[]),
+      tap((searchRes: SzSdkSearchResolvedEntity[]) => {
         console.warn('SzSearchService.searchByAttributes 1: ', searchRes)
         this.searchPerformed.next({
           params: this.currentSearchParams,
           results: searchRes
         });
         //console.warn('SzSearchService.searchByAttributes 2: ', searchRes)
-      })*/
+      })
     );
   }
   /**
@@ -90,7 +93,7 @@ export class SzSearchService {
    * get the current search results from the last search.
    * @memberof SzSearchService
    */
-  public getSearchResults() : SzAttributeSearchResult[] | null {
+  public getSearchResults() : SzSdkSearchResolvedEntity[] | null {
     return this.currentSearchResults;
   }
 
@@ -98,7 +101,7 @@ export class SzSearchService {
    * set the current search results from the last search.
    * @memberof SzSearchService
    */
-  public setSearchResults(results: SzAttributeSearchResult[] | null) : void {
+  public setSearchResults(results: SzSdkSearchResolvedEntity[] | null) : void {
     this.currentSearchResults = results ? results : null;
     this.resultsChanged.next( this.currentSearchResults );
   }

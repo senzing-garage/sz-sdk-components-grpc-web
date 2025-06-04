@@ -2063,6 +2063,7 @@
               }
             ],
             "styles": [
+              "src/lib/scss/styles.scss",
               "examples/grpc/search/src/styles.scss"
             ],
             "scripts": []

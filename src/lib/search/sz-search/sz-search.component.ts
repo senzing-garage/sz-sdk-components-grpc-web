@@ -23,6 +23,7 @@ import { SzPrefsService } from '../../services/sz-prefs.service';
 import { SzFoliosService } from '../../services/sz-folios.service';
 import { SzSearchHistoryFolio, SzSearchHistoryFolioItem } from '../../models/folio';
 import { SzSearchIdentifiersPickerDialogComponent, SzSearchIdentifiersPickerSheetComponent } from './sz-search-identifiers-picker.component';
+import { SzSdkSearchResolvedEntity } from '../../models/grpc/engine';
 
 /** @internal */
 interface SzSearchFormParams {
@@ -298,7 +299,7 @@ export class SzSearchComponent implements OnInit, OnDestroy {
    * emmitted when the search results have been changed.
    * @memberof SzSearchComponent
    */
-  @Output('resultsChange') searchResults: Subject<SzAttributeSearchResult[]> = new Subject<SzAttributeSearchResult[]>();
+  @Output('resultsChange') searchResults: Subject<SzSdkSearchResolvedEntity[]> = new Subject<SzSdkSearchResolvedEntity[]>();
   /**
    * emmitted when parameters of the search have been changed.
    *
