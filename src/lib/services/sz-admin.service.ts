@@ -36,7 +36,7 @@ export class SzAdminService {
   public restApiClientVersion: string;
   /** compatibility integer */
   public configCompatibilityVersion: string;
-  /** datatime of when the native api used was built */
+  /** date time of when the native api used was built */
   public nativeApiBuildDate: Date;
   /** native api build */
   public nativeApiBuildNumber: string;
