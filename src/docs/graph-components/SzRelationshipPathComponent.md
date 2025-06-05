@@ -22,13 +22,19 @@ see `sdk-graph-components` documentation for the full list of component methods 
 #### Angular
 
 ```html
-<sz-relationship-path from="" to=""></sz-relationship-path>
+<sz-relationship-path
+    from="" 
+    to="">
+</sz-relationship-path>
 ```
 
 #### Web Component
 
 ```html
-<sz-wc-relationship-path from="" to=""></sz-wc-relationship-path>
+<sz-wc-relationship-path 
+    from="" 
+    to="">
+</sz-wc-relationship-path>
 ```
 
 # Differences between Web Components and Angular Implementations

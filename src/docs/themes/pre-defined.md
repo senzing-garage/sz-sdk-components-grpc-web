@@ -7,7 +7,7 @@ We've included some pre-built themes for quick usage to get you up and running. 
 if you're using sass(and scss processor can reference node_modules), open up your main scss file(src/styles.scss in default angular layout) and include the following.
 
 ```scss
-@import "@senzing/sdk-components-ng/styles/themes/senzing.css";
+@import '@senzing/sdk-components-ng/styles/themes/senzing.css';
 ```
 
 ## using CSS

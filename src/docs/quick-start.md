@@ -145,7 +145,7 @@ The SDK components have to know the network address information of where the HTT
 Open up your application's app.module.ts file and add the SDK imports(SenzingSdkModule, and SzRestConfiguration)
 
 ```typescript
-import { SenzingSdkModule, SzRestConfiguration } from "@senzing/sdk-components-ng";
+import { SenzingSdkModule, SzRestConfiguration } from '@senzing/sdk-components-ng';
 ```
 
 Now add the _SenzingSdkModule_ to your applications imports. You can pass in the API configuration parameters inline(shown below) or via any factory method that constructs a _SzRestConfiguration_ object. Your application's NgModule declaration should look something like this below:
@@ -200,7 +200,7 @@ open up your app's entry point module declaration, this is usually located in sr
 and add the following to it's imports. If you've already done this in the previous step, or are using the web component(s) feel free to skip ahead to the html markup step.
 
 ```typescript
-import { SenzingSdkModule } from "@senzing/sdk-components-ng";
+import { SenzingSdkModule } from '@senzing/sdk-components-ng';
 ```
 
 now add the SenzingSdkModule to the components imports property:

@@ -22,11 +22,19 @@ The other main difference between the two implementations is that if using angul
 When accessing a method or setter through the DOM on a web component programmatically however, you access the setter/method in camel case ie:
 
 ```html
-<sz-wc-standalone-graph filter-width="320" graph-ids="1,1001,1002" show-pop-out-icon="false" show-match-key-control="false" show-filters-control="false" filter-control-position="top-right" show-match-keys="true"></sz-wc-standalone-graph>
+<sz-wc-standalone-graph 
+  filter-width="320" 
+  graph-ids="1,1001,1002" 
+  show-pop-out-icon="false" 
+  show-match-key-control="false" 
+  show-filters-control="false" 
+  filter-control-position="top-right" 
+  show-match-keys="true">
+</sz-wc-standalone-graph>
 
 <script>
   // hide graph filter control programmatically
-  document.querySelector("sz-wc-standalone-graph").showFiltersControl = false;
+  document.querySelector('sz-wc-standalone-graph').showFiltersControl = false;
 </script>
 ```
 
