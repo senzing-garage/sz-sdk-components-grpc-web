@@ -55,7 +55,7 @@ export class SzRecordStatsDonutChart implements OnInit, OnDestroy {
   /* @internal used to override auto-generated colors with user value */
   private _colors: string[];
   /** @internal possible values for sort order of list are 'alphadesc' | 'alphaasc' | 'countdesc' | 'countasc' */
-  private _orderBy: 'alphaasc' | 'alphaasc' | 'countdesc' | 'countasc';
+  private _orderBy: 'alphadesc' | 'alphaasc' | 'countdesc' | 'countasc';
   /* donut chart properties */
   /** @internal width of svg */
   private donutWidth: number;
