@@ -3,14 +3,14 @@
 ## Overview
 
 This project is for the senzing sdk web components. It provides web component versions built
-off of the components found in [@senzing/sz-sdk-components-grpc-web](https://github.com/senzing-garage/sz-sdk-components-grpc-web). The components themselves leverage the [rest-api-client-ng package](https://www.npmjs.com/package/@senzing/rest-api-client-ng) which itself is generated from the [OAS specification](https://github.com/senzing-garage/senzing-rest-api-specification).
+off of the components found in [@senzing/sz-sdk-components-grpc-web]. The components themselves leverage the [rest-api-client-ng package] which itself is generated from the [OAS specification].
 
 The idea is to provide a framework agnostic option of those same components.
 
-[![npm build](https://github.com/senzing-garage/sz-sdk-components-grpc-web/actions/workflows/npm-build.yaml/badge.svg)](https://github.com/senzing-garage/sz-sdk-components-grpc-web/actions/workflows/npm-build.yaml)
-[![npm version](https://badge.fury.io/js/%40senzing%2Fsdk-components-web.svg)](https://badge.fury.io/js/%40senzing%2Fsdk-components-web)
-![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/senzing/sz-sdk-components-grpc-web?color=%2300c4ff&logo=latest%20tag)
-![GitHub package.json version](https://img.shields.io/github/package-json/v/senzing/sz-sdk-components-grpc-web?color=orange&logo=latest&logoColor=blue)
+[![npm build]](https://github.com/senzing-garage/sz-sdk-components-grpc-web/actions/workflows/npm-build.yaml)
+[![npm version]](https://badge.fury.io/js/%40senzing%2Fsdk-components-web)
+![GitHub release (latest SemVer)]
+![GitHub package.json version]
 
 ### Web Components
 
@@ -18,9 +18,9 @@ Web components are a set of web platform APIs that allow you to create new custo
 
 For more information on the subject see the following sites:
 
-- [WebComponents.org](https://www.webcomponents.org/introduction)
-- [Web Components | MDN](https://developer.mozilla.org/en-US/docs/Web/Web_Components)
-- [Building Components | Web Fundamentals | Google Developers](https://developers.google.com/web/fundamentals/web-components/)
+- [WebComponents.org]
+- [Web Components | MDN]
+- [Building Components | Web Fundamentals | Google Developers]
 
 ## Installation
 
@@ -47,7 +47,7 @@ And include the component tag in your document like so:
 
 ## Scripting Components
 
-All the components support all the same inputs and output as the [@senzing/sz-sdk-components-grpc-web](https://github.com/senzing-garage/sz-sdk-components-grpc-web) package. [See documentation](https://senzing.github.io/sz-sdk-components-grpc-web/)
+All the components support all the same inputs and output as the [@senzing/sz-sdk-components-grpc-web] package. [See documentation]
 
 The only major difference between the two packages is the dependency requirements and the way that eventing is handled outside of the components. The web components are accessible just like any other DOM elements.
 
@@ -81,7 +81,7 @@ There are some simple themes provided in the themes directory in the package its
 
 ### Customizing
 
-There are some limitations when using web components. Because of the way that browsers treat the dom inside of the component tags themselves, the content inside a tag is not directly accesible. It means styling a sub element like so:
+There are some limitations when using web components. Because of the way that browsers treat the dom inside of the component tags themselves, the content inside a tag is not directly accessible. It means styling a sub element like so:
 
 ```css
 sz-search-results sz-search-result-card {
@@ -91,9 +91,9 @@ sz-search-results sz-search-result-card {
 
 will _*NOT*_ work.
 
-The elements themselves were created with this limitation in mind and try to provide as many sensible [CSS Variables](https://senzing.github.io/sz-sdk-components-grpc-web/additional-documentation/themes/customizing.html) as makes sense. For more information on CSS Variables See [this article](https://developers.google.com/web/updates/2016/02/css-variables-why-should-you-care) or [here](https://css-tricks.com/difference-between-types-of-css-variables/).
+The elements themselves were created with this limitation in mind and try to provide as many sensible [CSS Variables] as makes sense. For more information on CSS Variables See [this article] or [here].
 
-an example acheiving the same effect as above that _WILL WORK_ would be:
+an example achieving the same effect as above that _WILL WORK_ would be:
 
 ```css
 body {
@@ -101,13 +101,13 @@ body {
 }
 ```
 
-Another option is to bake the styles in to the components themselves. This is the extreme option, but skips over the issue entirely. The requirements for doing so are the same as building the sz-sdk-components-grpc-web package from source. The repo is [publicly avaiable](https://github.com/senzing-garage/sz-sdk-components-grpc-web), fork it and have yourself an afternoon.
+Another option is to bake the styles in to the components themselves. This is the extreme option, but skips over the issue entirely. The requirements for doing so are the same as building the sz-sdk-components-grpc-web package from source. The repo is publicly available[@senzing/sz-sdk-components-grpc-web], fork it and have yourself an afternoon.
 
 ## Dependencies
 
 ### REST API Server
 
-These components require the senzing [Senzing REST API Sever](https://github.com/senzing-garage/senzing-api-server/) to function. Follow [the instructions](https://github.com/senzing-garage/senzing-api-server/) to check out and build the [Senzing REST API Sever](https://github.com/senzing-garage/senzing-api-server/) from source or download a pre-built.
+These components require the senzing [Senzing REST API Sever] to function. Follow the instructions to check out and build the [Senzing REST API Sever] from source or download a pre-built.
 
 ### Example Notes
 
@@ -131,3 +131,19 @@ All examples can be rendered in a _Live_ edit state by checking out the main sdk
 - `ng serve @senzing/sdk-components-web -c largeGraph`
 - `ng serve @senzing/sdk-components-web -c smallGraph`
 <!-- - `ng serve @senzing/sdk-components-web -c findPathGraph` -->
+
+[@senzing/sz-sdk-components-grpc-web]: https://github.com/senzing-garage/sz-sdk-components-grpc-web
+[Building Components | Web Fundamentals | Google Developers]: https://developers.google.com/web/fundamentals/web-components/
+[CSS Variables]: https://senzing.github.io/sz-sdk-components-grpc-web/additional-documentation/themes/customizing.html
+[GitHub package.json version]: https://img.shields.io/github/package-json/v/senzing/sz-sdk-components-grpc-web?color=orange&logo=latest&logoColor=blue
+[GitHub release (latest SemVer)]: https://img.shields.io/github/v/release/senzing/sz-sdk-components-grpc-web?color=%2300c4ff&logo=latest%20tag
+[here]: https://css-tricks.com/difference-between-types-of-css-variables/
+[npm build]: https://github.com/senzing-garage/sz-sdk-components-grpc-web/actions/workflows/npm-build.yaml/badge.svg
+[npm version]: https://badge.fury.io/js/%40senzing%2Fsdk-components-web.svg
+[OAS specification]: https://github.com/senzing-garage/senzing-rest-api-specification
+[rest-api-client-ng package]: https://www.npmjs.com/package/@senzing/rest-api-client-ng
+[See documentation]: https://senzing.github.io/sz-sdk-components-grpc-web/
+[Senzing REST API Sever]: https://github.com/senzing-garage/senzing-api-server/
+[this article]: https://developers.google.com/web/updates/2016/02/css-variables-why-should-you-care
+[Web Components | MDN]: https://developer.mozilla.org/en-US/docs/Web/Web_Components
+[WebComponents.org]: https://www.webcomponents.org/introduction

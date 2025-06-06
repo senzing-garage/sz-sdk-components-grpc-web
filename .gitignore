@@ -27,6 +27,7 @@ sdk-components-grpc-web.iml
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+!.vscode/cspell.json
 
 # misc
 /.angular/cache
