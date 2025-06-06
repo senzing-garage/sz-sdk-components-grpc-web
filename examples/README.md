@@ -1,6 +1,6 @@
 # Examples
 
-the examples in this directory are not intended to be run standalone examples. Since this is a angular module it would be timeconsuming and distracting to have each example using a completely separate angular workspace since there would be alot of extra files that angular needs to run in the first place. 
+the examples in this directory are not intended to be run standalone examples. Since this is a angular module it would be time consuming and distracting to have each example using a completely separate angular workspace since there would be a lot of extra files that angular needs to run in the first place.
 
 They are fully functional mini-projects following the directory layout of [Angular projects](https://angular.io/guide/glossary#project). If you are unfamiliar with this style of layout the documentation can be found [here](https://angular.io/guide/file-structure).
 
@@ -24,7 +24,7 @@ All examples have the same dev dependencies as the main repository. namely [Angu
 
 The relevant source for for each example is located in the examples/{name of example}/src/app directory.
 
-##  Current List
+## Current List
 
 <table>
   <thead>
@@ -59,7 +59,7 @@ The relevant source for for each example is located in the examples/{name of exa
         <tr>
       <td>search-in-graph</td>
       <td>`npm run example:search-in-graph`</td>
-      <td>An example illustrating how to power the SzStandaloneGraphComponent component from a sz-seach tag result.
+      <td>An example illustrating how to power the SzStandaloneGraphComponent component from a sz-search tag result.
       </td>
     </tr>
     <tr>
