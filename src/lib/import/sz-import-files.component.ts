@@ -183,9 +183,22 @@ export class SzImportFileComponent implements OnInit, OnDestroy {
     //return true;
     return value && (value.trim().length > 0) && !(this.dataSourcesAsMap.has(value));
   }
+  public isMappedNewDataSource(originalName: string): boolean {
+    //return true;
+    return originalName && (originalName.trim().length > 0) ? !this.dataSourcesAsMap.has(originalName) : !this.dataSourcesAsMap.has(this.dataSourcesToRemap.get('NONE'));
+    //return !this.dataSourcesAsMap.has(nameToLookFor);
+    //return originalName && (originalName.trim().length > 0) && !(this.dataSourcesAsMap.has(originalName));
+  }
+  public isBlankDataSource(originalName: string): boolean {
+    return originalName && isNotNull(originalName) ? true : false;
+  }
 
   public reinitEngine() {
-    this.engineService.reinitialize(this.defaultConfigId)
+    this.engineService.reinitialize(this.defaultConfigId).pipe(
+      takeUntil(this.unsubscribe$)
+    ).subscribe((resp)=>{
+      console.log(`huh? `, resp)
+    })
   }
   public reinitEnvironment() {
     this.SdkEnvironment.reinitialize(this.defaultConfigId);
@@ -263,16 +276,17 @@ export class SzImportFileComponent implements OnInit, OnDestroy {
           this.addRecords(recordsToLoad).pipe(
             takeUntil(this.unsubscribe$)
           ).subscribe((resp)=> {
-            console.log('added records: ', resp);
+            console.log('added records 1: ', resp);
+            this.results = resp;
           });
         });
       } else {
-        // first create datasources
+        // skip to loading records
         console.log('loading records..')
         this.addRecords(recordsToLoad).pipe(
           takeUntil(this.unsubscribe$)
         ).subscribe((resp)=> {
-          console.log('added records: ', resp);
+          console.log('added records 2: ', resp);
           this.results = resp;
         });
       }
@@ -313,7 +327,10 @@ export class SzImportFileComponent implements OnInit, OnDestroy {
           ).subscribe((newConfigId)=>{
             console.log(`new config Id: #${newConfigId}`);
             this.SdkEnvironment.reinitialize(newConfigId);
-            this.configDefinition = conf.definition;
+            this.engineService.reinitialize(newConfigId)
+            //this.SdkEnvironment.engine.reinitialize(newConfigId);
+            this.defaultConfigId    = newConfigId;
+            this.configDefinition   = conf.definition;
             retVal.next(resp);
           });
         });

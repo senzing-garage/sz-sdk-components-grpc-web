@@ -1,3 +1,16 @@
 <h2 class="example-title">&#64;senzing/sdk-components-grpc-web/search example</h2>
-<sz-search-grpc></sz-search-grpc>
-<router-outlet></router-outlet>
+<sz-search-grpc
+  (resultsChange)="onSearchResults($event)"
+  (resultsCleared)="onSearchResultsCleared($event)"
+  (exception)="onSearchException($event)"
+  (parameterChange)="onSearchParameterChange($event)"
+  ></sz-search-grpc>
+<!-- start search results -->
+<div class="component-example">
+  <sz-search-results-grpc *ngIf="showSearchResults" 
+  [results]="currentSearchResults" 
+  [parameters]="currentSearchParameters"
+  (resultClick)="onSearchResultClick($event)"></sz-search-results-grpc>
+</div>
+<!--<button (click)="getConfig()">Get Config</button>-->
+<!-- end search results -->

@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common';
 import { Component, Input, OnInit } from '@angular/core';
 
 /**
@@ -9,7 +10,7 @@ import { Component, Input, OnInit } from '@angular/core';
     selector: 'sz-entity-match-pill',
     templateUrl: './sz-entity-match-pill.component.html',
     styleUrls: ['./sz-entity-match-pill.component.scss'],
-    standalone: false
+    imports: [CommonModule]
 })
 export class SzEntityMatchPillComponent implements OnInit {
   @Input() text: string;

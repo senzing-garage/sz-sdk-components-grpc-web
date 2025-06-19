@@ -68,7 +68,7 @@ import { SzEntityDetailSectionHeaderComponent } from './entity/detail/sz-entity-
 import { SzEntityDetailSectionCollapsibleCardComponent } from './entity/detail/sz-entity-details-section/collapsible-card.component';
 import { SzEntityDetailGraphComponent } from './entity/detail/sz-entity-detail-graph/sz-entity-detail-graph.component';
 import { SzEntityDetailHowReportComponent } from './entity/detail/sz-entity-detail-how-report/sz-entity-detail-how-report.component';
-import { SzEntityMatchPillComponent } from './entity/sz-entity-match-pill/sz-entity-match-pill.component';
+//import { SzEntityMatchPillComponent } from './entity/sz-entity-match-pill/sz-entity-match-pill.component';
 import { SzEntityRecordCardComponent } from './entity/sz-entity-record-card/sz-entity-record-card.component';
 import { SzEntityRecordCardHeaderComponent } from './entity/sz-entity-record-card/sz-entity-record-card-header/sz-entity-record-card-header.component';
 import { SzEntityRecordCardContentComponent } from './entity/sz-entity-record-card/sz-entity-record-card-content/sz-entity-record-card-content.component';
@@ -88,10 +88,10 @@ import { SzSearchComponent } from './search/sz-search/sz-search.component';
 import { SzSearchIdentifiersPickerDialogComponent, SzSearchIdentifiersPickerSheetComponent } from './search/sz-search/sz-search-identifiers-picker.component';
 import { SzSearchByIdComponent } from './search/sz-search/sz-search-by-id.component';
 import { SzEntityRecordViewerComponent } from './record/sz-entity-record-viewer.component';
-import { SzSearchResultsComponent } from './search/sz-search-results/sz-search-results.component';
-import { SzSearchResultCardComponent } from './search/sz-search-result-card/sz-search-result-card.component';
-import { SzSearchResultCardContentComponent } from './search/sz-search-result-card/sz-search-result-card-content/sz-search-result-card-content.component';
-import { SzSearchResultCardHeaderComponent } from './search/sz-search-result-card/sz-search-result-card-header/sz-search-result-card-header.component';
+//import { SzSearchResultsComponent } from './search/sz-search-results/sz-search-results.component';
+//import { SzSearchResultCardComponent } from './search/sz-search-result-card/sz-search-result-card.component';
+//import { SzSearchResultCardContentComponent } from './search/sz-search-result-card/sz-search-result-card-content/sz-search-result-card-content.component';
+//import { SzSearchResultCardHeaderComponent } from './search/sz-search-result-card/sz-search-result-card-header/sz-search-result-card-header.component';
 // why related
 import { SzWhyEntityComponent } from './why/sz-why-entity.component';
 import { SzWhyEntitiesComparisonComponent } from './why/sz-why-entities.component';
@@ -179,7 +179,7 @@ const SzGrpcEnvInjector = new InjectionToken<SzGrpcWebEnvironment>("SzGrpcWebEnv
         SzEntityDetailSectionHeaderComponent,
         SzEntityDetailSectionCollapsibleCardComponent,
         SzEntityDetailsSectionComponent,
-        SzEntityMatchPillComponent,
+        //SzEntityMatchPillComponent,
         SzEntityRecordCardComponent,
         SzEntityRecordViewerComponent,
         SzEntityRecordCardHeaderComponent,
@@ -212,10 +212,10 @@ const SzGrpcEnvInjector = new InjectionToken<SzGrpcWebEnvironment>("SzGrpcWebEnv
         SzSearchByIdComponent,
         SzSearchIdentifiersPickerDialogComponent,
         SzSearchIdentifiersPickerSheetComponent,
-        SzSearchResultsComponent,
-        SzSearchResultCardComponent,
-        SzSearchResultCardContentComponent,
-        SzSearchResultCardHeaderComponent,
+        //SzSearchResultsComponent,
+        //SzSearchResultCardComponent,
+        //SzSearchResultCardContentComponent,
+        //SzSearchResultCardHeaderComponent,
         SzShortNumberPipe,
         SzStandaloneGraphComponent,
         SzTooltipComponent,
@@ -265,8 +265,8 @@ const SzGrpcEnvInjector = new InjectionToken<SzGrpcWebEnvironment>("SzGrpcWebEnv
         SzShortNumberPipe,
         SzSearchComponent,
         SzSearchByIdComponent,
-        SzSearchResultsComponent,
-        SzSearchResultCardComponent,
+        //SzSearchResultsComponent,
+        //SzSearchResultCardComponent,
         SzStandaloneGraphComponent,
         SzVennDiagramsComponent,
         SzWhyEntitiesComparisonComponent,

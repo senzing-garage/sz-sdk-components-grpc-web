@@ -1,0 +1,18 @@
+<div class="sz-search-result-card-wrapper" [ngClass]="{
+    'matches': cardTitle === 'Match',
+    'possible-match': cardTitle === 'Possible Match',
+    'discovered-relationships': cardTitle === 'Discovered Relationships',
+    'name-only': cardTitle === 'Name Only Matches',
+    'is-open': isOpen
+    }">
+    <sz-search-result-card-header-grpc
+      [searchResult]="searchResult"
+      [searchValue]="searchValue"
+      [showDataSources]="showDataSources"
+      [showMatchKey]="showMatchKey"></sz-search-result-card-header-grpc>
+  
+    <sz-search-result-card-content-grpc
+    (howButtonClick)="onHowButtonClick($event)"
+    [entity]="searchResult" [showAllInfo]="showAllInfo"></sz-search-result-card-content-grpc>
+  </div>
+  

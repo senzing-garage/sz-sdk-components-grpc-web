@@ -39,8 +39,8 @@ export * from './lib/services/sz-how-ui.service';
 export * from './lib/search/sz-search/sz-search.component';
 export { SzSearchByIdComponent, SzSearchByIdFormParams } from './lib/search/sz-search/sz-search-by-id.component';
 export { SzEntityRecordViewerComponent } from './lib/record/sz-entity-record-viewer.component';
-export * from './lib/search/sz-search-results/sz-search-results.component';
-export * from './lib/search/sz-search-result-card/sz-search-result-card.component';
+//export * from './lib/search/sz-search-results/sz-search-results.component';
+//export * from './lib/search/sz-search-result-card/sz-search-result-card.component';
 export * from './lib/entity/detail/sz-entity-detail.component';
 export * from './lib/entity/detail/sz-entity-detail-graph/sz-entity-detail-graph.component';
 export * from './lib/entity/detail/sz-entity-detail-how-report/sz-entity-detail-how-report.component';
@@ -123,7 +123,9 @@ export { SzHowVirtualEntityDialog } from './lib/how/sz-how-virtual-entity-dialog
 /** gRPC Web */
 export * from './lib/configuration/sz-product-info/sz-product-info.component';
 export * from './lib/import/sz-import-files.component';
-export * from './lib/search/sz-search/sz-search-grpc.component';
+export { SzSearchGrpcComponent } from './lib/search/sz-search/sz-search-grpc.component';
+export { SzSearchResultsGrpcComponent } from './lib/search/sz-search-results/sz-search-results-grpc.component';
+export { SzSdkSearchResponse, SzSdkSearchResolvedEntity } from './lib/models/grpc/engine';
 
 /** export some members of rest client to ease type use */
 export {

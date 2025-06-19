@@ -22,11 +22,11 @@ import { SzEntitySearchParams } from '../models/entity-search';
 import { SzGrpcEngineService } from './grpc/engine.service';
 import { SzGrpcConfigManagerService } from './grpc/configManager.service';
 import { SzEngineFlags } from '@senzing/sz-sdk-typescript-grpc-web';
-import { SzSdkSearchResolvedEntity, SzSdkSearchResponse } from '../models/grpc/engine';
+import { SzSdkSearchResolvedEntity, SzSdkSearchResponse, SzSdkSearchResult } from '../models/grpc/engine';
 
 export interface SzSearchEvent {
   params: SzEntitySearchParams,
-  results: SzSdkSearchResolvedEntity[]
+  results: SzSdkSearchResult[]
 }
 
 @Injectable({
@@ -34,9 +34,9 @@ export interface SzSearchEvent {
 })
 export class SzSearchService {
   private currentSearchParams: SzEntitySearchParams = {};
-  private currentSearchResults: SzSdkSearchResolvedEntity[] | null = null;
+  private currentSearchResults: SzSdkSearchResult[] | null = null;
   public parametersChanged = new Subject<SzEntitySearchParams>();
-  public resultsChanged = new Subject<SzSdkSearchResolvedEntity[]>();
+  public resultsChanged = new Subject<SzSdkSearchResult[]>();
   public searchPerformed = new Subject<SzSearchEvent>();
 
   constructor(
@@ -51,15 +51,23 @@ export class SzSearchService {
    *
    * @memberof SzSearchService
    */
-  public searchByAttributes(searchParms: SzEntitySearchParams): Observable<SzSdkSearchResolvedEntity[]> {
+  public searchByAttributes(searchParms: SzEntitySearchParams): Observable<SzSdkSearchResult[]> {
     this.currentSearchParams = searchParms;
+    //const flags = SzEngineFlags.SZ_INCLUDE_FEATURE_SCORES |
+    const flags = SzEngineFlags.SZ_SEARCH_BY_ATTRIBUTES_DEFAULT_FLAGS |
+    SzEngineFlags.SZ_ENTITY_INCLUDE_ALL_RELATIONS | 
+    SzEngineFlags.SZ_ENTITY_INCLUDE_ENTITY_NAME |
+    SzEngineFlags.SZ_ENTITY_INCLUDE_RELATED_ENTITY_NAME |
+    SzEngineFlags.SZ_ENTITY_INCLUDE_ALL_RELATIONS |
+    SzEngineFlags.SZ_ENTITY_INCLUDE_DISCLOSED_RELATIONS;
+
     //return this.entityDataService.searchByAttributes(attrs?: string, attr?: Array<string>, withRelationships?: boolean, featureMode?: string, withFeatureStats?: boolean, withDerivedFeatures?: boolean, forceMinimal?: boolean, withRaw?: boolean, observe?: 'body', reportProgress?: boolean): Observable<SzAttributeSearchResponse>;
-    return this.engineService.searchByAttributes(JSON.stringify(searchParms), SzEngineFlags.SZ_ENTITY_INCLUDE_ALL_RELATIONS)
+    return this.engineService.searchByAttributes(JSON.stringify(searchParms), flags)
     .pipe(
       tap((searchRes) => console.log('SzSearchService.searchByAttributes: ', searchParms, searchRes)),
-      map((searchRes) => (JSON.parse(searchRes as string) as SzSdkSearchResponse).RESOLVED_ENTITIES),
+      map((searchRes) => (searchRes as SzSdkSearchResponse).RESOLVED_ENTITIES),
       //map((searchRes) => JSON.parse(searchRes).data.searchResults as SzSdkSearchResolvedEntity[]),
-      tap((searchRes: SzSdkSearchResolvedEntity[]) => {
+      tap((searchRes: SzSdkSearchResult[]) => {
         console.warn('SzSearchService.searchByAttributes 1: ', searchRes)
         this.searchPerformed.next({
           params: this.currentSearchParams,
@@ -93,7 +101,7 @@ export class SzSearchService {
    * get the current search results from the last search.
    * @memberof SzSearchService
    */
-  public getSearchResults() : SzSdkSearchResolvedEntity[] | null {
+  public getSearchResults() : SzSdkSearchResult[] | null {
     return this.currentSearchResults;
   }
 
@@ -101,7 +109,7 @@ export class SzSearchService {
    * set the current search results from the last search.
    * @memberof SzSearchService
    */
-  public setSearchResults(results: SzSdkSearchResolvedEntity[] | null) : void {
+  public setSearchResults(results: SzSdkSearchResult[] | null) : void {
     this.currentSearchResults = results ? results : null;
     this.resultsChanged.next( this.currentSearchResults );
   }
@@ -128,7 +136,7 @@ export class SzSearchService {
    */
   public getAttributeTypes(): Observable<SzAttributeType[]> {
     let _retSubject = new Subject<SzAttributeType[]>();
-    let _retVal     = _retSubject.asObservable();
+    let _retVal     = _retSubject.asObservable();Observable
 
     // get attributes
     this.configManagerService.config.then((conf) => {

@@ -73,9 +73,18 @@ export class SzGrpcEngineService {
     }
     public searchByAttributes(attributes: string | Map<any, any> | {[key: string] : any}, flags: BigInt | number = SzEngineFlags.SZ_SEARCH_BY_ATTRIBUTES_DEFAULT_FLAGS, searchProfile: string = ""): Observable<any | SzError> {
         let retVal = new Subject<string | SzError>();
-        console.log(`getting search results from grpc...`);
+        let flagss: BigInt = SzEngineFlags.SZ_SEARCH_BY_ATTRIBUTES_DEFAULT_FLAGS | 
+        SzEngineFlags.SZ_SEARCH_BY_ATTRIBUTES_STRONG | 
+        SzEngineFlags.SZ_INCLUDE_FEATURE_SCORES | 
+        SzEngineFlags.SZ_INCLUDE_MATCH_KEY_DETAILS | 
+        SzEngineFlags.SZ_ENTITY_INCLUDE_ENTITY_NAME | 
+        SzEngineFlags.SZ_ENTITY_INCLUDE_RECORD_DATA;
+        
+        console.log(`getting search results from grpc...`, flagss);
+
+
         if(this.szEnvironment && this.szEnvironment.engine) {
-          this.szEnvironment?.engine?.searchByAttributes(attributes, flags, searchProfile).then((resp) => {
+          this.szEnvironment?.engine?.searchByAttributes(attributes, flagss, searchProfile).then((resp) => {
             retVal.next(JSON.parse(resp as string));
           })
         }
