@@ -1,24 +1,30 @@
 import { Component, Input, Output, EventEmitter, ViewChildren, QueryList, OnDestroy } from '@angular/core';
 import { SzRelatedEntity, SzEntityRecord, SzRecordId, SzEntityIdentifier } from '@senzing/rest-api-client-ng';
-import { SzEntityDetailSectionCollapsibleCardComponent } from './collapsible-card.component';
+import { SzEntityDetailSectionCollapsibleCardComponentGrpc } from './collapsible-card.component';
 import { Subject } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
 import { BreakpointObserver, BreakpointState } from '@angular/cdk/layout';
-import { SzEntityRecordCardContentComponent } from '../../sz-entity-record-card/sz-entity-record-card-content/sz-entity-record-card-content.component';
+import { SzEntityRecordCardContentComponentGrpc } from '../../sz-entity-record-card/sz-entity-record-card-content/sz-entity-record-card-content.component';
 import { SzSectionDataByDataSource, SzEntityDetailSectionData } from '../../../models/entity-detail-section-data';
 import { SzDataSourceRecordsSelection, SzWhySelectionMode, SzWhySelectionModeBehavior } from '../../../models/data-source-record-selection';
+import { CommonModule } from '@angular/common';
+import { SzEntityDetailSectionHeaderComponentGrpc } from './header.component';
 
 /**
  * @internal
  * @export
  */
 @Component({
-    selector: 'sz-entity-details-section',
+    selector: 'sz-entity-details-section-grpc',
     templateUrl: './sz-entity-details-section.component.html',
     styleUrls: ['./sz-entity-details-section.component.scss'],
-    standalone: false
+    imports: [
+      CommonModule, 
+      SzEntityDetailSectionHeaderComponentGrpc, 
+      SzEntityDetailSectionCollapsibleCardComponentGrpc
+    ]
 })
-export class SzEntityDetailsSectionComponent implements OnDestroy {
+export class SzEntityDetailsSectionComponentGrpc implements OnDestroy {
   /** subscription to notify subscribers to unbind */
   public unsubscribe$ = new Subject<void>();
   _sectionData: SzEntityRecord[] | SzRelatedEntity[];
@@ -55,7 +61,7 @@ export class SzEntityDetailsSectionComponent implements OnDestroy {
   @Output() onCollapsedChange: EventEmitter<boolean> = new EventEmitter<boolean>();
   @Input() public collapsedStatePrefsKey: string = 'borgledeerger';
   
-  @ViewChildren(SzEntityDetailSectionCollapsibleCardComponent) collapsable: QueryList<SzEntityDetailSectionCollapsibleCardComponent>
+  @ViewChildren(SzEntityDetailSectionCollapsibleCardComponentGrpc) collapsable: QueryList<SzEntityDetailSectionCollapsibleCardComponentGrpc>
 
   /** the width to switch from wide to narrow layout */
   @Input() public layoutBreakpoints = [
@@ -114,7 +120,7 @@ export class SzEntityDetailsSectionComponent implements OnDestroy {
       });
       let _allRecordCols = [];
       sectionDataRecords.forEach((sectionData: SzEntityRecord | SzRelatedEntity) => {
-        _allRecordCols.push( SzEntityRecordCardContentComponent.getColumnsThatWouldBeDisplayedForData( sectionData ) );
+        _allRecordCols.push( SzEntityRecordCardContentComponentGrpc.getColumnsThatWouldBeDisplayedForData( sectionData ) );
       });
       // now condense to flattened array
       _allRecordCols.forEach((recordCols: boolean[]) => {

@@ -17,20 +17,27 @@ import {
 } from '@senzing/rest-api-client-ng';
 import { SzRelationshipNetworkComponent } from '../../../graph/sz-relationship-network/sz-relationship-network.component';
 
-import { bestEntityName } from '../../entity-utils';
-import { SzWhyEntityDialog } from '../../../why/sz-why-entity.component';
+import { bestEntityName } from '../../../common/entity-utils';
+import { CommonModule } from '@angular/common';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { SzEntityDetailSectionSummaryComponentGrpc } from './summary.component';
+import { SzEntityDetailHeaderContentComponentGrpc } from './content.component';
 
 /**
  * @internal
  * @export
  */
 @Component({
-    selector: 'sz-entity-detail-header',
+    selector: 'sz-entity-detail-header-grpc',
     templateUrl: './header.component.html',
     styleUrls: ['./header.component.scss'],
-    standalone: false
+    imports: [CommonModule, MatButtonModule, MatIconModule, MatTooltipModule,
+      SzEntityDetailSectionSummaryComponentGrpc, SzEntityDetailHeaderContentComponentGrpc
+    ]
 })
-export class SzEntityDetailHeaderComponent implements OnInit, OnDestroy {
+export class SzEntityDetailHeaderComponentGrpc implements OnInit, OnDestroy {
   @Input() public searchTerm: string;
   /** the entity to display */
   private _entity: SzEntityData;

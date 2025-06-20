@@ -4,19 +4,20 @@ import { SzResolvedEntity, SzDataSourceRecordSummary } from '@senzing/rest-api-c
 import { SzPrefsService } from '../../../services/sz-prefs.service';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { bestEntityName } from '../../entity-utils';
+import { bestEntityName } from '../../../common/entity-utils';
+import { CommonModule } from '@angular/common';
 
 /**
  * @internal
  * @export
  */
 @Component({
-    selector: 'sz-entity-record-card-header',
+    selector: 'sz-entity-record-card-header-grpc',
     templateUrl: './sz-entity-record-card-header.component.html',
     styleUrls: ['./sz-entity-record-card-header.component.scss'],
-    standalone: false
+    imports: [CommonModule]
 })
-export class SzEntityRecordCardHeaderComponent implements OnInit, OnDestroy {
+export class SzEntityRecordCardHeaderComponentGrpc implements OnInit, OnDestroy {
   @Input() searchResult: SzSearchResultEntityData;
   @Input() searchValue: string;
   @Input() hideBackGroundColor: boolean;

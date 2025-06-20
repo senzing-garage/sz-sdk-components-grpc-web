@@ -1,11 +1,11 @@
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { SzEntityDetailSectionCollapsibleCardComponent } from './collapsible-card.component';
+import { SzEntityDetailSectionCollapsibleCardComponentGrpc } from './collapsible-card.component';
 import { SenzingSdkModule } from 'src/lib/sdk.module';
 
 describe('SzEntityDetailSectionCollapsibleCardComponent', () => {
-  let component: SzEntityDetailSectionCollapsibleCardComponent;
-  let fixture: ComponentFixture<SzEntityDetailSectionCollapsibleCardComponent>;
+  let component: SzEntityDetailSectionCollapsibleCardComponentGrpc;
+  let fixture: ComponentFixture<SzEntityDetailSectionCollapsibleCardComponentGrpc>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
@@ -15,7 +15,7 @@ describe('SzEntityDetailSectionCollapsibleCardComponent', () => {
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(SzEntityDetailSectionCollapsibleCardComponent);
+    fixture = TestBed.createComponent(SzEntityDetailSectionCollapsibleCardComponentGrpc);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -58,14 +58,14 @@
     <ng-container *ngIf="isEntityRecord(cardData)">
       <div class="entity-records mat-expansion-panel-body">
           <div class="entity-record" *ngFor="let _cardData of cardData?.records">
-              <sz-entity-record-card-header
+              <sz-entity-record-card-header-grpc
                 [entityData]="_cardData"
                 [hideBackGroundColor]="true"
                 [layoutClasses]="layoutClasses"
                 (entityRecordClick)="onEntityRecordClick($event)"
                 >
-              </sz-entity-record-card-header>
-              <sz-entity-record-card-content
+              </sz-entity-record-card-header-grpc>
+              <sz-entity-record-card-content-grpc
               [showOtherData]="showOtherDataInEntities"
               [showNameData]="showNameDataInEntities"
               [showBestNameOnly]="showBestNameOnlyinEntities"
@@ -79,7 +79,7 @@
               [truncateResults]="truncateResults"
               [truncatedTooltip]="'click to expand.'"
               (onWhyNotClicked)="onEntityRecordWhyNotClicked($event)"
-            ></sz-entity-record-card-content>
+            ></sz-entity-record-card-content-grpc>
           </div>
       </div>
     </ng-container>
@@ -88,7 +88,7 @@
     <!-- start is not entity record (datasource records) -->
     <ng-container *ngIf="!isEntityRecord(cardData)">
       <div class="search-card-records  mat-expansion-panel-body">
-        <sz-entity-record-card-content
+        <sz-entity-record-card-content-grpc
           *ngFor="let _cardData of cardDataAsAny?.records"
           [showOtherData]="showOtherDataInDatasourceRecords"
           [columnsShown]="columnsShown"
@@ -103,7 +103,7 @@
           [truncatedTooltip]="'click to expand.'"
           (onDataSourceRecordClicked)="onDataSourceRecordClicked($event)"
           (onDataSourceRecordWhyClicked)="onDataSourceRecordWhyClicked($event)"
-        ></sz-entity-record-card-content>
+        ></sz-entity-record-card-content-grpc>
       </div>
     </ng-container>
     <!-- end is not entity record (datasource records) -->

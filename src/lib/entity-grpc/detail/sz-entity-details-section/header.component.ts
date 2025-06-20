@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common';
 import { Component, Input, OnInit } from '@angular/core';
 
 /**
@@ -5,12 +6,12 @@ import { Component, Input, OnInit } from '@angular/core';
  * @export
  */
 @Component({
-    selector: 'sz-entity-detail-section-header',
+    selector: 'sz-entity-detail-section-header-grpc',
     templateUrl: './header.component.html',
     styleUrls: ['./header.component.scss'],
-    standalone: false
+    imports: [CommonModule]
 })
-export class SzEntityDetailSectionHeaderComponent implements OnInit {
+export class SzEntityDetailSectionHeaderComponentGrpc implements OnInit {
   @Input() sectionTitle: string;
   @Input() sectionCount: number;
   @Input() sectionIcon: string;

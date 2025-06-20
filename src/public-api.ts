@@ -125,6 +125,8 @@ export * from './lib/configuration/sz-product-info/sz-product-info.component';
 export * from './lib/import/sz-import-files.component';
 export { SzSearchGrpcComponent } from './lib/search-grpc/sz-search/sz-search.component';
 export { SzSearchResultsGrpcComponent } from './lib/search-grpc/sz-search-results/sz-search-results.component';
+export { SzEntityDetailComponentGrpc } from './lib/entity-grpc/detail/sz-entity-detail.component';
+
 // models
 export * from './lib/models/grpc/config';
 export * from './lib/models/grpc/engine';

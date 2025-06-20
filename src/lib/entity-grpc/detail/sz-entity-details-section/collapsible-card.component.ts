@@ -1,4 +1,6 @@
 import { Component, Input, Output, EventEmitter, OnInit, OnDestroy, ViewChild, ChangeDetectorRef, ElementRef } from '@angular/core';
+import { CommonModule } from '@angular/common';
+
 import { SzSectionDataByDataSource, SzEntityDetailSectionData } from '../../../models/entity-detail-section-data';
 import { SzEntityIdentifier, SzEntityRecord, SzRecordId } from '@senzing/rest-api-client-ng';
 import { SzPrefsService } from '../../../services/sz-prefs.service';
@@ -7,17 +9,20 @@ import { Subject } from 'rxjs';
 import { SzDataSourceRecordsSelection, SzWhySelectionMode, SzWhySelectionModeBehavior } from '../../../models/data-source-record-selection';
 import { SzMultiSelectButtonComponent } from '../../../shared/multi-select-button/multi-select-button.component';
 
+import { SzEntityRecordCardHeaderComponentGrpc } from '../../sz-entity-record-card/sz-entity-record-card-header/sz-entity-record-card-header.component';
+import { SzEntityRecordCardContentComponentGrpc } from '../../sz-entity-record-card/sz-entity-record-card-content/sz-entity-record-card-content.component';
+
 /**
  * @internal
  * @export
  */
 @Component({
-    selector: 'sz-entity-detail-section-collapsible-card',
+    selector: 'sz-entity-detail-section-collapsible-card-grpc',
     templateUrl: './collapsible-card.component.html',
     styleUrls: ['./collapsible-card.component.scss'],
-    standalone: false
+    imports: [CommonModule, SzEntityRecordCardHeaderComponentGrpc, SzEntityRecordCardContentComponentGrpc]
 })
-export class SzEntityDetailSectionCollapsibleCardComponent implements OnInit, OnDestroy {
+export class SzEntityDetailSectionCollapsibleCardComponentGrpc implements OnInit, OnDestroy {
   @ViewChild('messages') private messagesContainer: HTMLElement;
   /** subscription to notify subscribers to unbind */
   public unsubscribe$ = new Subject<void>();

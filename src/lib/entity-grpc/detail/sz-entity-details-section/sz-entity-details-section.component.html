@@ -1,14 +1,14 @@
-<sz-entity-detail-section-header
+<sz-entity-detail-section-header-grpc
   [sectionTitle]="sectionTitle"
   [sectionCount]="sectionCount"
   [sectionIcon]="sectionIcon"
   [sectionId]="sectionId"
   [layoutClasses]="_layoutClasses"
   [ngClass]="_layoutClasses">
-</sz-entity-detail-section-header>
+</sz-entity-detail-section-header-grpc>
 <div [ngClass]="_layoutClasses">
   <ng-container *ngIf="showByDataSource">
-    <sz-entity-detail-section-collapsible-card
+    <sz-entity-detail-section-collapsible-card-grpc
       class="by-datasource"
       *ngFor="let dataSourceRecords of _sectionDataByDataSource; let ind = index"
       [showIcon]="showIcon"
@@ -29,10 +29,10 @@
       [whySelectionMode]="whySelectionMode"
       (dataSourceSelectModeChanged)="onDataSourceSelectModeChanged($event)"
       (entityRecordClick)="onEntityRecordClick($event)">
-    </sz-entity-detail-section-collapsible-card>
+    </sz-entity-detail-section-collapsible-card-grpc>
   </ng-container>
   <ng-container *ngIf="showEntitiesByMatchKey">
-    <sz-entity-detail-section-collapsible-card
+    <sz-entity-detail-section-collapsible-card-grpc
       class="by-matchkey"
       *ngFor="let entitiesByMatchKey of _sectionDataByMatchKey"
       [showIcon]="showIcon"
@@ -51,10 +51,10 @@
       (entityRecordClick)="onEntityRecordClick($event)"
       (entityRecordWhyNotClick)="onEntityRecordWhyNotClick($event)"
       class="by-match-key">
-    </sz-entity-detail-section-collapsible-card>
+    </sz-entity-detail-section-collapsible-card-grpc>
   </ng-container>
   <ng-container *ngIf="!showByDataSource && !showEntitiesByMatchKey">
-    <sz-entity-detail-section-collapsible-card
+    <sz-entity-detail-section-collapsible-card-grpc
       class="by-entity"
       *ngFor="let cardData of sectionData"
       [showIcon]="showIcon"
@@ -71,7 +71,7 @@
       [whySelectionMode]="whySelectionMode"
       (entityRecordClick)="onEntityRecordClick($event)"
       (entityRecordWhyNotClick)="onEntityRecordWhyNotClick($event)">
-    </sz-entity-detail-section-collapsible-card>
+    </sz-entity-detail-section-collapsible-card-grpc>
   </ng-container>
 </div>
 

@@ -1,11 +1,11 @@
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { SzEntityRecordCardHeaderComponent } from './sz-entity-record-card-header.component';
+import { SzEntityRecordCardHeaderComponentGrpc } from './sz-entity-record-card-header.component';
 import { SenzingSdkModule } from 'src/lib/sdk.module';
 
-describe('SzEntityRecordCardHeaderComponent', () => {
-  let component: SzEntityRecordCardHeaderComponent;
-  let fixture: ComponentFixture<SzEntityRecordCardHeaderComponent>;
+describe('SzEntityRecordCardHeaderComponentGrpc', () => {
+  let component: SzEntityRecordCardHeaderComponentGrpc;
+  let fixture: ComponentFixture<SzEntityRecordCardHeaderComponentGrpc>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
@@ -15,7 +15,7 @@ describe('SzEntityRecordCardHeaderComponent', () => {
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(SzEntityRecordCardHeaderComponent);
+    fixture = TestBed.createComponent(SzEntityRecordCardHeaderComponentGrpc);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

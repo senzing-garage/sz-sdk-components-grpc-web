@@ -1,21 +1,34 @@
 import { CommonModule } from '@angular/common';
 import { Component, ViewChild } from '@angular/core';
 import { 
-  SzAttributeSearchResult,
-  SzEntityDetailComponent, SzEntityIdentifier, SzEntitySearchParams, 
-  SzSdkSearchResolvedEntity, SzSearchGrpcComponent, 
+  SzEntityDetailComponent, SzEntityIdentifier, SzEntitySearchParams
+} from '@senzing/sdk-components-grpc-web';
+
+// new grpc components
+import {
+  SzSearchGrpcComponent, 
   SzSearchResultsGrpcComponent,
-  SzSdkSearchResult,
-  SzGrpcConfig,
+  SzEntityDetailComponentGrpc,
   SzGrpcConfigManagerService
 } from '@senzing/sdk-components-grpc-web';
+// new grpc models
+import { 
+  SzSdkSearchResolvedEntity, 
+  SzSdkSearchResult,
+  SzGrpcConfig,
+} from '@senzing/sdk-components-grpc-web';
+
 //import { SzSdkSearchResult } from 'src/lib/models/grpc/engine';
 //import { SzGrpcConfig } from 'src/lib/services/grpc/config.service';
 //import { SzGrpcConfigManagerService } from 'src/lib/services/grpc/configManager.service';
 
 @Component({
   selector: 'app-root',
-  imports: [SzSearchGrpcComponent, SzSearchResultsGrpcComponent, CommonModule],
+  imports: [
+    CommonModule,
+    SzSearchGrpcComponent, SzSearchResultsGrpcComponent,
+    SzEntityDetailComponentGrpc
+  ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
@@ -75,9 +88,9 @@ export class AppComponent {
   }
   public onSearchResultClick(entityData: SzSdkSearchResolvedEntity){
     console.log('onSearchResultClick: ', entityData);
-    /*
-    if (entityData && entityData.entityId > 0) {
-      this.currentlySelectedEntityId = entityData.entityId;
+    
+    if (entityData && entityData.ENTITY_ID > 0) {
+      this.currentlySelectedEntityId = entityData.ENTITY_ID;
       this._showSearchResults = false;
       this._showEntityDetail  = true;
       this._showHowReport     = false;
@@ -85,12 +98,23 @@ export class AppComponent {
       this._showSearchResults = true;
       this._showEntityDetail  = false;
       this._showHowReport     = false;
-    }*/
+    }
   }
 
   public onHowButtonClick(howEvent) {
     console.log('onHowButtonClick: ', howEvent.entityId);
     this.loadHowReport(howEvent.entityId);
+  }
+
+  public onBackToSearchResultsClick(event): void {
+    this._showSearchResults = true;
+    this._showEntityDetail  = false;
+    this._showHowReport     = false;
+  }
+  public onBackToEntityClick(event): void {
+    this._showSearchResults = false;
+    this._showEntityDetail  = true;
+    this._showHowReport     = false;
   }
 
   public loadHowReport(entityId) {

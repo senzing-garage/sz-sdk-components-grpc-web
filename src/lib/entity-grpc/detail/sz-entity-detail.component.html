@@ -16,7 +16,7 @@
 </ng-template>
 <!-- end graph link context menu template -->
 <div #nativeElementRef>
-  <sz-entity-detail-header
+  <sz-entity-detail-header-grpc
   [entity]="entity"
   [forceLayout]="_forceLayout"
   [showWhyFunction]="showEntityWhyFunction"
@@ -31,7 +31,7 @@
   (onHowButtonClick)="this.onHeaderHowButtonClick($event)"
   (onReEvaluateButtonClick)="this.onHeaderReEvaluateButtonClick($event)"
   [layoutClasses]="_layoutEnforcers">
-  </sz-entity-detail-header>
+  </sz-entity-detail-header-grpc>
   
   <!--<sz-entity-detail-graph data-html2canvas-ignore
     *ngIf="graphData && this.showGraphSection"
@@ -54,6 +54,7 @@
     (relationshipClick)="onGraphRelationshipClick($event)"
   ></sz-entity-detail-graph>-->
 
+<!--
   <sz-entity-detail-section-how-report class="details-section how-report"
     *ngIf="entityId && this.showHowSection"
     collapsedStatePrefsKey="howSectionCollapsed"
@@ -127,4 +128,5 @@
     [showNameDataInEntities]="showNameDataInDisclosedSection"
     (entityRecordClick)="onEntityRecordClick($event)">
   </sz-entity-details-section>
+-->
 </div>

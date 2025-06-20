@@ -1,3 +1,4 @@
+import { SzResolvedEntity } from "@senzing/rest-api-client-ng";
 import { SzSdkConfigAttr } from "../models/grpc/config";
 import { SzSdkEntityFeature } from "../models/grpc/engine";
 import { SzAttrClass } from "../models/SzFeatureTypes";
@@ -31,4 +32,9 @@ export function getStringEntityFeatures(features: {
         retMap.set(groupKey, _values);
     }
     return retMap;
+}
+
+export function bestEntityName(entity: SzResolvedEntity): string {
+    let retVal = entity?.bestName? entity.bestName : entity?.entityName ? entity.entityName : undefined;
+    return retVal;
 }

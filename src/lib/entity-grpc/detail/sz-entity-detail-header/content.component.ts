@@ -6,18 +6,20 @@ import { SzSearchResultEntityData } from '../../../models/responces/search-resul
 import { SzEntityDetailSectionData } from '../../../models/entity-detail-section-data';
 import { SzEntityRecord, SzEntityFeature } from '@senzing/rest-api-client-ng';
 import { SzPrefsService } from '../../../services/sz-prefs.service';
+import { CommonModule } from '@angular/common';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 /**
  * @internal
  * @export
  */
 @Component({
-    selector: 'sz-entity-detail-header-content',
+    selector: 'sz-entity-detail-header-content-grpc',
     templateUrl: './content.component.html',
     styleUrls: ['./content.component.scss'],
-    standalone: false
+    imports: [CommonModule, MatTooltipModule]
 })
-export class SzEntityDetailHeaderContentComponent implements OnDestroy, OnInit {
+export class SzEntityDetailHeaderContentComponentGrpc implements OnDestroy, OnInit {
   /** subscription to notify subscribers to unbind */
   public unsubscribe$ = new Subject<void>();
   private _truncateOtherDataAt: number = 3;

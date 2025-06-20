@@ -1,11 +1,11 @@
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { SzEntityRecordCardContentComponent } from './sz-entity-record-card-content.component';
+import { SzEntityRecordCardContentComponentGrpc } from './sz-entity-record-card-content.component';
 import { SenzingSdkModule } from 'src/lib/sdk.module';
 
 describe('SzEntityRecordCardContentComponent', () => {
-  let component: SzEntityRecordCardContentComponent;
-  let fixture: ComponentFixture<SzEntityRecordCardContentComponent>;
+  let component: SzEntityRecordCardContentComponentGrpc;
+  let fixture: ComponentFixture<SzEntityRecordCardContentComponentGrpc>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
@@ -15,7 +15,7 @@ describe('SzEntityRecordCardContentComponent', () => {
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(SzEntityRecordCardContentComponent);
+    fixture = TestBed.createComponent(SzEntityRecordCardContentComponentGrpc);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

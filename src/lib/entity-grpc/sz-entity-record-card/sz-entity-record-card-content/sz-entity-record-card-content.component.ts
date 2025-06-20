@@ -1,4 +1,8 @@
 import { ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 import { SzSearchResultEntityData } from '../../../models/responces/search-results/sz-search-result-entity-data';
 import { SzEntityDetailSectionData } from '../../../models/entity-detail-section-data';
 import {
@@ -14,18 +18,17 @@ import { takeUntil } from 'rxjs/operators';
 import { SzPrefsService } from '../../../services/sz-prefs.service';
 import { SzWhySelectionMode, SzWhySelectionAction, SzWhySelectionModeBehavior, SzWhySelectionActionBehavior } from '../../../models/data-source-record-selection';
 
-
 /**
  * @internal
  * @export
  */
 @Component({
-    selector: 'sz-entity-record-card-content',
+    selector: 'sz-entity-record-card-content-grpc',
     templateUrl: './sz-entity-record-card-content.component.html',
     styleUrls: ['./sz-entity-record-card-content.component.scss'],
-    standalone: false
+    imports: [CommonModule, MatTooltipModule, MatButtonModule, MatIconModule]
 })
-export class SzEntityRecordCardContentComponent implements OnInit {
+export class SzEntityRecordCardContentComponentGrpc implements OnInit {
   /** subscription to notify subscribers to unbind */
   public unsubscribe$ = new Subject<void>();
 
@@ -252,18 +255,18 @@ export class SzEntityRecordCardContentComponent implements OnInit {
         retVal[0] = true;
       }
       // name and attr data
-      let nameAndAttrData = SzEntityRecordCardContentComponent.getNameDataFromEntity(entity).concat(SzEntityRecordCardContentComponent.getAattributeDataFromEntity(entity));
+      let nameAndAttrData = SzEntityRecordCardContentComponentGrpc.getNameDataFromEntity(entity).concat(SzEntityRecordCardContentComponentGrpc.getAattributeDataFromEntity(entity));
       if(nameAndAttrData.length > 0) {
         retVal[1] = true;
       }
       // address and phone data
-      let phoneAndAddrData = SzEntityRecordCardContentComponent.getAddressDataFromEntity(entity).concat(SzEntityRecordCardContentComponent.getPhoneDataFromEntity(entity));
+      let phoneAndAddrData = SzEntityRecordCardContentComponentGrpc.getAddressDataFromEntity(entity).concat(SzEntityRecordCardContentComponentGrpc.getPhoneDataFromEntity(entity));
       // addressData.concat(phoneData);
       if(phoneAndAddrData && phoneAndAddrData.length > 0) {
         retVal[2] = true;
       }
       // identifier data
-      let identifierData = SzEntityRecordCardContentComponent.getIdentifierDataFromEntity(entity); 
+      let identifierData = SzEntityRecordCardContentComponentGrpc.getIdentifierDataFromEntity(entity); 
       if(identifierData.length > 0) {
         retVal[3] = true;
       }
@@ -303,7 +306,7 @@ export class SzEntityRecordCardContentComponent implements OnInit {
     } else {
       return [];
     }*/
-    return SzEntityRecordCardContentComponent.getNameDataFromEntity(this.entity, this._showBestNameOnly);
+    return SzEntityRecordCardContentComponentGrpc.getNameDataFromEntity(this.entity, this._showBestNameOnly);
   }
   public static getNameDataFromEntity(entity, showBestNameOnly?: boolean): string[] {
     if (entity) {
@@ -334,7 +337,7 @@ export class SzEntityRecordCardContentComponent implements OnInit {
     } else {
       return [];
     }*/
-    return SzEntityRecordCardContentComponent.getAattributeDataFromEntity(this.entity);
+    return SzEntityRecordCardContentComponentGrpc.getAattributeDataFromEntity(this.entity);
   }
 
   public static getAattributeDataFromEntity(entity): string[] {
@@ -364,7 +367,7 @@ export class SzEntityRecordCardContentComponent implements OnInit {
     } else {
       return [];
     }*/
-    return SzEntityRecordCardContentComponent.getAddressDataFromEntity(this.entity);
+    return SzEntityRecordCardContentComponentGrpc.getAddressDataFromEntity(this.entity);
   }
 
   public static getAddressDataFromEntity(entity): string[] {
@@ -394,7 +397,7 @@ export class SzEntityRecordCardContentComponent implements OnInit {
     } else {
       return [];
     }*/
-    return SzEntityRecordCardContentComponent.getPhoneDataFromEntity(this.entity); 
+    return SzEntityRecordCardContentComponentGrpc.getPhoneDataFromEntity(this.entity); 
   }
 
   public static getPhoneDataFromEntity(entity): string[] {
@@ -424,7 +427,7 @@ export class SzEntityRecordCardContentComponent implements OnInit {
     } else {
       return [];
     }*/
-    return SzEntityRecordCardContentComponent.getIdentifierDataFromEntity(this.entity); 
+    return SzEntityRecordCardContentComponentGrpc.getIdentifierDataFromEntity(this.entity); 
   }
 
   public static getIdentifierDataFromEntity(entity): string[] {

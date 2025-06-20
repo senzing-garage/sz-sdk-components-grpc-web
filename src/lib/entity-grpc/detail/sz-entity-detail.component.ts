@@ -16,7 +16,7 @@ import {
 } from '@senzing/rest-api-client-ng';
 import { MatDialog } from '@angular/material/dialog';
 
-import { SzEntityDetailGraphComponent } from './sz-entity-detail-graph/sz-entity-detail-graph.component';
+//import { SzEntityDetailGraphComponent } from './sz-entity-detail-graph/sz-entity-detail-graph.component';
 import { SzWhyEntityDialog } from '../../why/sz-why-entity.component';
 import { SzWhyEntitiesDialog } from '../../why/sz-why-entities.component';
 
@@ -27,6 +27,8 @@ import { SzMatchKeyTokenFilterScope } from '../../models/graph';
 import { howClickEvent } from '../../models/data-how';
 import { SzHowUIService } from '../../services/sz-how-ui.service';
 import { SzAlertMessageDialog } from '../../shared/alert-dialog/sz-alert-dialog.component';
+import { CommonModule } from '@angular/common';
+import { SzEntityDetailHeaderComponentGrpc } from './sz-entity-detail-header/header.component';
 
 /**
  * The Entity Detail Component.
@@ -54,12 +56,12 @@ import { SzAlertMessageDialog } from '../../shared/alert-dialog/sz-alert-dialog.
  * </script>
  */
 @Component({
-    selector: 'sz-entity-detail',
+    selector: 'sz-entity-detail-grpc',
     templateUrl: './sz-entity-detail.component.html',
     styleUrls: ['./sz-entity-detail.component.scss'],
-    standalone: false
+    imports: [CommonModule, SzEntityDetailHeaderComponentGrpc]
 })
-export class SzEntityDetailComponent implements OnInit, OnDestroy, AfterViewInit {
+export class SzEntityDetailComponentGrpc implements OnInit, OnDestroy, AfterViewInit {
   /** subscription to notify subscribers to unbind */
   public unsubscribe$ = new Subject<void>();
   /** @internal */
@@ -69,7 +71,6 @@ export class SzEntityDetailComponent implements OnInit, OnDestroy, AfterViewInit
   private entityDetailJSON: string = "";
   private _requestDataOnIdChange = true;
   public entity: SzEntityData;
-  
 
   // layout enforcers
   /** @internal */
@@ -389,8 +390,9 @@ export class SzEntityDetailComponent implements OnInit, OnDestroy, AfterViewInit
   public get nativeElement(): HTMLElement {
     return this.nativeElementRef.nativeElement;
   }
-  @ViewChild(SzEntityDetailGraphComponent)
-  public graphComponent: SzEntityDetailGraphComponent;
+  //@ViewChild(SzEntityDetailGraphComponent)
+  //public graphComponent: SzEntityDetailGraphComponent;
+  //public graphComponent: SzEntityDetailGraphComponent;
 
   /** built-in graph context menus */
   @ViewChild('graphNodeContextMenu') graphNodeContextMenu: TemplateRef<any>;
@@ -715,11 +717,12 @@ export class SzEntityDetailComponent implements OnInit, OnDestroy, AfterViewInit
    * whether or not the graph component is displaying match keys
    */
   public get showGraphMatchKeys() {
-    if(this.graphComponent && this.graphComponent.graphControlComponent && this.graphComponent.graphControlComponent.showLinkLabels) {
+    return this._showGraphLinkLabels;
+    /*if(this.graphComponent && this.graphComponent.graphControlComponent && this.graphComponent.graphControlComponent.showLinkLabels) {
       return this.graphComponent.graphControlComponent.showLinkLabels;
     } else {
       return this._showGraphLinkLabels;
-    }
+    }*/
   }
 
 
@@ -870,9 +873,9 @@ export class SzEntityDetailComponent implements OnInit, OnDestroy, AfterViewInit
       return sr.relationType == SzRelationshipType.DISCLOSEDRELATION;
     });
     // redraw graph on entity change
-    if(this.graphComponent && this.graphComponent.reload) {
+    /*if(this.graphComponent && this.graphComponent.reload) {
       this.graphComponent.reload(this.entityId);
-    }
+    }*/
     this.dataChanged.next(this.entity);
   }
 
@@ -1146,23 +1149,24 @@ export class SzEntityDetailComponent implements OnInit, OnDestroy, AfterViewInit
 
   /** can a specific entity node be removed from canvas */
   public isGraphEntityRemovable(entityId: SzEntityIdentifier): boolean {
-    return this.graphComponent.canRemoveNode(entityId);
+    return false;
+    //return this.graphComponent?.canRemoveNode(entityId);
   }
   /** show any entities that are related to a specific entity that are 
    * currently not on the canvas
    */
   public showGraphEntityRelationships(entityId: SzEntityIdentifier) {
-    this.graphComponent.expandNode(entityId);
+    //this.graphComponent?.expandNode(entityId);
   }
   /** hide all visible(expanded) entities related to a specific entity
    * that are themselves not related to any other visible entities
    */
   public hideGraphEntityRelationships(entityId: SzEntityIdentifier) {
-    this.graphComponent.collapseNode(entityId);
+    //this.graphComponent?.collapseNode(entityId);
   }
   /** remove single node and any directly related nodes that are only related to the entity specified */
   public hideGraphEntity(entityId: SzEntityIdentifier) {
-    this.graphComponent.removeNode(entityId);
+    //this.graphComponent?.removeNode(entityId);
   }
   /** the built-in graph link context menu has an option to show
    * a "Why Not" report modal on select.

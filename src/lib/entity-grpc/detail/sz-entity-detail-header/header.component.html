@@ -52,18 +52,18 @@
       <div><span class="detail-header__entity-id">Entity Id: {{entityId}}</span></div>
       <!--<div><span class="detail-header__last-seen">Last seen: TBD</span></div>-->
       <div class="detail-header__section-summary--wrapper">
-        <sz-entity-detail-section-summary
+        <sz-entity-detail-section-summary-grpc
           *ngFor="let section of sectionSummaryInfo; let idx = index"
           [layoutClasses]="_layoutClasses"
           [sectionId]="idx+1"
           [section]="section">
-        </sz-entity-detail-section-summary>
+        </sz-entity-detail-section-summary-grpc>
       </div>
     </div>
   </div>
   <div class="detail-header__bottom--wrapper">
-    <sz-entity-detail-header-content
+    <sz-entity-detail-header-content-grpc
     [layoutClasses]="_layoutClasses"
-    [entity]="entity?.resolvedEntity"></sz-entity-detail-header-content>
+    [entity]="entity?.resolvedEntity"></sz-entity-detail-header-content-grpc>
   </div>
 </div>
