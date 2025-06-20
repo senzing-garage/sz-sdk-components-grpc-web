@@ -1,0 +1,138 @@
+:host {
+  position: relative;
+
+  /* by default hide the hover select effect */
+  .select-mode-multiple-hover-mask {
+    /* margin-left: 50%; */
+    background-color: var(--sz-entity-detail-section-record-card-why-hover-message-background-color);
+    display: none;
+    position: absolute;
+    width: var(--sz-entity-detail-section-record-card-why-hover-message-width);
+    height: var(--sz-entity-detail-section-record-card-why-hover-message-height);
+    right: 5px;
+    top: 5px;
+    border-radius: var(--sz-entity-detail-section-record-card-why-hover-message-border-radius);
+    border-color: var(--sz-entity-detail-section-record-card-why-hover-message-border-color);
+    border-width: var(--sz-entity-detail-section-record-card-why-hover-message-border-width);
+    border: var(--sz-entity-detail-section-record-card-why-hover-message-border);
+    padding: var(--sz-entity-detail-section-record-card-why-hover-message-padding);
+    color: var(--sz-entity-detail-section-record-card-why-hover-message-color);
+
+    .select-mode-multiple-hover-indicator {
+      position: relative;
+      /* left: 50%; */
+      /* width: 50%; */
+      text-align: center;
+      top: calc(50% - 10px);
+      text-transform: var(--sz-entity-detail-section-record-card-why-hover-message-text-transform);
+      font-size: var(--sz-entity-detail-section-record-card-why-hover-message-font-size);
+      font-weight: var(--sz-entity-detail-section-record-card-why-hover-message-font-weight);
+    }
+  }
+  .select-mode-single-hover-button {
+    display: none;
+    position: absolute;
+    right: var(--sz-entity-detail-section-record-card-why-button-margin-right);
+    top: var(--sz-entity-detail-section-record-card-why-button-margin-top);
+    border-radius: var(--sz-entity-detail-section-record-card-why-button-border-radius);
+    /*border-width: 2px;*/
+    /*border: 1px dashed #d3d3d3;*/
+    padding: var(--sz-entity-detail-section-record-card-why-button-padding);
+    color: var(--sz-entity-detail-section-record-card-why-button-color);
+    background-color: var(--sz-entity-detail-section-record-card-why-button-background-color);
+    border-color: var(--sz-entity-detail-section-record-card-why-button-border-color);
+  }
+
+  &.is-selectable {
+    &.select-mode-multiple:hover {
+      cursor: pointer;
+      background-color: #f0f8ffcc;
+  
+      .select-mode-multiple-hover-mask {
+        display: inline-block;
+      }
+      &.selected .select-mode-multiple-hover-mask {
+        display: none;
+      }
+    }
+    &.select-mode-single:hover {
+      /*cursor: pointer;
+      background-color: #f0f8ffcc;*/
+  
+      .select-mode-single-hover-button {
+        display: inline-block;
+      }
+    }
+  }
+
+  &.select-mode-multiple .mat-expansion-panel-header {
+      .mat-title-bar { 
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        justify-content: space-between;
+      }
+  }
+  .search-card__content--wrapper {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+
+    /* for narrow layouts change the reflow orientation */
+    &.layout-narrow, &.layout-rail {
+      flex-direction: column;
+
+      .search-card__content--column {
+        min-width: auto;
+        margin-right: auto;
+        margin-bottom: 2em;
+      }
+    }
+
+    .line {
+      margin-bottom: .5em;
+    }
+    /* assume three columns, then override */
+    .search-card__content--column {
+      min-width: 30%;
+      margin-right: 2em;
+    }
+
+    .search-card__content--column:last-child {
+      flex-grow: 2;
+      margin-right: 0;
+    }
+  }
+
+  /* set hard column perc widths based on how many cols are showing */
+  .search-card__content--wrapper.columns-one {
+    .search-card__content--column   {
+      min-width: var(--sz-entity-detail-section-record-card-one-cols-min-width);
+    }
+  }
+  .search-card__content--wrapper.columns-two {
+    .search-card__content--column   {
+      min-width: var(--sz-entity-detail-section-record-card-two-cols-min-width);
+    }
+  }
+  .search-card__content--wrapper.columns-three {
+    .search-card__content--column   {
+      min-width: var(--sz-entity-detail-section-record-card-three-cols-min-width);
+    }
+  }
+  .search-card__content--wrapper.columns-four {
+    .search-card__content--column   {
+      min-width: var(--sz-entity-detail-section-record-card-four-cols-min-width);
+    }
+    /* lock first and last so other cols can expand properly */
+    .search-card__content--column:first-child,
+    .search-card__content--column:last-child,
+    .search-card__content--column.nameData {
+      max-width: calc(25% - 2em);
+    }
+    .search-card__content--column.addressPhoneData {
+      width: 100%;
+    }
+  }
+}

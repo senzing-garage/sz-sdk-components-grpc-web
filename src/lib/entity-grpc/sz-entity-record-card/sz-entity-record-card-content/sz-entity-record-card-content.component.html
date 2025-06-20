@@ -1,0 +1,82 @@
+<div class="search-card__content--wrapper"
+  [class.collapsed]="truncateResults"
+  [class.columns-two]="!showColumnOne && !showColumnFour"
+  [class.columns-three]="showColumnOne && !showColumnFour || showColumnFour && !showColumnOne"
+  [class.columns-four]="showColumnOne && showColumnFour"
+  [ngClass]="layoutClasses"
+  (click)="onRecordCardContentClicked($event); truncateResults=!truncateResults">
+    <div class="search-card__content--column otherData" #columnOne  *ngIf="showColumnOne">
+      <div class="line" *ngIf="entity?.recordId && showRecordIdWhenNative"><span [class.ellipsis]="truncateResults">Record Id: {{entity.recordId}}</span></div>
+      <div class="line" [class.truncated]="i >= truncateOtherDataAt && truncateResults"
+        *ngFor="let otherData of otherData; let i = index">
+        <span *ngIf="(i < truncateOtherDataAt || truncateOtherDataAt < 0 || !truncateResults) && showOtherData" [class.ellipsis]="truncateResults">
+          {{otherData}}
+        </span>
+      </div>
+      <span class="ellipsis-toggle" matTooltip="truncatedTooltip"
+      matTooltipPosition="left"
+      *ngIf="columnOneTotal > truncateOtherDataAt && truncateResults">...</span>
+    </div>
+    <div class="search-card__content--column nameData attrData" #columnTwo *ngIf="showColumnTwo">
+      <div class="line" [class.truncated]="i >= maxLinesToDisplay && truncateResults" *ngFor="let nameAttributeData of getNameAndAttributeData(nameData, attributeData); let i = index">
+        <span *ngIf="i < maxLinesToDisplay || !truncateResults" [class.ellipsis]="truncateResults">
+          {{nameAttributeData}}
+        </span>
+      </div>
+      <span class="ellipsis-toggle" matTooltip="truncatedTooltip"
+      matTooltipPosition="left"
+      *ngIf="columnTwoTotal > maxLinesToDisplay && truncateResults">...</span>
+    </div>
+    <div class="search-card__content--column addressData addressPhoneData" #columnThree *ngIf="showColumnThree">
+      <div class="line" [class.truncated]="i >= maxLinesToDisplay && truncateResults" *ngFor="let addressPhoneData of getAddressAndPhoneData(addressData, phoneData);
+      let i = index">
+        <span *ngIf="i < maxLinesToDisplay || !truncateResults"
+        [class.linked-attribute]="isLinkedAttribute(addressPhoneData)"
+        [class.ellipsis]="truncateResults">
+          {{addressPhoneData}}
+        </span>
+      </div>
+      <span class="ellipsis-toggle" matTooltip="truncatedTooltip"
+      matTooltipPosition="left"
+      *ngIf="columnThreeTotal > maxLinesToDisplay && truncateResults">...</span>
+    </div>
+    <div class="search-card__content--column identificationData" #columnFour *ngIf="showColumnFour">
+      <div class="line" [class.truncated]="i >= maxLinesToDisplay && truncateResults" *ngFor="let identificationData of identifierData; let i = index">
+        <span *ngIf="i < maxLinesToDisplay || !truncateResults"
+        [class.linked-attribute]="isLinkedAttribute(identificationData)"
+        [class.ellipsis]="truncateResults">
+          {{identificationData}}
+        </span>
+      </div>
+      <span class="ellipsis-toggle" matTooltip="truncatedTooltip"
+      matTooltipPosition="left"
+      *ngIf="columnFourTotal > maxLinesToDisplay && truncateResults">...</span>
+    </div>
+</div>
+<div class="select-mode-multiple-hover-mask" (click)="onRecordCardContentClicked($event);">
+  <div class="select-mode-multiple-hover-indicator">click to select</div>
+</div>
+<!--<div class="select-mode-single-hover-mask">-->
+  <button 
+      class="select-mode-single-hover-button select-mode-action-why"
+      *ngIf="whySelectionAction == 'WHY'"
+      mat-stroked-button
+      matTooltipPosition="above"
+      matTooltip="Perform Why Analysis on this record"
+      (click)="onRecordCardWhyClicked($event)">
+      <mat-icon  
+      aria-hidden="false" aria-label="Click to perform Why on record"
+      >compare_arrows</mat-icon> Why?
+  </button>
+  <button 
+  class="select-mode-single-hover-button select-mode-action-why-not"
+  *ngIf="whySelectionAction == 'WHY_NOT'"
+  mat-stroked-button
+  matTooltipPosition="above"
+  matTooltip="Perform Why Not Analysis between this entity and the one you are currently viewing"
+  (click)="onRelatedEntityCardWhyNotClicked($event)">
+  <mat-icon  
+  aria-hidden="false" aria-label="Click to perform Why Not on between this entity and the one you are currently viewing"
+  >compare_arrows</mat-icon> Why Not?
+</button>
+<!--</div>-->

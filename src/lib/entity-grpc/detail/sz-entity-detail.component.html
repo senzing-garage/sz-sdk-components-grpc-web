@@ -1,0 +1,130 @@
+
+<!-- @senzing/sdk/entity/detail/sz-entity-detail -->
+<!-- start graph entity context menu template -->
+<ng-template #graphNodeContextMenu let-entityEvt>
+  <ul class="graph-context-menu">
+      <li>#{{entityEvt?.entityId}}</li>
+      <li [class.disabled]="!isGraphEntityRemovable(entityEvt)" (click)="hideGraphEntity(entityEvt)">Hide Entity</li>
+  </ul>
+</ng-template>
+<!-- end graph entity context menu template -->
+<!-- start graph link context menu template -->
+<ng-template #graphLinkContextMenu let-linkEvt>
+<ul class="graph-context-menu">
+    <li (click)="openWhyReportForGraphRelationship(linkEvt)">Show "Why Not" Report</li>
+</ul>
+</ng-template>
+<!-- end graph link context menu template -->
+<div #nativeElementRef>
+  <sz-entity-detail-header
+  [entity]="entity"
+  [forceLayout]="_forceLayout"
+  [showWhyFunction]="showEntityWhyFunction"
+  [showHowFunction]="showEntityHowFunction"
+  [requiresReEvaluation]="entityRequiresReEvaluation"
+  [showReEvaluateButton]="showReEvaluateButton"
+  [showReEvaluateMessage]="showReEvaluateMessage"
+  [reEvaluationMessage]="reEvaluateMessage"
+  [howButtonDisabled]="howFunctionDisabled"
+  [reEvaluateButtonDisabled]="reEvaluateButtonDisabled"
+  (onWhyButtonClick)="this.onHeaderWhyButtonClick($event)"
+  (onHowButtonClick)="this.onHeaderHowButtonClick($event)"
+  (onReEvaluateButtonClick)="this.onHeaderReEvaluateButtonClick($event)"
+  [layoutClasses]="_layoutEnforcers">
+  </sz-entity-detail-header>
+  
+  <!--<sz-entity-detail-graph data-html2canvas-ignore
+    *ngIf="graphData && this.showGraphSection"
+    [data]="graphData"
+    [title]="this.graphTitle"
+    [captureMouseWheel]="graphAllowScrollingZoom"
+    [showPopOutIcon]="graphShowPopOutIcon"
+    [popOutIconPosition]="graphPopOutIconPosition"
+    [showZoomControl]="graphShowZoomControl"
+    [zoomControlPosition]="graphZoomControlPosition"
+    (popoutClick)="onGraphPopoutClick($event)"
+    [showMatchKeyControl]="graphShowMatchKeyControl"
+    [showFiltersControl]="graphShowFiltersControl"
+    [matchKeyTokenSelectionScope]="graphMatchKeyTokenSelectionScope"
+    [showLinkLabels]="this._showGraphLinkLabels"
+    (contextMenuClick)="onGraphRightClick($event)"
+    (relationshipContextMenuClick)="onGraphRelationshipRightClick($event)"
+    (scrollWheelEvent)="graphScrollWheelEvent.emit($event)"
+    (entityClick)="onGraphEntityClick($event)"
+    (relationshipClick)="onGraphRelationshipClick($event)"
+  ></sz-entity-detail-graph>-->
+
+  <sz-entity-detail-section-how-report class="details-section how-report"
+    *ngIf="entityId && this.showHowSection"
+    collapsedStatePrefsKey="howSectionCollapsed"
+    (onCollapsedChange)="this.onSectionCollapsedChange('howSectionCollapsed', $event)"
+    [entityId]="entityId"
+    [forceLayout]="_forceLayout"
+    [layoutClasses]="_layoutEnforcers">
+  </sz-entity-detail-section-how-report>
+
+  <sz-entity-details-section class="details-section datasources"
+    *ngIf="entity?.resolvedEntity?.records?.length && this.showMatchesSection"
+    collapsedStatePrefsKey="recordsSectionCollapsed"
+    (onCollapsedChange)="this.onSectionCollapsedChange('recordsSectionCollapsed', $event)"
+    [sectionData]="entity?.resolvedEntity?.records"
+    [sectionTitle]="'Matched Records'"
+    sectionId="detail-section-1"
+    [sectionCount]="entity?.resolvedEntity?.records?.length"
+    [showWhyUtilities]="showRecordWhyUtilities"
+    [whySelectionMode]="whySelectionMode"
+    (onCompareRecordsForWhy)="onCompareRecordsForWhy($event)"
+    [forceLayout]="_forceLayout"
+    [layoutClasses]="_layoutEnforcers"
+    [showNameDataInEntities]="showNameDataInMatchesSection"
+    (dataSourceRecordsSelected)="onDataSourceRecordsSelected($event)"
+    (entityRecordClick)="onEntityRecordClick($event)">
+  </sz-entity-details-section>
+
+  <sz-entity-details-section class="details-section possible"
+    *ngIf="this._possibleMatches?.length && this.showPossibleMatchesSection"
+    collapsedStatePrefsKey="possibleMatchesSectionCollapsed"
+    (onCollapsedChange)="this.onSectionCollapsedChange('possibleMatchesSectionCollapsed', $event)"
+    [sectionData]="this._possibleMatches"
+    [sectionTitle]="'Possible Matches'"
+    sectionId="detail-section-2"
+    [sectionCount]="this._possibleMatches?.length"
+    [showWhyUtilities]="showRelatedWhyNotFunction"
+    [whySelectionMode]="whySelectionMode"
+    [forceLayout]="_forceLayout"
+    [layoutClasses]="_layoutEnforcers"
+    [showNameDataInEntities]="showNameDataInPossibleMatchesSection"
+    (onCollapsedChange)="this.onSectionCollapsedChange('possibleMatches', $event)"
+    (entityRecordClick)="onEntityRecordClick($event)"
+    (onCompareEntitiesForWhyNot)="onCompareEntitiesForWhyNot($event)">
+  </sz-entity-details-section>
+  <sz-entity-details-section class="details-section discovered"
+    *ngIf="this._discoveredRelationships?.length && this.showPossibleRelationshipsSection"
+    collapsedStatePrefsKey="possibleRelationshipsSectionCollapsed"
+    (onCollapsedChange)="this.onSectionCollapsedChange('possibleRelationshipsSectionCollapsed', $event)"
+    [sectionData]="this._discoveredRelationships"
+    [sectionTitle]="'Possible Relationships'"
+    sectionId="detail-section-3"
+    [sectionCount]="this._discoveredRelationships?.length"
+    [forceLayout]="_forceLayout"
+    [layoutClasses]="_layoutEnforcers"
+    [showNameDataInEntities]="showNameDataInPossibleRelationshipsSection"
+    [showWhyUtilities]="showRelatedWhyNotFunction"
+    [whySelectionMode]="whySelectionMode"
+    (entityRecordClick)="onEntityRecordClick($event)"
+    (onCompareEntitiesForWhyNot)="onCompareEntitiesForWhyNot($event)">
+  </sz-entity-details-section>
+  <sz-entity-details-section class="details-section disclosed"
+    *ngIf="this._disclosedRelationships?.length && this.showDisclosedSection"
+    collapsedStatePrefsKey="disclosedRelationshipsSectionCollapsed"
+    (onCollapsedChange)="this.onSectionCollapsedChange('disclosedRelationshipsSectionCollapsed', $event)"
+    [sectionData]="this._disclosedRelationships"
+    [sectionTitle]="'Disclosed Relationships'"
+    sectionId="detail-section-4"
+    [sectionCount]="this._disclosedRelationships?.length"
+    [forceLayout]="_forceLayout"
+    [layoutClasses]="_layoutEnforcers"
+    [showNameDataInEntities]="showNameDataInDisclosedSection"
+    (entityRecordClick)="onEntityRecordClick($event)">
+  </sz-entity-details-section>
+</div>

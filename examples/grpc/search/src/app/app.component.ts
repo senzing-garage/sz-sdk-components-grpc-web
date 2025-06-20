@@ -4,11 +4,14 @@ import {
   SzAttributeSearchResult,
   SzEntityDetailComponent, SzEntityIdentifier, SzEntitySearchParams, 
   SzSdkSearchResolvedEntity, SzSearchGrpcComponent, 
-  SzSearchResultsGrpcComponent
+  SzSearchResultsGrpcComponent,
+  SzSdkSearchResult,
+  SzGrpcConfig,
+  SzGrpcConfigManagerService
 } from '@senzing/sdk-components-grpc-web';
-import { SzSdkSearchResult } from 'src/lib/models/grpc/engine';
-import { SzGrpcConfig } from 'src/lib/services/grpc/config';
-import { SzGrpcConfigManagerService } from 'src/lib/services/grpc/configManager.service';
+//import { SzSdkSearchResult } from 'src/lib/models/grpc/engine';
+//import { SzGrpcConfig } from 'src/lib/services/grpc/config.service';
+//import { SzGrpcConfigManagerService } from 'src/lib/services/grpc/configManager.service';
 
 @Component({
   selector: 'app-root',

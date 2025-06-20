@@ -23,7 +23,7 @@ import { SzConfigurationService } from '../../services/sz-configuration.service'
 import { SzPrefsService } from '../../services/sz-prefs.service';
 import { SzFoliosService } from '../../services/sz-folios.service';
 import { SzSearchHistoryFolio, SzSearchHistoryFolioItem } from '../../models/folio';
-import { SzSearchIdentifiersPickerDialogComponent, SzSearchIdentifiersPickerSheetComponent } from './sz-search-identifiers-picker.component';
+import { SzSearchIdentifiersPickerDialogComponent, SzSearchIdentifiersPickerSheetComponent } from '../../search/sz-search/sz-search-identifiers-picker.component';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -94,11 +94,11 @@ interface SzBoolFieldMapByName {
  */
 @Component({
     selector: 'sz-search-grpc',
-    templateUrl: './sz-search-grpc.component.html',
+    templateUrl: './sz-search.component.html',
     imports: [
         CommonModule, FormsModule, ReactiveFormsModule, 
         MatBadgeModule, MatButtonModule, MatIconModule, MatInputModule],
-    styleUrls: ['./sz-search-grpc.component.scss']
+    styleUrls: ['./sz-search.component.scss']
 
 })
 export class SzSearchGrpcComponent implements OnInit, OnDestroy {

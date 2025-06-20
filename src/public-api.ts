@@ -120,12 +120,19 @@ export { SzHowNavComponent } from './lib/how/sz-how-nav.component';
 export { SzHowVirtualEntityCardComponent } from './lib/how/cards/sz-how-virtual-entity-card.component';
 export { SzHowVirtualEntityDialog } from './lib/how/sz-how-virtual-entity-dialog.component';
 
-/** gRPC Web */
+/** --------------------------   gRPC Web */
 export * from './lib/configuration/sz-product-info/sz-product-info.component';
 export * from './lib/import/sz-import-files.component';
-export { SzSearchGrpcComponent } from './lib/search/sz-search/sz-search-grpc.component';
-export { SzSearchResultsGrpcComponent } from './lib/search/sz-search-results/sz-search-results-grpc.component';
-export { SzSdkSearchResponse, SzSdkSearchResolvedEntity } from './lib/models/grpc/engine';
+export { SzSearchGrpcComponent } from './lib/search-grpc/sz-search/sz-search.component';
+export { SzSearchResultsGrpcComponent } from './lib/search-grpc/sz-search-results/sz-search-results.component';
+// models
+export * from './lib/models/grpc/config';
+export * from './lib/models/grpc/engine';
+export * from './lib/models/grpc/product';
+// services
+export { SzGrpcConfig } from './lib/services/grpc/config.service';
+export { SzGrpcConfigManagerService } from './lib/services/grpc/configManager.service';
+
 
 /** export some members of rest client to ease type use */
 export {

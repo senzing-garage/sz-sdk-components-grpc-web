@@ -2,7 +2,7 @@ import { Inject, Injectable, signal } from '@angular/core';
 import { SzEngineFlags, SzError, SzGrpcWebConfig, SzGrpcWebEnvironment, SzGrpcWebEnvironmentOptions } from '@senzing/sz-sdk-typescript-grpc-web';
 import { Observable, Subject, take, takeUntil } from 'rxjs';
 import { SzProductLicenseResponse, SzProductVersionResponse } from '../../models/grpc/product';
-import { SzGrpcConfig } from './config';
+import { SzGrpcConfig } from './config.service';
 import { isNotNull } from '../../common/utils';
 
 @Injectable({

@@ -2,7 +2,7 @@ import { Inject, Injectable, signal } from '@angular/core';
 import { SzGrpcWebConfig, SzGrpcWebEnvironment, SzGrpcWebEnvironmentOptions } from '@senzing/sz-sdk-typescript-grpc-web';
 import { Observable, Subject, take, takeUntil } from 'rxjs';
 import { SzProductLicenseResponse, SzProductVersionResponse } from '../../../lib/models/grpc/product';
-import { SzGrpcConfig } from './config';
+import { SzGrpcConfig } from './config.service';
 import { SzSdkConfigAttr, SzSdkConfigFeatureType, SzSdkConfigJson } from '../../models/grpc/config';
 import { SzAttrClass } from 'src/lib/models/SzFeatureTypes';
 
@@ -17,7 +17,7 @@ export class SzGrpcConfigManagerService {
     public attrs: SzSdkConfigAttr[];
     public featureTypes: SzSdkConfigFeatureType[];
     public fTypeToAttrClassMap: Map<string, SzAttrClass | SzAttrClass[]>;
-    
+
     public get defaultConfigId(): number {
         return this._defaultConfigId;
     }

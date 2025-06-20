@@ -6,16 +6,16 @@ import { SzAttributeSearchResult, SzEntityIdentifier } from '@senzing/rest-api-c
 import { howClickEvent } from '../../models/data-how';
 import { SzSdkSearchResolvedEntity, SzSdkSearchResult } from '../../models/grpc/engine';
 import { CommonModule } from '@angular/common';
-import { SzSearchResultCardHeaderGrpcComponent } from './sz-search-result-card-header/sz-search-result-card-header-grpc.component';
-import { SzSearchResultCardContentGrpcComponent } from './sz-search-result-card-content/sz-search-result-card-content-grpc.component';
+import { SzSearchResultCardHeaderGrpcComponent } from '../../search/sz-search-result-card/sz-search-result-card-header/sz-search-result-card-header-grpc.component';
+import { SzSearchResultCardContentGrpcComponent } from '../../search/sz-search-result-card/sz-search-result-card-content/sz-search-result-card-content-grpc.component';
 /**
  * @internal
  * @export
  */
 @Component({
     selector: 'sz-search-result-card-grpc',
-    templateUrl: './sz-search-result-card-grpc.component.html',
-    styleUrls: ['./sz-search-result-card-grpc.component.scss'],
+    templateUrl: './sz-search-result-card.component.html',
+    styleUrls: ['./sz-search-result-card.component.scss'],
     imports: [CommonModule, SzSearchResultCardHeaderGrpcComponent, SzSearchResultCardContentGrpcComponent]
 })
 export class SzSearchResultCardGrpcComponent implements OnInit, OnDestroy {

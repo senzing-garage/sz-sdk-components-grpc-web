@@ -1,0 +1,88 @@
+@use "../../../scss/theme";
+
+.section-header__wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: var(--sz-entity-detail-section-header-margin);
+  padding: var(--sz-entity-detail-section-header-padding);
+  color: var(--sz-entity-detail-section-header-color);
+  font-size: var(--sz-entity-detail-section-header-font-size);
+  font-weight: 600;
+  font-family: var(--sz-entity-detail-section-header-font-family);
+  border-radius: var(--sz-entity-detail-section-header-border-radius);
+
+  &.layout-rail {
+    border-radius: var(--sz-entity-detail-section-lo-rail-border-radius);
+    font-size: var(--sz-entity-detail-section-header-lo-rail-font-size);
+    font-weight: var(--sz-entity-detail-section-header-lo-rail-font-weight);
+
+    .section-header__left-content {
+      span {
+        font-size: inherit;
+        font-weight: inherit;
+      }
+    }
+    .section-header__right-content {
+      .section-header__countLabel {
+        font-size: inherit;
+        font-weight: inherit;
+      }
+      .section-header__count {
+        font-size: inherit;
+        font-weight: inherit;
+      }
+    }
+  }
+
+  &.layout-narrow, &.layout-rail {
+    .hide-on-narrow {
+        display: none;
+    }
+  }
+
+  svg {
+    display: inline-block;
+    width: var(--sz-entity-detail-section-header-font-size);
+    height: calc( var(--sz-entity-detail-section-header-font-size) *1.15 );
+    stroke-width: 0;
+    stroke: var(--sz-entity-detail-section-header-color);
+    fill: var(--sz-entity-detail-section-header-color);
+    margin-right: .3em;
+  }
+
+  .icon-flip {
+    transform: rotate(180deg);
+  }
+
+  &.matched-records {
+    background: var(--sz-color-matches);
+  }
+  &.possible-matches {
+    background: var(--sz-color-possible-matches);
+  }
+  &.possible-relationships {
+    background: var(--sz-color-possibly-related);
+
+  }
+  &.disclosed-relationships {
+    background: var(--sz-color-disclosed);
+  }
+
+
+
+  .section-header__right-content {
+    display: flex;
+    align-items: center;
+    .section-header__countLabel {
+      font-size: var(--sz-entity-detail-section-header-count-label-font-size);
+      /*font-weight: 300;*/
+      margin: 0 0 0 6px;
+    }
+    .section-header__count {
+      font-size: var(--sz-entity-detail-section-header-count-font-size);
+      margin: 0 4px 0 8px;
+    }
+  }
+
+}

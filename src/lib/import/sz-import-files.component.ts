@@ -4,7 +4,7 @@ import { SzGrpcProductService } from '../services/grpc/product.service';
 import { SzGrpcWebConfig, SzGrpcWebEnvironment } from '@senzing/sz-sdk-typescript-grpc-web';
 import { detectLineEndings, isNotNull } from '../common/utils';
 import { SzGrpcConfigManagerService } from '../services/grpc/configManager.service';
-import { SzGrpcConfig } from '../services/grpc/config';
+import { SzGrpcConfig } from '../services/grpc/config.service';
 import { SzSdkDataSource } from '../models/grpc/config';
 import { SzGrpcEngineService } from '../services/grpc/engine.service';
 import { MatIconModule } from '@angular/material/icon';

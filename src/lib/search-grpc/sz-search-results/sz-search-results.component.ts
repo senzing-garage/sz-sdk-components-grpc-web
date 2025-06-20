@@ -16,12 +16,12 @@ import { SzAlertMessageDialog } from '../../shared/alert-dialog/sz-alert-dialog.
 import { parseBool } from '../../common/utils';
 import { howClickEvent } from '../../models/data-how';
 import { SzSdkSearchMatchLevel, SzSdkSearchResolvedEntity, SzSdkSearchResponse, SzSdkSearchResult } from '../../models/grpc/engine';
-import { SzSearchResultCardGrpcComponent } from '../sz-search-result-card/sz-search-result-card-grpc.component';
+import { SzSearchResultCardGrpcComponent } from '../sz-search-result-card/sz-search-result-card.component';
 
 @Component({
     selector: 'sz-search-results-grpc',
-    templateUrl: './sz-search-results-grpc.component.html',
-    styleUrls: ['./sz-search-results-grpc.component.scss'],
+    templateUrl: './sz-search-results.component.html',
+    styleUrls: ['./sz-search-results.component.scss'],
     imports: [CommonModule, SzSearchResultCardGrpcComponent]
 })
 export class SzSearchResultsGrpcComponent implements OnInit, OnDestroy {
