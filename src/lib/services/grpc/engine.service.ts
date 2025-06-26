@@ -61,11 +61,11 @@ export class SzGrpcEngineService {
         }
         return retVal;
     }
-    public getEntityByEntityId(entityId: number): Observable<any | SzError> {
+    public getEntityByEntityId(entityId: number, flags: BigInt | number = SzEngineFlags.SZ_ENTITY_DEFAULT_FLAGS): Observable<any | SzError> {
         let retVal = new Subject<string | SzError>();
         console.log(`getting entity by id from grpc...`);
         if(this.szEnvironment && this.szEnvironment.engine) {
-          this.szEnvironment?.engine?.getEntityByEntityId(entityId).then((resp) => {
+          this.szEnvironment?.engine?.getEntityByEntityId(entityId, flags).then((resp) => {
             retVal.next(JSON.parse(resp as string));
           })
         }
@@ -110,6 +110,16 @@ export class SzGrpcEngineService {
       }
       return retVal.asObservable();
     }
+    public findNetworkByEntityId(entityId: number, maxDegrees?: number, buildOutDegrees?: number, buildOutMaxEntities?: number, flags: BigInt | number = SzEngineFlags.SZ_ENTITY_DEFAULT_FLAGS): Observable<any | SzError> {
+      let retVal = new Subject<string | SzError>();
+      console.log(`find network by id from grpc...`);
+      if(this.szEnvironment && this.szEnvironment.engine) {
+        this.szEnvironment?.engine?.findNetworkByEntityId([entityId], maxDegrees, buildOutDegrees, buildOutMaxEntities, flags).then((resp) => {
+          retVal.next(JSON.parse(resp as string));
+        })
+      }
+      return retVal.asObservable();
+  }
     public reinitialize(configId: number) {
         let retVal = new Subject<unknown>();
         console.log(`reinitialize engine with #${configId}...`);

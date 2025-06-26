@@ -24,6 +24,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { SzEntityDetailSectionSummaryComponentGrpc } from './summary.component';
 import { SzEntityDetailHeaderContentComponentGrpc } from './content.component';
+import { SzRelatedEntityMatchLevel, SzResumeEntity, SzResumeRelatedEntity } from '../../../models/SzResumeEntity';
+import { SzSdkEntityFeature, SzSdkEntityRecord } from '../../../models/grpc/engine';
 
 /**
  * @internal
@@ -40,16 +42,16 @@ import { SzEntityDetailHeaderContentComponentGrpc } from './content.component';
 export class SzEntityDetailHeaderComponentGrpc implements OnInit, OnDestroy {
   @Input() public searchTerm: string;
   /** the entity to display */
-  private _entity: SzEntityData;
+  private _entity: SzResumeEntity;
   /** set the entity to display */
-  @Input() public set entity(value: SzEntityData) {
+  @Input() public set entity(value: SzResumeEntity) {
     this._entity = value;
-    if(value && value.resolvedEntity) {
-      this.setIconClassesFromEntity( value.resolvedEntity );
+    if(value) {
+      this.setIconClassesFromEntity( value );
     }
   }
   /** get the entity being displayed */
-  public get entity(): SzEntityData {
+  public get entity(): SzResumeEntity {
     return this._entity;
   }
   /** subscription to notify subscribers to unbind */
@@ -76,23 +78,23 @@ export class SzEntityDetailHeaderComponentGrpc implements OnInit, OnDestroy {
   @Input() public forceLayout: boolean = false;
 
   private _bestName: string = null;
-  private _bestNameEntity: SzEntityData = null;
+  private _bestNameEntity: SzResumeEntity = null;
 
   /**
    * A list of the search results that are matches.
    * @readonly
    */
-  public get matches(): SzEntityRecord[] {
-    return this.entity && this.entity.resolvedEntity.records ? this.entity.resolvedEntity.records : undefined;
+  public get matches(): SzSdkEntityRecord[] {
+    return this.entity && this.entity.RECORDS ? this.entity.RECORDS : undefined;
   }
   /**
    * A list of the search results that are possible matches.
    *
    * @readonly
    */
-  public get possibleMatches(): SzRelatedEntity[] {
-    return this.entity && this.entity.relatedEntities && this.entity.relatedEntities.filter ? this.entity.relatedEntities.filter( (sr) => {
-      return sr.relationType == SzRelationshipType.POSSIBLEMATCH;
+  public get possibleMatches(): SzResumeRelatedEntity[] {
+    return this.entity && this.entity.RELATED_ENTITIES && this.entity.RELATED_ENTITIES.filter ? this.entity.RELATED_ENTITIES.filter( (sr) => {
+      return sr.MATCH_LEVEL_CODE == SzRelatedEntityMatchLevel.POSSIBLE_MATCH;
     }) : undefined;
   }
   /**
@@ -100,9 +102,9 @@ export class SzEntityDetailHeaderComponentGrpc implements OnInit, OnDestroy {
    *
    * @readonly
    */
-  public get discoveredRelationships(): SzRelatedEntity[] {
-    return this.entity && this.entity.relatedEntities && this.entity.relatedEntities.filter ? this.entity.relatedEntities.filter( (sr) => {
-      return sr.relationType == SzRelationshipType.POSSIBLERELATION;
+  public get discoveredRelationships(): SzResumeRelatedEntity[] {
+    return this.entity && this.entity.RELATED_ENTITIES && this.entity.RELATED_ENTITIES.filter ? this.entity.RELATED_ENTITIES.filter( (sr) => {
+      return sr.MATCH_LEVEL_CODE == SzRelatedEntityMatchLevel.POSSIBLY_RELATED;
     }) : undefined;
   }
   /**
@@ -110,10 +112,10 @@ export class SzEntityDetailHeaderComponentGrpc implements OnInit, OnDestroy {
    *
    * @readonly
    */
-  public get disclosedRelationships(): SzRelatedEntity[] {
+  public get disclosedRelationships(): SzResumeRelatedEntity[] {
 
-    return this.entity && this.entity.relatedEntities && this.entity.relatedEntities.filter ? this.entity.relatedEntities.filter( (sr) => {
-      return sr.relationType == SzRelationshipType.DISCLOSEDRELATION;
+    return this.entity && this.entity.RELATED_ENTITIES && this.entity.RELATED_ENTITIES.filter ? this.entity.RELATED_ENTITIES.filter( (sr) => {
+      return sr.MATCH_LEVEL_CODE == SzRelatedEntityMatchLevel.DISCLOSED;
     }) : undefined;
   }
 
@@ -129,14 +131,14 @@ export class SzEntityDetailHeaderComponentGrpc implements OnInit, OnDestroy {
     if (!this.entity) {
       return bestEntityName(null);
     }
-    this._bestName = bestEntityName(this.entity.resolvedEntity);
+    this._bestName = bestEntityName(this.entity);
     this._bestNameEntity = this.entity;
     return this._bestName;
   }
   /** get the entity id if available, otherwise undefined */
   public get entityId(): number | undefined {
-    if(this.entity && this.entity.resolvedEntity && this.entity.resolvedEntity.entityId) {
-      return this.entity.resolvedEntity.entityId;
+    if(this.entity && this.entity.ENTITY_ID) {
+      return this.entity.ENTITY_ID;
     }
     return undefined;
   }
@@ -145,18 +147,18 @@ export class SzEntityDetailHeaderComponentGrpc implements OnInit, OnDestroy {
    * returns "M", "F", or undefined if gender cannot be determined.
    * @param features
    */
-  private getGenderFromFeatures(features: {[key: string] : SzEntityFeature[]} | undefined | null): string | undefined {
+  private getGenderFromFeatures(features: {[key: string] : SzSdkEntityFeature[]} | undefined | null): string | undefined {
     if(features){
       //console.warn('getGenderFromFeatures: ', features.GENDER);
       if(features['GENDER']){
         // has gender
         let _gender = features['GENDER'];
         if(_gender.some) {
-          let _female = _gender.some( (val: {primaryValue: string, usageType: any, duplicateValues: any} ) => {
-            return val.primaryValue === "F";
+          let _female = _gender.some( (val: SzSdkEntityFeature ) => {
+            return val.FEAT_DESC === "F";
           });
-          let _male = _gender.some( (val: {primaryValue: string, usageType: any, duplicateValues: any} ) => {
-            return val.primaryValue === "M";
+          let _male = _gender.some( (val: SzSdkEntityFeature ) => {
+            return val.FEAT_DESC === "M";
           });
           //console.warn('getGenderFromFeatures: ', _female, features.GENDER);
           return (_female ? 'F' : ( _male ? 'M' : undefined));
@@ -213,11 +215,11 @@ export class SzEntityDetailHeaderComponentGrpc implements OnInit, OnDestroy {
     return this._iconClasses;
   }
   /** sets the appropriate icon to show for the entity in the header */
-  private setIconClassesFromEntity(entity: SzResolvedEntity) {
+  private setIconClassesFromEntity(entity: SzResumeEntity) {
     const iconClasses = ['icon-user', 'icon-inline'];
     if(entity) {
       const iconType    = SzRelationshipNetworkComponent.getIconType(entity);
-      const gender      = entity && entity.features ? this.getGenderFromFeatures(entity.features) : undefined;
+      const gender      = entity && entity.FEATURES ? this.getGenderFromFeatures(entity.FEATURES) : undefined;
 
       if(iconType && iconType !== undefined){
         if (iconType === 'business') {
@@ -241,8 +243,8 @@ export class SzEntityDetailHeaderComponentGrpc implements OnInit, OnDestroy {
    */
   public get iconGender(): string {
     let gender = 'none';
-    if(this.entity && this.entity.resolvedEntity){
-      gender = this.getGenderFromFeatures(this.entity.resolvedEntity.features)
+    if(this.entity && this.entity){
+      gender = this.getGenderFromFeatures(this.entity.FEATURES)
     }
     return gender;
   }
@@ -335,8 +337,8 @@ export class SzEntityDetailHeaderComponentGrpc implements OnInit, OnDestroy {
     if (this.entity) {
       return [
         {
-          total: ((this.entity && this.entity.resolvedEntity && this.entity.resolvedEntity.records && this.entity.resolvedEntity.records.length) ? this.entity.resolvedEntity.records.length : 0),
-          title: 'Matched Record'+ ((this.entity && this.entity.resolvedEntity && this.entity.resolvedEntity.records && this.entity.resolvedEntity.records.length === 1) ? '' : 's')
+          total: ((this.entity && this.entity.RECORDS && this.entity.RECORDS.length) ? this.entity.RECORDS.length : 0),
+          title: 'Matched Record'+ ((this.entity && this.entity.RECORDS && this.entity.RECORDS.length === 1) ? '' : 's')
         },
         {
           total: ((this.possibleMatches && this.possibleMatches.length) ? this.possibleMatches.length : 0),

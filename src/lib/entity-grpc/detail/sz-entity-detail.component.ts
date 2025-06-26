@@ -1,6 +1,6 @@
 import { Component, Input, Output, EventEmitter, ElementRef, ViewChild, AfterViewInit, OnInit, OnDestroy, ChangeDetectorRef, TemplateRef, ViewContainerRef } from '@angular/core';
 import { SzSearchService } from '../../services/sz-search.service';
-import { tap, takeUntil, filter, take } from 'rxjs/operators';
+import { tap, takeUntil, filter, take, map } from 'rxjs/operators';
 import { fromEvent, Subject, Subscription } from 'rxjs';
 import { Overlay, OverlayRef } from '@angular/cdk/overlay';
 import { TemplatePortal } from '@angular/cdk/portal';
@@ -29,6 +29,10 @@ import { SzHowUIService } from '../../services/sz-how-ui.service';
 import { SzAlertMessageDialog } from '../../shared/alert-dialog/sz-alert-dialog.component';
 import { CommonModule } from '@angular/common';
 import { SzEntityDetailHeaderComponentGrpc } from './sz-entity-detail-header/header.component';
+import { SzGrpcEngineService } from '../../services/grpc/engine.service';
+import { SzEngineFlags } from '@senzing/sz-sdk-typescript-grpc-web';
+import { SzSdkEntityRecord, SzSdkFindNetworkResponse } from '../../models/grpc/engine';
+import { SzRelatedEntityMatchLevel, SzResumeEntity, SzResumeRelatedEntity } from '../../models/SzResumeEntity';
 
 /**
  * The Entity Detail Component.
@@ -68,9 +72,8 @@ export class SzEntityDetailComponentGrpc implements OnInit, OnDestroy, AfterView
   overlayRef: OverlayRef | null;
 
   private _entityId: number;
-  private entityDetailJSON: string = "";
   private _requestDataOnIdChange = true;
-  public entity: SzEntityData;
+  public entity: SzResumeEntity;
 
   // layout enforcers
   /** @internal */
@@ -117,10 +120,10 @@ export class SzEntityDetailComponentGrpc implements OnInit, OnDestroy, AfterView
   }
 
   // data views
-  _discoveredRelationships: SzRelatedEntity[];
-  _disclosedRelationships: SzRelatedEntity[];
-  _possibleMatches: SzRelatedEntity[];
-  _matches: SzEntityRecord[];
+  _discoveredRelationships: SzResumeRelatedEntity[];
+  _disclosedRelationships: SzResumeRelatedEntity[];
+  _possibleMatches: SzResumeRelatedEntity[];
+  _matches: SzSdkEntityRecord[];
 
   // show | hide specific sections
   private _showGraphSection: boolean = true;
@@ -407,7 +410,7 @@ export class SzEntityDetailComponentGrpc implements OnInit, OnDestroy, AfterView
    * emitted when a search is done being performed.
    * @returns the result of the entity request OR an Error object if something went wrong.
    */
-  @Output() requestEnd: EventEmitter<SzEntityData|Error> = new EventEmitter<SzEntityData|Error>();
+  @Output() requestEnd: EventEmitter<SzResumeEntity|Error> = new EventEmitter<SzResumeEntity|Error>();
   /**
    * emitted when a search encounters an exception
    * @returns error object.
@@ -417,7 +420,7 @@ export class SzEntityDetailComponentGrpc implements OnInit, OnDestroy, AfterView
    * emmitted when the entity data to display has been changed.
    */
   @Output('dataChanged')
-  dataChanged: Subject<SzEntityData> = new Subject<SzEntityData>();
+  dataChanged: Subject<SzResumeEntity> = new Subject<SzResumeEntity>();
   /**
    * emmitted when the entity id has been changed.
    */
@@ -485,7 +488,7 @@ export class SzEntityDetailComponentGrpc implements OnInit, OnDestroy, AfterView
    * set the entity data directly, instead of via entityId lookup.
    */
   @Input('data')
-  public set entityData(value: SzEntityData) {
+  public set entityData(value: SzResumeEntity) {
     this.entity = value;
     this.onEntityDataChanged();
   }
@@ -742,8 +745,8 @@ export class SzEntityDetailComponentGrpc implements OnInit, OnDestroy, AfterView
       return undefined;
     }
     return {
-      resolvedEntity: this.entity.resolvedEntity,
-      relatedEntities: this.entity.relatedEntities
+      resolvedEntity: this.entity,
+      relatedEntities: this.entity.RELATED_ENTITIES
     };
   }
 
@@ -751,24 +754,24 @@ export class SzEntityDetailComponentGrpc implements OnInit, OnDestroy, AfterView
    * Get the entity Id of the current entity being displayed.
    */
   public get entityId(): number {
-    return this.entity && this.entity.resolvedEntity && this.entity.resolvedEntity.entityId ? this.entity.resolvedEntity.entityId : this._entityId;
+    return this.entity && this.entity.ENTITY_ID && this.entity.ENTITY_ID ? this.entity.ENTITY_ID : this._entityId;
   }
 
   /**
    * A list of the search results that are matches.
    * @readonly
    */
-  public get matches(): SzEntityRecord[] {
-    return this.entity && this.entity.resolvedEntity.records ? this.entity.resolvedEntity.records : undefined;
+  public get matches(): SzSdkEntityRecord[] {
+    return this.entity && this.entity.RECORDS ? this.entity.RECORDS : undefined;
   }
   /**
    * A list of the search results that are possible matches.
    *
    * @readonly
    */
-  public get possibleMatches(): SzRelatedEntity[] {
-    return this.entity && this.entity.relatedEntities && this.entity.relatedEntities.filter ? this.entity.relatedEntities.filter( (sr) => {
-      return sr.relationType == SzRelationshipType.POSSIBLEMATCH;
+  public get possibleMatches(): SzResumeRelatedEntity[] {
+    return this.entity && this.entity.RELATED_ENTITIES && this.entity.RELATED_ENTITIES.filter ? this.entity.RELATED_ENTITIES.filter( (sr) => {
+      return sr.MATCH_LEVEL_CODE == SzRelatedEntityMatchLevel.POSSIBLE_MATCH;
     }) : undefined;
   }
   /**
@@ -776,9 +779,9 @@ export class SzEntityDetailComponentGrpc implements OnInit, OnDestroy, AfterView
    *
    * @readonly
    */
-  public get discoveredRelationships(): SzRelatedEntity[] {
-    return this.entity && this.entity.relatedEntities && this.entity.relatedEntities.filter ? this.entity.relatedEntities.filter( (sr) => {
-      return sr.relationType == SzRelationshipType.POSSIBLERELATION;
+  public get discoveredRelationships(): SzResumeRelatedEntity[] {
+    return this.entity && this.entity.RELATED_ENTITIES && this.entity.RELATED_ENTITIES.filter ? this.entity.RELATED_ENTITIES.filter( (sr) => {
+      return sr.MATCH_LEVEL_CODE == SzRelatedEntityMatchLevel.POSSIBLY_RELATED;
     }) : undefined;
   }
   /**
@@ -786,10 +789,10 @@ export class SzEntityDetailComponentGrpc implements OnInit, OnDestroy, AfterView
    *
    * @readonly
    */
-  public get disclosedRelationships(): SzRelatedEntity[] {
+  public get disclosedRelationships(): SzResumeRelatedEntity[] {
 
-    return this.entity && this.entity.relatedEntities && this.entity.relatedEntities.filter ? this.entity.relatedEntities.filter( (sr) => {
-      return sr.relationType == SzRelationshipType.DISCLOSEDRELATION;
+    return this.entity && this.entity.RELATED_ENTITIES && this.entity.RELATED_ENTITIES.filter ? this.entity.RELATED_ENTITIES.filter( (sr) => {
+      return sr.MATCH_LEVEL_CODE == SzRelatedEntityMatchLevel.DISCLOSED;
     }) : undefined;
   }
 
@@ -801,6 +804,7 @@ export class SzEntityDetailComponentGrpc implements OnInit, OnDestroy, AfterView
     public overlay: Overlay,
     public prefs: SzPrefsService,
     private searchService: SzSearchService,
+    private engineService: SzGrpcEngineService,
     public viewContainerRef: ViewContainerRef,
   ) {}
 
@@ -862,15 +866,15 @@ export class SzEntityDetailComponentGrpc implements OnInit, OnDestroy, AfterView
   private onEntityDataChanged() {
     // doing the set on these manually because pulling directly from setter(s)
     // causes render change cycle to break mem and hammer redraw
-    if(this.entity && this.entity.resolvedEntity && this.entity.resolvedEntity.records) this._matches = this.entity.resolvedEntity.records;
-    if(this.entity && this.entity.relatedEntities && this.entity.relatedEntities.filter) this._possibleMatches = this.entity.relatedEntities.filter( (sr) => {
-      return sr.relationType == SzRelationshipType.POSSIBLEMATCH;
+    if(this.entity && this.entity.RECORDS) this._matches = this.entity.RECORDS;
+    if(this.entity && this.entity.RELATED_ENTITIES && this.entity.RELATED_ENTITIES.filter) this._possibleMatches = this.entity.RELATED_ENTITIES.filter( (sr) => {
+      return sr.MATCH_LEVEL_CODE == SzRelatedEntityMatchLevel.POSSIBLE_MATCH;
     });
-    if(this.entity && this.entity.relatedEntities && this.entity.relatedEntities.filter) this._discoveredRelationships = this.entity.relatedEntities.filter( (sr) => {
-      return sr.relationType == SzRelationshipType.POSSIBLERELATION;
+    if(this.entity && this.entity.RELATED_ENTITIES && this.entity.RELATED_ENTITIES.filter) this._discoveredRelationships = this.entity.RELATED_ENTITIES.filter( (sr) => {
+      return sr.MATCH_LEVEL_CODE == SzRelatedEntityMatchLevel.POSSIBLY_RELATED;
     });
-    if(this.entity && this.entity.relatedEntities && this.entity.relatedEntities.filter) this._disclosedRelationships = this.entity.relatedEntities.filter( (sr) => {
-      return sr.relationType == SzRelationshipType.DISCLOSEDRELATION;
+    if(this.entity && this.entity.RELATED_ENTITIES && this.entity.RELATED_ENTITIES.filter) this._disclosedRelationships = this.entity.RELATED_ENTITIES.filter( (sr) => {
+      return sr.MATCH_LEVEL_CODE == SzRelatedEntityMatchLevel.DISCLOSED;
     });
     // redraw graph on entity change
     /*if(this.graphComponent && this.graphComponent.reload) {
@@ -974,8 +978,8 @@ export class SzEntityDetailComponentGrpc implements OnInit, OnDestroy, AfterView
     let _data: any = {
       entityId: entityId
     }
-    if(this.entity && this.entity.resolvedEntity && (this.entity.resolvedEntity.bestName || this.entity.resolvedEntity.entityName)) {
-      _data.entityName = this.entity.resolvedEntity.bestName ? this.entity.resolvedEntity.bestName : this.entity.resolvedEntity.entityName;
+    if(this.entity && (this.entity.BEST_NAME || this.entity.ENTITY_NAME)) {
+      _data.entityName = this.entity.BEST_NAME ? this.entity.BEST_NAME : this.entity.ENTITY_NAME;
     }
     if(this._openWhyComparisonModalOnClick){
       this.dialog.open(SzWhyEntityDialog, {
@@ -1015,7 +1019,7 @@ export class SzEntityDetailComponentGrpc implements OnInit, OnDestroy, AfterView
         minWidth: 800,
         height: 'var(--sz-why-dialog-default-height)',
         data: {
-          entityId: this.entity.resolvedEntity.entityId,
+          entityId: this.entity.ENTITY_ID,
           showOkButton: false,
           okButtonText: 'Close',
           records: records
@@ -1027,7 +1031,7 @@ export class SzEntityDetailComponentGrpc implements OnInit, OnDestroy, AfterView
   public onCompareEntitiesForWhyNot(entityIds: any) {
     //console.log('SzEntityDetailComponent.onCompareEntitiesForWhyNot: ', entityIds, this._openWhyComparisonModalOnClick);
     if(entityIds && entityIds.length > 0 && entityIds.push){
-      entityIds.push(this.entity.resolvedEntity.entityId);
+      entityIds.push(this.entity.ENTITY_ID);
     }
     
     this.relatedEntitiesWhyNotButtonClick.emit(entityIds);
@@ -1071,6 +1075,21 @@ export class SzEntityDetailComponentGrpc implements OnInit, OnDestroy, AfterView
     if (this._entityId) {
       this.requestStart.emit(this._entityId);
 
+      this.findNetworkByEntityId(this._entityId).pipe(
+        tap(res => console.log('SzSearchService.findNetworkByEntityId: ' + this._entityId, res)),
+        takeUntil(this.unsubscribe$),
+        take(1)
+      ).subscribe({
+        next: (entity: any) => {
+          this.entity = entity;
+        },
+        error: (err)=> {
+          this.requestEnd.emit( err );
+          this.exception.next( err );
+        }
+      });
+
+      /*
       this.searchService.getEntityById(this._entityId, true).
       pipe(
         tap(res => console.log('SzSearchService.getEntityById: ' + this._entityId, res)),
@@ -1096,7 +1115,61 @@ export class SzEntityDetailComponentGrpc implements OnInit, OnDestroy, AfterView
           this.exception.next( err );
         }
       });
+      */
     }
+  }
+
+  private findNetworkByEntityId(entityId: number) {
+    const flags = SzEngineFlags.SZ_FIND_NETWORK_DEFAULT_FLAGS |
+    SzEngineFlags.SZ_FIND_NETWORK_INCLUDE_MATCHING_INFO | 
+    SzEngineFlags.SZ_ENTITY_INCLUDE_ALL_RELATIONS | 
+    SzEngineFlags.SZ_ENTITY_INCLUDE_ALL_FEATURES |
+    SzEngineFlags.SZ_ENTITY_INCLUDE_RECORD_DATA | 
+    SzEngineFlags.SZ_ENTITY_INCLUDE_RELATED_MATCHING_INFO |
+    //SzEngineFlags.SZ_INCLUDE_MATCH_KEY_DETAILS |
+    SzEngineFlags.SZ_ENTITY_INCLUDE_RELATED_RECORD_DATA | 
+    SzEngineFlags.SZ_ENTITY_INCLUDE_RELATED_ENTITY_NAME |
+    SzEngineFlags.SZ_ENTITY_INCLUDE_DISCLOSED_RELATIONS |
+    SzEngineFlags.SZ_ENTITY_INCLUDE_POSSIBLY_RELATED_RELATIONS;
+    /*
+    SzEngineFlags.SZ_ENTITY_INCLUDE_ALL_RELATIONS | 
+    SzEngineFlags.SZ_ENTITY_INCLUDE_ENTITY_NAME |
+    SzEngineFlags.SZ_ENTITY_INCLUDE_RELATED_ENTITY_NAME |
+    SzEngineFlags.SZ_ENTITY_INCLUDE_DISCLOSED_RELATIONS |
+    SzEngineFlags.SZ_ENTITY_INCLUDE_POSSIBLY_RELATED_RELATIONS | 
+    SzEngineFlags.SZ_ENTITY_INCLUDE_RELATED_RECORD_DATA | 
+    SzEngineFlags.SZ_ENTITY_INCLUDE_ALL_FEATURES | 
+    SzEngineFlags.SZ_ENTITY_INCLUDE_RELATED_MATCHING_INFO;*/
+
+    return this.engineService.findNetworkByEntityId(entityId, 1, 1, 1000, flags).pipe(
+      takeUntil(this.unsubscribe$),
+      map((response: SzSdkFindNetworkResponse) => {
+        let result: SzResumeEntity;
+        let _primaryEntityResult = response.ENTITIES.find((item)=>{
+          return (item.RESOLVED_ENTITY && item.RESOLVED_ENTITY.ENTITY_ID === entityId) 
+        })
+        if(_primaryEntityResult) {
+          let fullRelated: SzResumeRelatedEntity[] = [];
+          _primaryEntityResult.RELATED_ENTITIES.forEach((relEnt)=>{
+            let resolvedEnt = Object.assign({
+                "MATCH_LEVEL_CODE": relEnt.MATCH_LEVEL_CODE,
+                "MATCH_KEY": relEnt.MATCH_KEY,
+                "ERRULE_CODE": relEnt.ERRULE_CODE,
+                "IS_DISCLOSED": relEnt.IS_DISCLOSED,
+                "IS_AMBIGUOUS": relEnt.IS_AMBIGUOUS
+            }, response.ENTITIES.find((expEnt)=>{
+              return expEnt.RESOLVED_ENTITY.ENTITY_ID === relEnt.ENTITY_ID
+            }).RESOLVED_ENTITY);
+            fullRelated.push(resolvedEnt);
+          })
+          result = Object.assign({
+            RELATED_ENTITIES: fullRelated,
+            _related: _primaryEntityResult.RELATED_ENTITIES
+          }, _primaryEntityResult.RESOLVED_ENTITY)
+        }
+        return result;
+      })
+    )
   }
   
   /** @internal */

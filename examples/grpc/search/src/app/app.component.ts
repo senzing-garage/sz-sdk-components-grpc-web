@@ -151,4 +151,14 @@ export class AppComponent {
 
   }
 
+  ngAfterViewInit() {
+    const searchParams = this.searchBox.getSearchParams();
+    if (searchParams){
+      if ( Object.keys(searchParams).length > 0) {
+        // do auto search
+        this.searchBox.submitSearch();
+      }
+    }
+  }
+
 }

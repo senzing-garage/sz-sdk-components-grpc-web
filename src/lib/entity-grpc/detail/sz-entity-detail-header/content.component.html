@@ -6,9 +6,9 @@
   [ngClass]="layoutClasses"
   (click)="toggleTruncation($event)">
     <div  class="search-card__content--column" #columnOne  *ngIf="showColumnOne">
-      <div class="line" *ngIf="hasRecordId && showRecordIdWhenNative"><span [class.ellipsis]="truncateResults">Record Id: {{entity.recordId}}</span></div>
+      <div class="line" *ngIf="hasRecordId && showRecordIdWhenNative"><span [class.ellipsis]="truncateResults">Record Id: {{record?.RECORD_ID}}</span></div>
       <div class="line" [class.truncated]="i >= truncateOtherDataAt && truncateResults"
-        *ngFor="let otherData of entity.otherData; let i = index">
+        *ngFor="let otherData of otherData; let i = index">
         <span *ngIf="i < truncateOtherDataAt || !truncateResults" [class.ellipsis]="truncateResults">
           {{otherData}}
         </span>
@@ -54,8 +54,8 @@
       *ngIf="columnFourTotal > maxLinesToDisplay && truncateResults">...</span>
     </div>
     <div class="search-card__content--column" #columnOne  *ngIf="showColumnOne && layout == 1">
-        <div class="line"><span [class.ellipsis]="truncateResults">Record Id: {{entity.recordId}}</span></div>
-        <div class="line" *ngFor="let otherData of entity.otherData; let i = index">
+        <div class="line"><span [class.ellipsis]="truncateResults">Record Id: {{record?.RECORD_ID}}</span></div>
+        <div class="line" *ngFor="let otherData of otherData; let i = index">
           <span [class.truncated]="i >= maxLinesToDisplay && truncateResults" *ngIf="i < maxLinesToDisplay || !truncateResults" [class.ellipsis]="truncateResults">
             {{otherData}}
           </span>

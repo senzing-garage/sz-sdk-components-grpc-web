@@ -8,6 +8,10 @@ import { SzEntityRecord, SzEntityFeature } from '@senzing/rest-api-client-ng';
 import { SzPrefsService } from '../../../services/sz-prefs.service';
 import { CommonModule } from '@angular/common';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { SzResumeEntity } from '../../../models/SzResumeEntity';
+import { getStringEntityFeatures } from '../../../common/entity-utils';
+import { SzGrpcConfigManagerService } from '../../../services/grpc/configManager.service';
+import { SzSdkEntityRecord } from 'src/lib/models/grpc/engine';
 
 /**
  * @internal
@@ -27,7 +31,8 @@ export class SzEntityDetailHeaderContentComponentGrpc implements OnDestroy, OnIn
   @Input() public showRecordIdWhenNative: boolean = false;
 
   //@Input() entity: ResolvedEntityData | SearchResultEntityData | EntityDetailSectionData | EntityRecord;
-  @Input() entity: any; // the strong typing is making it impossible to handle all variations
+  @Input() entity: SzResumeEntity; // the strong typing is making it impossible to handle all variations
+  @Input() record: SzSdkEntityRecord; // we pass only the record in when the details section is matched records instead of trying to do clever type detection
   @Input() maxLinesToDisplay = 3;
   @Input() truncateOtherDataAt = 3;
   @Input() set parentEntity( value ) {
@@ -61,9 +66,20 @@ export class SzEntityDetailHeaderContentComponentGrpc implements OnDestroy, OnIn
   _parentEntity: any;
   _matchKeys: string[];
 
+  private _entityFeatures: Map<string, string[]>;
+  public get entityFeatures(): Map<string, string[]> {
+    if(!this._entityFeatures && this.entity) {
+      let _features = this.entity.FEATURES;
+      let _featuresAsStrings = getStringEntityFeatures(_features, true, this.configManager.fTypeToAttrClassMap);
+      this._entityFeatures = _featuresAsStrings;
+    }
+    return this._entityFeatures;
+  }
+
   constructor(
     public prefs: SzPrefsService,
-    private cd: ChangeDetectorRef
+    private cd: ChangeDetectorRef,
+    private configManager: SzGrpcConfigManagerService
   ) {}
 
   /**
@@ -93,8 +109,8 @@ export class SzEntityDetailHeaderContentComponentGrpc implements OnDestroy, OnIn
   }
 
   public get hasRecordId(): boolean {
-    if(this.entity && this.entity.recordId){
-      return (this.entity.recordId !== undefined && this.entity.recordId !== null) ? true: false;
+    if(this.record && this.record.RECORD_ID){
+      return (this.record.RECORD_ID !== undefined && this.record.RECORD_ID !== null) ? true: false;
     }
     return false;
   }
@@ -109,13 +125,13 @@ export class SzEntityDetailHeaderContentComponentGrpc implements OnDestroy, OnIn
 
   // ----------------- start total getters -------------------
   get columnOneTotal(): number {
-    if (this.entity && this.entity.otherData) {
-      return this.entity.otherData.length;
+    if (this.entityFeatures.has('OTHER')) {
+      return this.entityFeatures.get('OTHER').length;
     }
     return 0;
   }
   get showColumnOne(): boolean {
-    return (this.entity && this.entity.otherData && this.entity.otherData.length > 0) && this.showOtherData;
+    return (this.entity && this.entityFeatures.has('OTHER') && this.entityFeatures.get('OTHER').length > 0) && this.showOtherData;
   }
   get columnTwoTotal(): number {
     return (this.nameData.concat(this.attributeData).length);
@@ -136,11 +152,9 @@ export class SzEntityDetailHeaderContentComponentGrpc implements OnDestroy, OnIn
   // -----------------  end total getters  -------------------
 
   get nameData(): string[] {
-    if (this.entity) {
-      if (this.entity && this.entity.nameData) {
-        return this.entity.nameData;
-      } else if (this.entity && this.entity.topNames) {
-        return this.entity.topNames;
+    if (this.entityFeatures) {
+      if (this.entityFeatures && this.entityFeatures.has('NAME')) {
+        return this.entityFeatures.get('NAME');
       } else {
         return [];
       }
@@ -150,13 +164,11 @@ export class SzEntityDetailHeaderContentComponentGrpc implements OnDestroy, OnIn
   }
 
   get attributeData(): string[] {
-    if (this.entity) {
-      if ( this.entity.characteristicData ) {
-        return this.entity.characteristicData;
-      } else if ( this.entity.attributeData) {
-        return this.entity.attributeData;
-      } else if ( this.entity.topAttributes) {
-        return this.entity.topAttributes;
+    if (this.entityFeatures) {
+      if ( this.entityFeatures.has('CHARACTERISTIC') ) {
+        return this.entityFeatures.get('CHARACTERISTIC');
+      } else if ( this.entityFeatures.has('ATTRIBUTE')) {
+        return this.entityFeatures.get('ATTRIBUTE');
       } else {
         return [];
       }
@@ -166,11 +178,9 @@ export class SzEntityDetailHeaderContentComponentGrpc implements OnDestroy, OnIn
   }
 
   get addressData(): string[] {
-    if (this.entity) {
-      if (this.entity.addressData) {
-        return this.entity.addressData;
-      } else if (this.entity.addressData) {
-        return this.entity.addressData;
+    if (this.entityFeatures) {
+      if (this.entityFeatures.has('ADDRESS')) {
+        return this.entityFeatures.get('ADDRESS');
       } else {
         return [];
       }
@@ -180,17 +190,44 @@ export class SzEntityDetailHeaderContentComponentGrpc implements OnDestroy, OnIn
   }
 
   get phoneData(): string[] {
-    if (this.entity) {
-      if (this.entity.phoneData) {
-        return this.entity.phoneData;
-      } else if (this.entity.topPhoneNumbers) {
-        return this.entity.topPhoneNumbers;
+    if (this.entityFeatures) {
+      if (this.entityFeatures.has('PHONE')) {
+        return this.entityFeatures.get('PHONE');
       } else {
         return [];
       }
     } else {
       return [];
     }
+  }
+
+  get otherData(): string[] {
+    if (this.entityFeatures) {
+      if (this.entityFeatures.has('OTHER')) {
+        return this.entityFeatures.get('OTHER');
+      } else {
+        return [];
+      }
+    } else {
+      return [];
+    }
+  }
+  
+  get identifierData(): string[] {
+    try{
+      if (this.entityFeatures) {
+        if (this.entityFeatures.has('IDENTIFIER') && this.entityFeatures.get('IDENTIFIER').length > 0) {
+          return this.entityFeatures.get('IDENTIFIER');
+        } else {
+          return [];
+        }
+      } else {
+        return [];
+      }
+    }catch(err){
+      console.warn('\tSzEntityDetailHeaderContentComponent.identifierData error', err.message);
+    }
+    return [];
   }
 
   getMatchKeysAsArray(pEntity: any): string[] {
@@ -252,25 +289,6 @@ export class SzEntityDetailHeaderContentComponentGrpc implements OnDestroy, OnIn
     } else {
       this.truncateResults=!this.truncateResults;
     }
-  }
-
-  get identifierData(): string[] {
-    try{
-      if (this.entity) {
-        if (this.entity.identifierData && this.entity.identifierData.length > 0) {
-          return this.entity.identifierData;
-        } else if (this.entity.topIdentifiers && this.entity.topIdentifiers.length > 0) {
-          return this.entity.topIdentifiers;
-        } else {
-          return [];
-        }
-      } else {
-        return [];
-      }
-    }catch(err){
-      console.warn('\tSzEntityDetailHeaderContentComponent.identifierData error', err.message);
-    }
-    return [];
   }
 
   /**

@@ -3,6 +3,7 @@ import { SzSdkConfigAttr } from "../models/grpc/config";
 import { SzSdkEntityFeature } from "../models/grpc/engine";
 import { SzAttrClass } from "../models/SzFeatureTypes";
 import { SzGrpcConfigManagerService } from "../services/grpc/configManager.service";
+import { SzResumeEntity } from "../models/SzResumeEntity";
 
 
 export function getStringEntityFeatures(features: {
@@ -34,7 +35,7 @@ export function getStringEntityFeatures(features: {
     return retMap;
 }
 
-export function bestEntityName(entity: SzResolvedEntity): string {
-    let retVal = entity?.bestName? entity.bestName : entity?.entityName ? entity.entityName : undefined;
+export function bestEntityName(entity: SzResumeEntity): string {
+    let retVal = entity?.BEST_NAME? entity.BEST_NAME : entity?.ENTITY_NAME ? entity.ENTITY_NAME : undefined;
     return retVal;
 }

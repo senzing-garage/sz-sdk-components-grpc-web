@@ -1,5 +1,9 @@
 <h2 class="example-title">&#64;senzing/sdk-components-grpc-web/search example</h2>
 <sz-search-grpc
+  #searchBox
+  name="Jenny Smith"
+  phone="702-333-3333"
+  address="909 Jenga Way Las Vegas NV 89111"
   (resultsChange)="onSearchResults($event)"
   (resultsCleared)="onSearchResultsCleared($event)"
   (exception)="onSearchException($event)"

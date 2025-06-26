@@ -157,10 +157,20 @@ export class SzSearchService {
   public getEntityById(entityId: SzEntityIdentifier, withRelated = false, detailLevel = SzDetailLevel.VERBOSE): Observable<SzEntityData> {
     console.log('@senzing/sdk/services/sz-search[getEntityById('+ entityId +', '+ withRelated +')] ');
     const withRelatedStr = withRelated ? 'FULL' : 'NONE';
+    const flags = SzEngineFlags.SZ_ENTITY_DEFAULT_FLAGS |
+    SzEngineFlags.SZ_ENTITY_INCLUDE_ALL_RELATIONS | 
+    SzEngineFlags.SZ_ENTITY_INCLUDE_ENTITY_NAME |
+    SzEngineFlags.SZ_ENTITY_INCLUDE_RELATED_ENTITY_NAME |
+    SzEngineFlags.SZ_ENTITY_INCLUDE_DISCLOSED_RELATIONS |
+    SzEngineFlags.SZ_ENTITY_INCLUDE_POSSIBLY_RELATED_RELATIONS | 
+    SzEngineFlags.SZ_ENTITY_INCLUDE_RELATED_RECORD_DATA | 
+    SzEngineFlags.SZ_ENTITY_INCLUDE_ALL_FEATURES | 
+    SzEngineFlags.SZ_ENTITY_INCLUDE_RELATED_MATCHING_INFO;
+
     //return this.engineService.getEntityByEntityId((entityId as number), detailLevel, undefined, undefined, undefined, undefined, withRelatedStr)
-    return this.engineService.getEntityByEntityId((entityId as number))
+    return this.engineService.getEntityByEntityId((entityId as number), flags)
     .pipe(
-      //tap((res: SzEntityResponse) => console.log('SzSearchService.getEntityById: ' + entityId, res.data)),
+      tap((res: any) => console.log('SzSearchService.getEntityById: ' + entityId, res)),
       map((res) => res)
     );
   }
