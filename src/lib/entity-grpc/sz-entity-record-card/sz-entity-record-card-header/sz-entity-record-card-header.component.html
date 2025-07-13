@@ -8,11 +8,11 @@
         <span>{{ entityDetailsLinkName | titlecase}}&nbsp;</span>
       </a>
     </span>
-    <ng-template #bestName><a class="search__link">{{searchResult?.bestName}}</a></ng-template>
+    <ng-template #bestName><a class="search__link">{{this.bestName | titlecase}}</a></ng-template>
     <div *ngIf="breakDownInfoExist" class="breakdown-container">
       <span *ngFor="let info of breakDownInfo"
             class="search-card__header--breakdown ellipsis">
-            <span class="search-card__header--breakdown--charsep">|</span>{{info?.dataSource}}<span *ngIf="info?.recordCount > 1"> ({{info?.recordCount}})</span><span class="record-id" *ngIf="info?.recordCount <= 1 && info?.topRecordIds[0] && showRecordIdWhenSingleRecord">: {{info?.topRecordIds}}</span>
+            <span class="search-card__header--breakdown--charsep">|</span>{{info?.DATA_SOURCE}}<span *ngIf="info?.RECORD_COUNT > 1"> ({{info?.RECORD_COUNT}})</span><span class="record-id" *ngIf="info?.RECORD_COUNT <= 1 && info?.TOP_RECORD_IDS[0] && showRecordIdWhenSingleRecord">: {{info?.TOP_RECORD_IDS}}</span>
       </span>
     </div>
   </header>

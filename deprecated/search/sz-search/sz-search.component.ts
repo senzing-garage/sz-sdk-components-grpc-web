@@ -15,15 +15,15 @@ import {
   SzAttributeTypesResponse
 } from '@senzing/rest-api-client-ng';
 
-import { SzEntitySearchParams } from '../../models/entity-search';
-import { SzSearchService } from '../../services/sz-search.service';
-import { JSONScrubber, parseBool } from '../../common/utils';
-import { SzConfigurationService } from '../../services/sz-configuration.service';
-import { SzPrefsService } from '../../services/sz-prefs.service';
-import { SzFoliosService } from '../../services/sz-folios.service';
-import { SzSearchHistoryFolio, SzSearchHistoryFolioItem } from '../../models/folio';
+import { SzEntitySearchParams } from '../../../src/lib/models/entity-search';
+import { SzSearchService } from '../../../src/lib/services/sz-search.service';
+import { JSONScrubber, parseBool } from '../../../src/lib/common/utils';
+import { SzConfigurationService } from '../../../src/lib/services/sz-configuration.service';
+import { SzPrefsService } from '../../../src/lib/services/sz-prefs.service';
+import { SzFoliosService } from '../../../src/lib/services/sz-folios.service';
+import { SzSearchHistoryFolio, SzSearchHistoryFolioItem } from '../../../src/lib/models/folio';
 import { SzSearchIdentifiersPickerDialogComponent, SzSearchIdentifiersPickerSheetComponent } from './sz-search-identifiers-picker.component';
-import { SzSdkSearchResolvedEntity, SzSdkSearchResult } from '../../models/grpc/engine';
+import { SzSdkSearchResolvedEntity, SzSdkSearchResult } from '../../../src/lib/models/grpc/engine';
 
 /** @internal */
 interface SzSearchFormParams {
@@ -535,7 +535,7 @@ export class SzSearchComponent implements OnInit, OnDestroy {
     });
   }
   /** @interal */
-  public getAnyDisabled(keys: string[]): string {
+  public getAnyDisabled(keys: string[]): string | null {
     const _some = keys.some((key) => {
       return this.disabledFields[ key ];
     });
@@ -545,7 +545,7 @@ export class SzSearchComponent implements OnInit, OnDestroy {
     return null;
   }
   /** @interal */
-  public getDisabled(key: string): string {
+  public getDisabled(key: string): string | null {
     if(this.disabledFields && this.disabledFields[ key ]) {
       return '';
     }
@@ -652,7 +652,10 @@ export class SzSearchComponent implements OnInit, OnDestroy {
 
     if(allowedTypes && allowedTypes.length > 0) {
       retTypes = attributeTypes.filter( (attr: SzAttributeType) => {
-        return (allowedTypes.indexOf( attr.attributeCode) > -1);
+        if(attr.attributeCode !== null) {
+          return allowedTypes.indexOf( attr.attributeCode as string) > -1
+        }
+        return false;
       });
     }
     return retTypes

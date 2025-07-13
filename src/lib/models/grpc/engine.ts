@@ -54,12 +54,14 @@ export interface SzSdkEntityRecord extends SzSdkEntityBaseRecord {
     "MATCH_LEVEL_CODE"?: SzSdkSearchMatchLevel,
     "ERRULE_CODE"?: string,
     "FIRST_SEEN_DT"?: string,
-    "LAST_SEEN_DT"?: string
+    "LAST_SEEN_DT"?: string,
+    "FEATURES"?: {[key: string]: SzSdkEntityFeature[]}
 }
 
 export interface SzSdkEntityRecordSummary {
     "DATA_SOURCE": string,
-    "RECORD_COUNT": number
+    "RECORD_COUNT": number,
+    "TOP_RECORD_IDS"?: Array<string>;
 }
 
 export interface SzSdkBaseEntity {

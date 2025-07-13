@@ -12,8 +12,7 @@ import { Subject } from 'rxjs';
 @Component({
     selector: 'sz-button-multi-select',
     templateUrl: './multi-select-button.component.html',
-    styleUrls: ['./multi-select-button.component.scss'],
-    standalone: false
+    styleUrls: ['./multi-select-button.component.scss']
 })
 export class SzMultiSelectButtonComponent implements OnInit, OnDestroy, AfterViewInit {
     /** subscription to notify subscribers to unbind */

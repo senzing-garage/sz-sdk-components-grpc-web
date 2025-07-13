@@ -14,14 +14,15 @@
               <path d="M972.8 448v263.314c0 0 0 0 0 7.314 0 109.714-197.486 197.486-453.486 197.486s-460.8-87.771-460.8-204.8c0-7.314 0-14.629 0-14.629v-234.057c0-7.314 0-14.629 0-14.629s0-14.629 0-14.629v-234.057c0-7.314 0-14.629 0-14.629 0-109.714 197.486-197.486 453.486-197.486 248.686 0 438.857 80.457 453.486 182.857 0 0 0 0 0 0v7.314c0 0 0 0 0 7.314 0 0 0 0 0 7.314v241.371c0 0 0-7.314 0-7.314 7.314 7.314 7.314 14.629 7.314 21.943 0 0 0 0 0 0zM768 338.286v0c-146.286-43.886-358.4-43.886-512 0v0c-87.771 29.257-146.286 65.829-146.286 109.714 0 36.571 51.2 80.457 138.971 102.4l14.629-7.314c146.286-36.571 343.771-36.571 490.057 0v0l14.629 7.314c87.771-29.257 138.971-65.829 138.971-102.4 7.314-36.571-43.886-80.457-138.971-109.714zM519.314 857.6c234.057 0 402.286-73.143 402.286-146.286 0-36.571-58.514-80.457-146.286-109.714v0c-146.286-43.886-358.4-43.886-512 0v0c-87.771 29.257-146.286 65.829-146.286 109.714 0 73.143 160.914 146.286 402.286 146.286zM519.314 38.4c-234.057 0-402.286 73.143-402.286 146.286 0 36.571 51.2 80.457 138.971 102.4l14.629-7.314c146.286-36.571 343.771-36.571 490.057 0v0l14.629 7.314c87.771-29.257 138.971-65.829 138.971-102.4 0-73.143-160.914-146.286-394.971-146.286z" />
             </g>
           </svg>
-          <span class="collapsible-card__title">{{cardData?.dataSource}}</span>
+          <span class="collapsible-card__title">{{cardTitle}}</span>
         </div>
         <!--recordWhyMultiselectActive: {{recordWhyMultiselectActive}}<br/>
         showWhyUtilities: {{showWhyUtilities}}<br/>
         isMultiSelect: {{isMultiSelect}}<br/>
         whySelectionMode: {{whySelectionMode}}-->
         <!-- start "entity select control" mechanism -->
-        <div #multiSelectButtonWrapper><sz-button-multi-select #multiSelectButton *ngIf="showWhyUtilities && isMultiSelect"
+        <div #multiSelectButtonWrapper><sz-button-multi-select #multiSelectButton 
+          *ngIf="showWhyUtilities && isMultiSelect"
           (onSelectActiveChange)="onWhyRecordComparisonModeActiveChange($event)"
           (onSelectedClick)="onRecordsWhyButtonClick($event)"
           [selectedCount]="this.selectedRecords.length"
@@ -55,11 +56,12 @@
       </div>
     </div>
     <!-- start is entity record (possible/disclosed matches) -->
-    <ng-container *ngIf="isEntityRecord(cardData)">
-      <div class="entity-records mat-expansion-panel-body">
-          <div class="entity-record" *ngFor="let _cardData of cardData?.records">
+    <ng-container *ngIf="isEntityRecord()">
+      <div class="entity-records mat-expansion-panel-body"
+        *ngFor="let section of entitiesByMatchKey | keyvalue">
+          <div class="entity-record" *ngFor="let relatedEntity of section.value">
               <sz-entity-record-card-header-grpc
-                [entityData]="_cardData"
+                [entity]="relatedEntity"
                 [hideBackGroundColor]="true"
                 [layoutClasses]="layoutClasses"
                 (entityRecordClick)="onEntityRecordClick($event)"
@@ -70,10 +72,10 @@
               [showNameData]="showNameDataInEntities"
               [showBestNameOnly]="showBestNameOnlyinEntities"
               [ignorePrefOtherDataChanges]="true"
-              [entity]="_cardData"
-              [parentEntity]="cardData"
+              [relatedEntity]="relatedEntity"
               [layoutClasses]="layoutClasses"
-              [ngClass]="{'open': expanded, 'no-shade': true, 'selected': isRelatedEntitySelected(_cardData), 'select-mode-single': isSingleSelect, 'select-mode-multiple': isMultiSelect, 'is-selectable': relatedWhyNotSelectActive}"
+              [ngClass]="{'open': expanded, 'no-shade': true, 
+              'selected': isRelatedEntitySelected(relatedEntity), 'select-mode-single': isSingleSelect, 'select-mode-multiple': isMultiSelect, 'is-selectable': relatedWhyNotSelectActive}"
               [whySelectionMode]="whySelectionMode"
               [whySelectionAction]="'WHY_NOT'"
               [truncateResults]="truncateResults"
@@ -86,16 +88,16 @@
     <!-- end is entity record (possible/disclosed matches) -->
 
     <!-- start is not entity record (datasource records) -->
-    <ng-container *ngIf="!isEntityRecord(cardData)">
-      <div class="search-card-records  mat-expansion-panel-body">
+    <ng-container *ngIf="!isEntityRecord()">
+      <div class="search-card-records  mat-expansion-panel-body"
+        *ngFor="let section of recordsByDataSource | keyvalue">
         <sz-entity-record-card-content-grpc
-          *ngFor="let _cardData of cardDataAsAny?.records"
+          *ngFor="let record of section.value"
           [showOtherData]="showOtherDataInDatasourceRecords"
           [columnsShown]="columnsShown"
           [truncateOtherDataAt]="truncateOtherDataInRecordsAt"
-          [entity]="_cardData"
-          [parentEntity]="cardData"
-          [ngClass]="{'open': expanded, 'selected': isRecordSelected(_cardData), 'select-mode-single': isSingleSelect, 'select-mode-multiple': isMultiSelect, 'is-selectable': recordWhySelectActive}"
+          [record]="record"
+          [ngClass]="{'open': expanded, 'selected': isRecordSelected(record), 'select-mode-single': isSingleSelect, 'select-mode-multiple': isMultiSelect, 'is-selectable': recordWhySelectActive}"
           [whySelectionMode]="whySelectionMode"
           [whySelectionAction]="'WHY'"
           [layoutClasses]="layoutClasses"

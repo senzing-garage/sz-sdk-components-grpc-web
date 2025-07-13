@@ -54,7 +54,7 @@ import { SzConfigurationAboutComponent } from './configuration/sz-configuration-
 import { SzRestConfigurationComponent } from './configuration/sz-rest-configuration/sz-rest-configuration.component';
 import { SzCrossSourceSelectComponent } from './statistics/cross-source/sz-cross-source-select.component';
 import { SzLicenseInfoComponent } from './configuration/sz-license/sz-license.component';
-import { SzMultiSelectButtonComponent } from './shared/multi-select-button/multi-select-button.component';
+//import { SzMultiSelectButtonComponent } from './shared/multi-select-button/multi-select-button.component';
 import { SzPoweredByComponent } from './sz-powered-by/sz-powered-by.component';
 import { SzPreferencesComponent } from './configuration/sz-preferences/sz-preferences.component';
 import { SzPrefDictComponent } from './configuration/sz-preferences/sz-pref-dict/sz-pref-dict.component';
@@ -84,14 +84,14 @@ import { SzStandaloneGraphComponent } from './entity/detail/sz-entity-detail-gra
 import { SzGraphFilterComponent } from './graph/sz-graph-filter.component';
 import { SzGraphComponent } from './graph/sz-graph.component';
 // search related
-import { SzSearchComponent } from './search/sz-search/sz-search.component';
-import { SzSearchIdentifiersPickerDialogComponent, SzSearchIdentifiersPickerSheetComponent } from './search/sz-search/sz-search-identifiers-picker.component';
-import { SzSearchByIdComponent } from './search/sz-search/sz-search-by-id.component';
+//import { SzSearchComponent } from '../../deprecated/search/sz-search/sz-search.component';
+//import { SzSearchIdentifiersPickerDialogComponent, SzSearchIdentifiersPickerSheetComponent } from '../../deprecated/search/sz-search/sz-search-identifiers-picker.component';
+//import { SzSearchByIdComponent } from '../../deprecated/search/sz-search/sz-search-by-id.component';
 import { SzEntityRecordViewerComponent } from './record/sz-entity-record-viewer.component';
-//import { SzSearchResultsComponent } from './search/sz-search-results/sz-search-results.component';
-//import { SzSearchResultCardComponent } from './search/sz-search-result-card/sz-search-result-card.component';
-//import { SzSearchResultCardContentComponent } from './search/sz-search-result-card/sz-search-result-card-content/sz-search-result-card-content.component';
-//import { SzSearchResultCardHeaderComponent } from './search/sz-search-result-card/sz-search-result-card-header/sz-search-result-card-header.component';
+//import { SzSearchResultsComponent } from '../../deprecated/search/sz-search-results/sz-search-results.component';
+//import { SzSearchResultCardComponent } from '../../deprecated/search/sz-search-result-card/sz-search-result-card.component';
+//import { SzSearchResultCardContentComponent } from '../../deprecated/search/sz-search-result-card/sz-search-result-card-content/sz-search-result-card-content.component';
+//import { SzSearchResultCardHeaderComponent } from '../../deprecated/search/sz-search-result-card/sz-search-result-card-header/sz-search-result-card-header.component';
 // why related
 import { SzWhyEntityComponent } from './why/sz-why-entity.component';
 import { SzWhyEntitiesComparisonComponent } from './why/sz-why-entities.component';
@@ -198,7 +198,7 @@ const SzGrpcEnvInjector = new InjectionToken<SzGrpcWebEnvironment>("SzGrpcWebEnv
         SzHowVirtualEntityDialog,
         SzLicenseInfoComponent,
         SzOrderedMapEntries,
-        SzMultiSelectButtonComponent,
+        //SzMultiSelectButtonComponent,
         SzPoweredByComponent,
         SzPreferencesComponent,
         SzPrefDictComponent,
@@ -208,10 +208,10 @@ const SzGrpcEnvInjector = new InjectionToken<SzGrpcWebEnvironment>("SzGrpcWebEnv
         SzRelationshipNetworkLookupComponent,
         SzRelationshipPathComponent,
         SzElementResizeObserverDirective,
-        SzSearchComponent,
-        SzSearchByIdComponent,
-        SzSearchIdentifiersPickerDialogComponent,
-        SzSearchIdentifiersPickerSheetComponent,
+        //SzSearchComponent,
+        //SzSearchByIdComponent,
+        //SzSearchIdentifiersPickerDialogComponent,
+        //SzSearchIdentifiersPickerSheetComponent,
         //SzSearchResultsComponent,
         //SzSearchResultCardComponent,
         //SzSearchResultCardContentComponent,
@@ -263,8 +263,8 @@ const SzGrpcEnvInjector = new InjectionToken<SzGrpcWebEnvironment>("SzGrpcWebEnv
         SzRelationshipNetworkLookupComponent,
         SzRelationshipPathComponent,
         SzShortNumberPipe,
-        SzSearchComponent,
-        SzSearchByIdComponent,
+        //SzSearchComponent,
+        //SzSearchByIdComponent,
         //SzSearchResultsComponent,
         //SzSearchResultCardComponent,
         SzStandaloneGraphComponent,

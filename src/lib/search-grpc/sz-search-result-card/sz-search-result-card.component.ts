@@ -6,8 +6,8 @@ import { SzAttributeSearchResult, SzEntityIdentifier } from '@senzing/rest-api-c
 import { howClickEvent } from '../../models/data-how';
 import { SzSdkSearchResolvedEntity, SzSdkSearchResult } from '../../models/grpc/engine';
 import { CommonModule } from '@angular/common';
-import { SzSearchResultCardHeaderGrpcComponent } from '../../search/sz-search-result-card/sz-search-result-card-header/sz-search-result-card-header-grpc.component';
-import { SzSearchResultCardContentGrpcComponent } from '../../search/sz-search-result-card/sz-search-result-card-content/sz-search-result-card-content-grpc.component';
+import { SzSearchResultCardHeaderGrpcComponent } from './sz-search-result-card-header/sz-search-result-card-header-grpc.component';
+import { SzSearchResultCardContentGrpcComponent } from './sz-search-result-card-content/sz-search-result-card-content-grpc.component';
 /**
  * @internal
  * @export

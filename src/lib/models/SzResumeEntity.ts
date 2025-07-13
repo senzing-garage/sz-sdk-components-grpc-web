@@ -1,4 +1,4 @@
-import { SzSdkRelatedEntity, SzSdkResolvedEntity, SzSdkSearchMatchLevel } from "./grpc/engine"
+import { SzSdkEntityRecord, SzSdkRelatedEntity, SzSdkResolvedEntity, SzSdkSearchMatchLevel } from "./grpc/engine"
 
 export type SzRelatedEntityMatchLevel = 'RESOLVED' | 'POSSIBLY_SAME' | 'NAME_ONLY'| 'POSSIBLY_RELATED' | 'DISCLOSED';
 /** the possible values of a `SzResolutionStepListItemType` is */
@@ -22,3 +22,6 @@ export interface SzResumeEntity extends SzSdkResolvedEntity {
   BEST_NAME?: string,
   RELATED_ENTITIES: SzResumeRelatedEntity[]
 }
+
+export type SzResumeRecordsByDataSource = Map<string, SzSdkEntityRecord[]>
+export type SzResumeRelatedEntitiesByMatchKey = Map<string, SzResumeRelatedEntity[]>

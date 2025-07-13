@@ -17,6 +17,11 @@ import { Subject, BehaviorSubject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { SzPrefsService } from '../../../services/sz-prefs.service';
 import { SzWhySelectionMode, SzWhySelectionAction, SzWhySelectionModeBehavior, SzWhySelectionActionBehavior } from '../../../models/data-source-record-selection';
+import { SzSdkEntityFeature, SzSdkEntityRecord, SzSdkSearchResolvedEntity, SzSdkSearchResult } from '../../../models/grpc/engine';
+import {  SzResumeRelatedEntity } from '../../../models/SzResumeEntity';
+import { getEntityFeaturesByType, getStringEntityFeatures } from '../../../common/entity-utils';
+import { SzGrpcConfigManagerService } from '../../../services/grpc/configManager.service';
+import { SzAttrClass, SzFeatureType } from '../../../models/SzFeatureTypes';
 
 /**
  * @internal
@@ -33,13 +38,18 @@ export class SzEntityRecordCardContentComponentGrpc implements OnInit {
   public unsubscribe$ = new Subject<void>();
 
   //@Input() entity: ResolvedEntityData | SearchResultEntityData | EntityDetailSectionData | EntityRecord;
-  _entity: any;
-
+  //_entity: any;
+  private _searchResult: SzSdkSearchResult;
+  private _relatedEntity: SzResumeRelatedEntity;
+  private _record: SzSdkEntityRecord;
   private _truncateOtherDataAt: number = -1;
   private _showOtherData: boolean = false;
   private _showNameData: boolean = true;
   private _showBestNameOnly: boolean = false;
   private _ignorePrefOtherDataChanges = false;
+  private _features: Map<string, string[]>;
+  private _matchKeys: string[];
+  
   @Input() public whySelectionMode: SzWhySelectionModeBehavior = SzWhySelectionMode.NONE;
   @Input() public whySelectionAction: SzWhySelectionActionBehavior = SzWhySelectionAction.NONE;
 
@@ -77,6 +87,30 @@ export class SzEntityRecordCardContentComponentGrpc implements OnInit {
   get showBestNameOnly(): boolean {
     return this._showBestNameOnly;
   }
+  @Input() public set relatedEntity(value: SzResumeRelatedEntity) {
+    this._relatedEntity = value;
+    if(value && value.MATCH_KEY) {
+      this._matchKeys = this.getMatchKeysAsArray(value.MATCH_KEY);
+    }
+  }
+  public get relatedEntity() {
+    return this._relatedEntity;
+  }
+  @Input() public set searchResult(value: SzSdkSearchResult) {
+    this._searchResult = value;
+    if(value && value.MATCH_INFO.MATCH_KEY) {
+      this._matchKeys = this.getMatchKeysAsArray(value.MATCH_INFO.MATCH_KEY);
+    }
+  }
+  public get searchResult() {
+    return this._searchResult;
+  }
+  @Input() public set record(value: SzSdkEntityRecord) {
+    this.record = value;
+  }
+  public get record() {
+    return this._record;
+  }
   public get isMultiSelect(): boolean {
     return this.whySelectionMode === SzWhySelectionMode.MULTIPLE
   }
@@ -87,22 +121,44 @@ export class SzEntityRecordCardContentComponentGrpc implements OnInit {
     return this.whySelectionMode !== SzWhySelectionMode.NONE
   }
 
-  @Input() set entity(value) {
-    // console.log('set entity: ', value);
-    this._entity = value;
-  }
-  get entity() {
-    return this._entity;
+  public get features(): Map<string, string[]> {
+    if(!this._features) {
+      let _features: {[key: string]: SzSdkEntityFeature[]}; 
+      if(this.searchResult) {
+        // search result
+        _features = this.searchResult.ENTITY.RESOLVED_ENTITY.FEATURES;
+      }
+      if(this.relatedEntity) {
+        // related entity from resume
+        _features = this.relatedEntity.FEATURES;
+      }
+      if(this.record){
+        // record from resume
+        _features = this.record.FEATURES;
+      }
+      if(_features) {
+        let _featuresAsStrings = getStringEntityFeatures(_features, true, this.configManager.fTypeToAttrClassMap);
+        this._features = _featuresAsStrings;
+      }
+    }
+    return this._features;
   }
 
   @Input() maxLinesToDisplay = 3;
 
-  @Input() set parentEntity( value ) {
-    this._parentEntity = value;
+  @Input() set matchKey( value ) {
     if(value && value.matchKey) {
       this._matchKeys = this.getMatchKeysAsArray(value);
     }
   } // only used for displaying "linked" icons on field data(primarily on entity details relationships)
+  
+  get matchKeys(): string[] {
+    if(this._matchKeys) {
+      return this._matchKeys;
+    }
+    // no match keys, should we retest?
+    return undefined;
+  }
 
   @Input() truncateResults: boolean = true;
   @Input() truncatedTooltip: string = "Show more..";
@@ -139,15 +195,23 @@ export class SzEntityRecordCardContentComponentGrpc implements OnInit {
   /** subscription breakpoint changes */
   private layoutChange$ = new BehaviorSubject<number>(this.layout);
 
-  _parentEntity: any;
-  _matchKeys: string[];
+  //_parentEntity: any;
 
-  constructor(private cd: ChangeDetectorRef, public prefs: SzPrefsService) {}
+  constructor(
+    private cd: ChangeDetectorRef, 
+    private configManager: SzGrpcConfigManagerService,
+    public prefs: SzPrefsService) {}
 
   ngOnInit() {
     setTimeout(() => {
       this.cd.markForCheck();
     });
+
+    // generate features by type map
+    if(this._relatedEntity || this._record || this._searchResult) {
+      let _features       = (this._record) ? this._record.FEATURES : this._searchResult ? this._searchResult : this._relatedEntity.FEATURES;
+      let _featuresByType = this.featuresByType;
+    }
 
     this.prefs.entityDetail.prefsChanged.pipe(
       takeUntil(this.unsubscribe$)
@@ -181,22 +245,32 @@ export class SzEntityRecordCardContentComponentGrpc implements OnInit {
     return nameData.concat(attributeData);
   }
 
-  getAddressAndPhoneData(addressData: string[], phoneData: string[]): string[] {
-    return addressData.concat(phoneData);
+  get isSearchEntity() {
+    return this._searchResult ? true : false;
+  }
+  get isRelatedEntity() {
+    return this._relatedEntity ? true : false;
+  }
+  get isRecord() {
+    return this._record ? true : false;
   }
 
   // ----------------- start total getters -------------------
 
   get columnOneTotal(): number {
-    if (this.entity.entityName && this.entity.addressData) {
-      return this.entity.addressData.length;
+    if(this.isSearchEntity) {
+
+    }
+    if(this.addressData){
+    //if (this.searchResult.ENTITY.RESOLVED_ENTITY.ENTITY_NAME && this.searchResult.ENTITY.RESOLVED_ENTITY.FEATURES['ADDRESS']) {
+      return this.addressData.length;
     }
     return 0;
   }
   get showColumnOne(): boolean {
     let retVal = false;
-    if(this.entity) {
-      if(this.showOtherData && this.entity.otherData && this.entity.otherData.length > 0) {
+    if(this.otherData) {
+      if(this.showOtherData && this.otherData && this.otherData.length > 0) {
         retVal = true;
       }
     }
@@ -210,7 +284,7 @@ export class SzEntityRecordCardContentComponentGrpc implements OnInit {
     return (this.nameData.concat(this.attributeData).length);
   }
   get showColumnTwo(): boolean {
-    const nameAndAttrData = this.getNameAndAttributeData(this.nameData, this.attributeData);
+    const nameAndAttrData = this.nameAndAttributeData;
     let retVal = this._showNameData && nameAndAttrData.length > 0;
     // check "columnsShown[1]" for override
     if(this.columnsShown && this.columnsShown[0] === true) {
@@ -222,7 +296,7 @@ export class SzEntityRecordCardContentComponentGrpc implements OnInit {
     return (this.addressData.concat(this.phoneData).length);
   }
   get showColumnThree(): boolean {
-    const phoneAndAddrData = this.getAddressAndPhoneData(this.addressData, this.phoneData);
+    const phoneAndAddrData = this.addressAndPhoneData;
     let retVal  = (phoneAndAddrData && phoneAndAddrData.length > 0);
     // check "columnsShown[2]" for override
     if(this.columnsShown && this.columnsShown[2] === true) {
@@ -247,51 +321,67 @@ export class SzEntityRecordCardContentComponentGrpc implements OnInit {
    * individual record, then fed back in to ALL records via "columnsShown" so that columns 
    * are always aligned properly.
    */
-  public static getColumnsThatWouldBeDisplayedForData(entity: SzEntityRecord | SzRelatedEntity): boolean[] {
+  
+  public static getColumnsThatWouldBeDisplayedForData(entityOrRecord: SzSdkEntityRecord | SzResumeRelatedEntity, featureToAttrMap: Map<SzFeatureType, SzAttrClass | SzAttrClass[]>): boolean[] {
+  //public static getColumnsThatWouldBeDisplayedForData(entity: SzEntityRecord | SzRelatedEntity): boolean[] {
     let retVal = [false,false,false,false];
-    if(entity) {
-      // other data
-      if(entity.otherData && entity.otherData.length > 0) {
-        retVal[0] = true;
-      }
-      // name and attr data
-      let nameAndAttrData = SzEntityRecordCardContentComponentGrpc.getNameDataFromEntity(entity).concat(SzEntityRecordCardContentComponentGrpc.getAattributeDataFromEntity(entity));
-      if(nameAndAttrData.length > 0) {
-        retVal[1] = true;
-      }
-      // address and phone data
-      let phoneAndAddrData = SzEntityRecordCardContentComponentGrpc.getAddressDataFromEntity(entity).concat(SzEntityRecordCardContentComponentGrpc.getPhoneDataFromEntity(entity));
-      // addressData.concat(phoneData);
-      if(phoneAndAddrData && phoneAndAddrData.length > 0) {
-        retVal[2] = true;
-      }
-      // identifier data
-      let identifierData = SzEntityRecordCardContentComponentGrpc.getIdentifierDataFromEntity(entity); 
-      if(identifierData.length > 0) {
-        retVal[3] = true;
+    let featuresByType: Map<string, SzSdkEntityFeature[]>;
+    
+    if(entityOrRecord) {
+      let _features = ((entityOrRecord as SzSdkEntityRecord).RECORD_ID) ? (entityOrRecord as SzSdkEntityRecord).FEATURES : (entityOrRecord as SzResumeRelatedEntity).FEATURES;
+      featuresByType  = getEntityFeaturesByType(_features, featureToAttrMap);
+      if(featuresByType) {
+        // other data
+        if(featuresByType && featuresByType.has('OTHER') &&  featuresByType.get('OTHER').length > 0) {
+          retVal[0] = true;
+        }
+        // name and attr data
+        //let nameAndAttrData = SzEntityRecordCardContentComponentGrpc.getNameDataFromEntity(entity).concat(SzEntityRecordCardContentComponentGrpc.getAattributeDataFromEntity(entity));
+        if((featuresByType && featuresByType.has('NAME') &&  featuresByType.get('NAME').length > 0)) {
+          retVal[1] = true;
+        }
+        // address and phone data
+        //let phoneAndAddrData = SzEntityRecordCardContentComponentGrpc.getAddressDataFromEntity(entity).concat(SzEntityRecordCardContentComponentGrpc.getPhoneDataFromEntity(entity));
+        // addressData.concat(phoneData);
+        if((featuresByType && featuresByType.has('PHONE') &&  featuresByType.get('PHONE').length > 0)) {
+          retVal[2] = true;
+        }
+        // identifier data
+        //let identifierData = SzEntityRecordCardContentComponentGrpc.getIdentifierDataFromEntity(entity); 
+        if((featuresByType && featuresByType.has('IDENTIFIER') &&  featuresByType.get('IDENTIFIER').length > 0)) {
+          retVal[3] = true;
+        }
       }
     }
     return retVal;
   }
   // -----------------  end total getters  -------------------
+  private _featuresByType: Map<SzFeatureType, SzSdkEntityFeature[]>;
+  public get featuresByType() {
+    if(!this._featuresByType) {
+      let _fTypeToAttrClassMap = this.configManager.fTypeToAttrClassMap;
+      //this._featuresByType = this.configManager.fTypeToAttrClassMap;
+      if(this._searchResult && this._searchResult.ENTITY.RESOLVED_ENTITY.FEATURES) {
+        let _features = this._searchResult.ENTITY.RESOLVED_ENTITY.FEATURES;
+        this._featuresByType = getEntityFeaturesByType(_features, _fTypeToAttrClassMap);
+      } else if(this._relatedEntity && this._relatedEntity.FEATURES) {
+        let _features = this._relatedEntity.FEATURES;
+        this._featuresByType = getEntityFeaturesByType(_features, _fTypeToAttrClassMap);
+      } else if(this._record && this._record.FEATURES) {
+        let _features = this._record.FEATURES;
+        this._featuresByType = getEntityFeaturesByType(_features, _fTypeToAttrClassMap);
 
-  get otherData(): string[] {
-    if (this.entity && this.showOtherData) {
-      if (this.entity.otherData ) {
-        return this.entity.otherData;
-      } else if (this.entity && this.entity.nameData) {
-        return this.entity.nameData;
-      } else if (this.entity && this.entity.nameData) {
-        return this.entity.nameData;
-      } else {
-        return [];
       }
-    } else {
-      return [];
     }
+    return this._featuresByType;
   }
 
-  get nameData(): string[] {
+  get otherData(): SzSdkEntityFeature[] | undefined {
+    let _features = this.featuresByType;
+    return _features.has(SzFeatureType.OTHER) ? _features.get(SzFeatureType.OTHER) : undefined;
+  }
+
+  get nameData(): SzSdkEntityFeature[] | undefined  {
     /*
     if (this.entity) {
       if (this.entity && this.entity.nameData && this.entity.nameData.length > 0 && !this._showBestNameOnly) {
@@ -306,149 +396,65 @@ export class SzEntityRecordCardContentComponentGrpc implements OnInit {
     } else {
       return [];
     }*/
-    return SzEntityRecordCardContentComponentGrpc.getNameDataFromEntity(this.entity, this._showBestNameOnly);
+    let _features = this.featuresByType;
+    let _names    = _features.has(SzFeatureType.NAME) ? _features.get(SzFeatureType.NAME) : undefined;
+    return _names;
   }
-  public static getNameDataFromEntity(entity, showBestNameOnly?: boolean): string[] {
-    if (entity) {
-      if (entity && entity.nameData && entity.nameData.length > 0 && !showBestNameOnly) {
-        return entity.nameData;
-      } else if (entity && entity.bestName) {
-        return [entity.bestName];
-      } else if (entity && entity.entityName && !showBestNameOnly) {
-        return [entity.entityName];
-      } else {
-        return [];
-      }
-    } else {
-      return [];
+
+  get attributeData(): SzSdkEntityFeature[] | undefined {
+    let _features         = this.featuresByType;
+    let _attributes       = _features.has(SzFeatureType.ATTRIBUTE)      ? _features.get(SzFeatureType.ATTRIBUTE)      : undefined;
+    let _characteristics  = _features.has(SzFeatureType.CHARACTERISTIC) ? _features.get(SzFeatureType.CHARACTERISTIC) : undefined;
+    let _retVal: SzSdkEntityFeature[] | undefined;
+    if(_attributes) {
+      _retVal  = _retVal.concat(_attributes);
     }
-  }
-
-  get attributeData(): string[] {
-    /*
-    if (this.entity) {
-      if ( this.entity.characteristicData) {
-        return this.entity.characteristicData;
-      } else if ( this.entity.attributeData) {
-        return this.entity.attributeData;
-      } else {
-        return [];
-      }
-    } else {
-      return [];
-    }*/
-    return SzEntityRecordCardContentComponentGrpc.getAattributeDataFromEntity(this.entity);
-  }
-
-  public static getAattributeDataFromEntity(entity): string[] {
-    if (entity) {
-      if ( entity.characteristicData) {
-        return entity.characteristicData;
-      } else if ( entity.attributeData) {
-        return entity.attributeData;
-      } else {
-        return [];
-      }
-    } else {
-      return [];
+    if(_characteristics) {
+      _retVal  = _retVal.concat(_characteristics);
     }
+    return _retVal;
   }
 
-  get addressData(): string[] {
-    /*
-    if (this.entity) {
-      if (this.entity.addressData) {
-        return this.entity.addressData;
-      } else if (this.entity.addressData) {
-        return this.entity.addressData;
-      } else {
-        return [];
-      }
-    } else {
-      return [];
-    }*/
-    return SzEntityRecordCardContentComponentGrpc.getAddressDataFromEntity(this.entity);
+  get addressData(): SzSdkEntityFeature[] | undefined {
+    let _features   = this.featuresByType;
+    let _addresses  = _features.has(SzFeatureType.ADDRESS) ? _features.get(SzFeatureType.ADDRESS) : undefined;
+    return _addresses;
+  }
+  get phoneData(): SzSdkEntityFeature[] | undefined {
+    let _features = this.featuresByType;
+    let _phones   = _features.has(SzFeatureType.PHONE) ? _features.get(SzFeatureType.PHONE) : undefined;
+    return _phones;
   }
 
-  public static getAddressDataFromEntity(entity): string[] {
-    if (entity) {
-      if (entity.addressData) {
-        return entity.addressData;
-      } else if (entity.addressData) {
-        return entity.addressData;
-      } else {
-        return [];
-      }
-    } else {
-      return [];
-    }
+  get identifierData(): SzSdkEntityFeature[] | undefined {
+    let _features     = this.featuresByType;
+    let _identifiers  = _features.has(SzFeatureType.IDENTIFIER) ? _features.get(SzFeatureType.IDENTIFIER) : undefined;
+    return _identifiers;
   }
 
-  get phoneData(): string[] {
-    /*
-    if (this.entity) {
-      if (this.entity.phoneData) {
-        return this.entity.phoneData;
-      } else if (this.entity.phoneData) {
-        return this.entity.phoneData;
-      } else {
-        return [];
-      }
-    } else {
-      return [];
-    }*/
-    return SzEntityRecordCardContentComponentGrpc.getPhoneDataFromEntity(this.entity); 
+  get nameAndAttributeData(): SzSdkEntityFeature[] | undefined {
+    let _names      = this.nameData;
+    let _attributes = this.attributeData;
+    let _retVal: SzSdkEntityFeature[] | undefined;
+    if(_names)      { _retVal  = _retVal.concat(_names); }
+    if(_attributes) { _retVal  = _retVal.concat(_attributes); }
+    return _retVal;
   }
 
-  public static getPhoneDataFromEntity(entity): string[] {
-    if (entity) {
-      if (entity.phoneData) {
-        return entity.phoneData;
-      } else if (entity.phoneData) {
-        return entity.phoneData;
-      } else {
-        return [];
-      }
-    } else {
-      return [];
-    }
+  get addressAndPhoneData(): SzSdkEntityFeature[] | undefined {
+    let _addresses  = this.addressData;
+    let _phones     = this.phoneData;
+    let _retVal: SzSdkEntityFeature[] | undefined;
+    if(_addresses)  { _retVal  = _retVal.concat(_addresses); }
+    if(_phones)     { _retVal  = _retVal.concat(_phones); }
+    return _retVal;
   }
 
-  get identifierData(): string[] {
-    /*
-    if (this.entity) {
-      if (this.entity.identifierData) {
-        return this.entity.identifierData;
-      } else if (this.entity.identifierData) {
-        return this.entity.identifierData;
-      } else {
-        return [];
-      }
-    } else {
-      return [];
-    }*/
-    return SzEntityRecordCardContentComponentGrpc.getIdentifierDataFromEntity(this.entity); 
-  }
-
-  public static getIdentifierDataFromEntity(entity): string[] {
-    if (entity) {
-      if (entity.identifierData) {
-        return entity.identifierData;
-      } else if (entity.identifierData) {
-        return entity.identifierData;
-      } else {
-        return [];
-      }
-    } else {
-      return [];
-    }
-  }
-
-  getMatchKeysAsArray(pEntity: any): string[] {
+  getMatchKeysAsArray(matchKey: string): string[] {
     let ret = [];
 
-    if(pEntity && pEntity.matchKey) {
-      const mkeys = pEntity.matchKey
+    if(matchKey) {
+      const mkeys = matchKey
       .split(/[-](?=\w)/)
       .filter(i => !!i)
       .filter( val => val.indexOf('+') >= 0 )
@@ -468,14 +474,6 @@ export class SzEntityRecordCardContentComponentGrpc implements OnInit {
     return ret;
   }
 
-  get matchKeys(): string[] {
-    if(this._matchKeys) {
-      return this._matchKeys;
-    }
-    // no match keys, should we retest?
-    return undefined;
-  }
-
   isLinkedAttribute(attrValue: string): boolean {
     const matchArr = this.matchKeys;
     if(attrValue && matchArr && matchArr.length > 0) {
@@ -492,58 +490,112 @@ export class SzEntityRecordCardContentComponentGrpc implements OnInit {
     return false;
   }
 
-  /**
-   * @deprecated
-   */
-  private isEntityRecord(data: SzSearchResultEntityData | SzEntityDetailSectionData | SzEntityRecord): data is SzEntityRecord {
-    if (data) {
-      return (<SzEntityRecord>data).relationshipData !== undefined && (<SzEntityRecord>data).relationshipData.length > 0;
-    }
-    return false;
-  }
-  /**
-   * @deprecated
-   */
-  private isEntityDetailData(data: SzSearchResultEntityData | SzEntityDetailSectionData | SzEntityRecord): data is SzEntityDetailSectionData {
-    if (data) {
-      return (<SzEntityDetailSectionData>data).matchLevel !== undefined;
-    }
-    return false;
-  }
   @Output('onDataSourceRecordClicked') 
-  onRecordCardContentClickedEmitter: EventEmitter<SzRecordId> = new EventEmitter<SzRecordId>();
-
+  onRecordCardContentClickedEmitter: EventEmitter<SzSdkEntityRecord> = new EventEmitter<SzSdkEntityRecord>();
   public onRecordCardContentClicked(event: any) {
     //console.log('SzEntityRecordCardContentComponent.onRecordCardContentClicked()', this.entity, this);
-    
-    if(this.entity && this.entity.dataSource && this.entity.recordId) {
-      let recordId: SzRecordId = {src: this.entity.dataSource, id: this.entity.recordId};
-      this.onRecordCardContentClickedEmitter.emit(recordId);
+    if(this._record) {
+      let payload: SzSdkEntityRecord = this._record;
+      this.onRecordCardContentClickedEmitter.emit(payload);
     } else {
       console.error('SzEntityRecordCardContentComponent.onRecordCardContentClicked() ERROR: datasource or recordId missing');
     }
   }
   @Output('onDataSourceRecordWhyClicked') 
-  onRecordCardWhyClickedEmitter: EventEmitter<SzRecordId> = new EventEmitter<SzRecordId>();
-
+  onRecordCardWhyClickedEmitter: EventEmitter<SzSdkEntityRecord> = new EventEmitter<SzSdkEntityRecord>();
   public onRecordCardWhyClicked(event: any) {
     //console.log('SzEntityRecordCardContentComponent.onRecordCardWhyClicked()', this.entity, this);
-    if(this.entity && this.entity.dataSource && this.entity.recordId) {
-      let recordId: SzRecordId = {src: this.entity.dataSource, id: this.entity.recordId};
-      this.onRecordCardWhyClickedEmitter.emit(recordId);
+    if(this._record) {
+      let payload: SzSdkEntityRecord = this._record;
+      this.onRecordCardWhyClickedEmitter.emit(payload);
     } else {
       console.error('SzEntityRecordCardContentComponent.onRecordCardWhyClicked() ERROR: datasource or recordId missing');
     }
   }
   @Output('onWhyNotClicked') 
-  onWhyNotClickedEmitter: EventEmitter<SzEntityIdentifier> = new EventEmitter<SzEntityIdentifier>();
-
+  onWhyNotClickedEmitter: EventEmitter<SzResumeRelatedEntity> = new EventEmitter<SzResumeRelatedEntity>();
   public onRelatedEntityCardWhyNotClicked(event: any) {
-    //console.log('SzEntityRecordCardContentComponent.onRelatedEntityCardWhyNotClicked()', this.entity, this);
-    if(this.entity && this.entity.entityId) {
-      this.onWhyNotClickedEmitter.emit(this.entity.entityId)
+    console.log('SzEntityRecordCardContentComponent.onRelatedEntityCardWhyNotClicked()', this._relatedEntity, this);
+    if(this._relatedEntity) {
+      this.onWhyNotClickedEmitter.emit(this._relatedEntity)
     } else {
       console.error('SzEntityRecordCardContentComponent.onRelatedEntityCardWhyNotClicked() ERROR: entityId missing');
     }
   }
+  // ----------------------- probably deprecated (not sure yet)
+  /*
+  public static getIdentifierDataFromEntity(entity): string[] {
+    if (entity) {
+      if (entity.identifierData) {
+        return entity.identifierData;
+      } else if (entity.identifierData) {
+        return entity.identifierData;
+      } else {
+        return [];
+      }
+    } else {
+      return [];
+    }
+  }*/
+  /*
+  public static getPhoneDataFromEntity(entity): string[] {
+    if (entity) {
+      if (entity.phoneData) {
+        return entity.phoneData;
+      } else if (entity.phoneData) {
+        return entity.phoneData;
+      } else {
+        return [];
+      }
+    } else {
+      return [];
+    }
+  }*/
+  /*
+  public static getAddressDataFromEntity(entity): string[] {
+    if (entity) {
+      if (entity.addressData) {
+        return entity.addressData;
+      } else if (entity.addressData) {
+        return entity.addressData;
+      } else {
+        return [];
+      }
+    } else {
+      return [];
+    }
+  }*/
+  /*public getNameDataFromEntity(entity, showBestNameOnly?: boolean): string[] {
+    let _featuresByType = this.featuresByType;
+    if (entity) {
+      if (entity && entity.nameData && entity.nameData.length > 0 && !showBestNameOnly) {
+        return entity.nameData;
+      } else if (entity && entity.bestName) {
+        return [entity.bestName];
+      } else if (entity && entity.entityName && !showBestNameOnly) {
+        return [entity.entityName];
+      } else {
+        return [];
+      }
+    } else {
+      return [];
+    }
+  }
+  */
+  /*
+  public getAattributeDataFromEntity(entity: SzSdkSearchResolvedEntity | SzResumeRelatedEntity): string[] {
+    let _featuresByType = this.featuresByType;
+    if (entity) {
+      if ( entity.characteristicData) {
+        return entity.characteristicData;
+      } else if ( entity.attributeData) {
+        return entity.attributeData;
+      } else {
+        return [];
+      }
+    } else {
+      return [];
+    }
+  }*/
+
 }

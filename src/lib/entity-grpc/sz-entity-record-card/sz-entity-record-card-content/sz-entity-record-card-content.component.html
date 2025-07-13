@@ -6,7 +6,7 @@
   [ngClass]="layoutClasses"
   (click)="onRecordCardContentClicked($event); truncateResults=!truncateResults">
     <div class="search-card__content--column otherData" #columnOne  *ngIf="showColumnOne">
-      <div class="line" *ngIf="entity?.recordId && showRecordIdWhenNative"><span [class.ellipsis]="truncateResults">Record Id: {{entity.recordId}}</span></div>
+      <div class="line" *ngIf="record?.recordId && showRecordIdWhenNative"><span [class.ellipsis]="truncateResults">Record Id: {{record.recordId}}</span></div>
       <div class="line" [class.truncated]="i >= truncateOtherDataAt && truncateResults"
         *ngFor="let otherData of otherData; let i = index">
         <span *ngIf="(i < truncateOtherDataAt || truncateOtherDataAt < 0 || !truncateResults) && showOtherData" [class.ellipsis]="truncateResults">
