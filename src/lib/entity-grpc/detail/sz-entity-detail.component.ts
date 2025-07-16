@@ -33,6 +33,7 @@ import { SzGrpcEngineService } from '../../services/grpc/engine.service';
 import { SzEngineFlags } from '@senzing/sz-sdk-typescript-grpc-web';
 import { SzSdkEntityRecord, SzSdkFindNetworkResponse } from '../../models/grpc/engine';
 import { SzRelatedEntityMatchLevel, SzResumeEntity, SzResumeRelatedEntity } from '../../models/SzResumeEntity';
+import { SzEntityDetailsSectionComponentGrpc } from './sz-entity-details-section/sz-entity-details-section.component';
 
 /**
  * The Entity Detail Component.
@@ -63,7 +64,10 @@ import { SzRelatedEntityMatchLevel, SzResumeEntity, SzResumeRelatedEntity } from
     selector: 'sz-entity-detail-grpc',
     templateUrl: './sz-entity-detail.component.html',
     styleUrls: ['./sz-entity-detail.component.scss'],
-    imports: [CommonModule, SzEntityDetailHeaderComponentGrpc]
+    imports: [CommonModule, 
+      SzEntityDetailHeaderComponentGrpc, 
+      SzEntityDetailsSectionComponentGrpc
+    ]
 })
 export class SzEntityDetailComponentGrpc implements OnInit, OnDestroy, AfterViewInit {
   /** subscription to notify subscribers to unbind */
@@ -341,6 +345,9 @@ export class SzEntityDetailComponentGrpc implements OnInit, OnDestroy, AfterView
   /** whether or not the "reevaluate" messaging */
   public get entityRequiresReEvaluation(): boolean {
     return this._entityRequiresReEvaluation;
+  }
+  public recordCount(records: SzSdkEntityRecord[]): number {
+    return records.length;
   }
   /** message to show when re-evalution is required */
   public get reEvaluateMessage(): string {
@@ -790,7 +797,6 @@ export class SzEntityDetailComponentGrpc implements OnInit, OnDestroy, AfterView
    * @readonly
    */
   public get disclosedRelationships(): SzResumeRelatedEntity[] {
-
     return this.entity && this.entity.RELATED_ENTITIES && this.entity.RELATED_ENTITIES.filter ? this.entity.RELATED_ENTITIES.filter( (sr) => {
       return sr.MATCH_LEVEL_CODE == SzRelatedEntityMatchLevel.DISCLOSED;
     }) : undefined;
@@ -864,6 +870,7 @@ export class SzEntityDetailComponentGrpc implements OnInit, OnDestroy, AfterView
    *  matches, possible matches, possible relationships, and disclosed relationships.
    */
   private onEntityDataChanged() {
+    console.log('onEntityDataChanged: ', this.entity.RELATED_ENTITIES);
     // doing the set on these manually because pulling directly from setter(s)
     // causes render change cycle to break mem and hammer redraw
     if(this.entity && this.entity.RECORDS) this._matches = this.entity.RECORDS;
@@ -1127,6 +1134,7 @@ export class SzEntityDetailComponentGrpc implements OnInit, OnDestroy, AfterView
     SzEngineFlags.SZ_ENTITY_INCLUDE_RECORD_DATA | 
     SzEngineFlags.SZ_ENTITY_INCLUDE_RELATED_MATCHING_INFO |
     //SzEngineFlags.SZ_INCLUDE_MATCH_KEY_DETAILS |
+    SzEngineFlags.SZ_ENTITY_INCLUDE_RECORD_FEATURE_DETAILS | 
     SzEngineFlags.SZ_ENTITY_INCLUDE_RELATED_RECORD_DATA | 
     SzEngineFlags.SZ_ENTITY_INCLUDE_RELATED_ENTITY_NAME |
     SzEngineFlags.SZ_ENTITY_INCLUDE_DISCLOSED_RELATIONS |

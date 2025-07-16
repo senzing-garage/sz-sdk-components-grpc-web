@@ -54,44 +54,44 @@ import { SzConfigurationAboutComponent } from './configuration/sz-configuration-
 import { SzRestConfigurationComponent } from './configuration/sz-rest-configuration/sz-rest-configuration.component';
 import { SzCrossSourceSelectComponent } from './statistics/cross-source/sz-cross-source-select.component';
 import { SzLicenseInfoComponent } from './configuration/sz-license/sz-license.component';
-import { SzMultiSelectButtonComponent } from './shared/multi-select-button/multi-select-button.component';
+//import { SzMultiSelectButtonComponent } from './shared/multi-select-button/multi-select-button.component';
 import { SzPoweredByComponent } from './sz-powered-by/sz-powered-by.component';
 import { SzPreferencesComponent } from './configuration/sz-preferences/sz-preferences.component';
 import { SzPrefDictComponent } from './configuration/sz-preferences/sz-pref-dict/sz-pref-dict.component';
 /** entity resume related */
-import { SzEntityDetailComponent } from './entity/detail/sz-entity-detail.component';
-import { SzEntityDetailHeaderComponent } from './entity/detail/sz-entity-detail-header/header.component';
-import { SzEntityDetailSectionSummaryComponent } from './entity/detail/sz-entity-detail-header/summary.component';
-import { SzEntityDetailHeaderContentComponent } from './entity/detail/sz-entity-detail-header/content.component';
-import { SzEntityDetailsSectionComponent } from './entity/detail/sz-entity-details-section/sz-entity-details-section.component';
-import { SzEntityDetailSectionHeaderComponent } from './entity/detail/sz-entity-details-section/header.component';
-import { SzEntityDetailSectionCollapsibleCardComponent } from './entity/detail/sz-entity-details-section/collapsible-card.component';
-import { SzEntityDetailGraphComponent } from './entity/detail/sz-entity-detail-graph/sz-entity-detail-graph.component';
-import { SzEntityDetailHowReportComponent } from './entity/detail/sz-entity-detail-how-report/sz-entity-detail-how-report.component';
+//import { SzEntityDetailComponent } from './entity/detail/sz-entity-detail.component';
+//import { SzEntityDetailHeaderComponent } from './entity/detail/sz-entity-detail-header/header.component';
+//import { SzEntityDetailSectionSummaryComponent } from './entity/detail/sz-entity-detail-header/summary.component';
+//import { SzEntityDetailHeaderContentComponent } from './entity/detail/sz-entity-detail-header/content.component';
+//import { SzEntityDetailsSectionComponent } from './entity/detail/sz-entity-details-section/sz-entity-details-section.component';
+//import { SzEntityDetailSectionHeaderComponent } from './entity/detail/sz-entity-details-section/header.component';
+//import { SzEntityDetailSectionCollapsibleCardComponent } from './entity/detail/sz-entity-details-section/collapsible-card.component';
+//import { SzEntityDetailGraphComponent } from './entity/detail/sz-entity-detail-graph/sz-entity-detail-graph.component';
+//import { SzEntityDetailHowReportComponent } from './entity/detail/sz-entity-detail-how-report/sz-entity-detail-how-report.component';
 //import { SzEntityMatchPillComponent } from './entity/sz-entity-match-pill/sz-entity-match-pill.component';
-import { SzEntityRecordCardComponent } from './entity/sz-entity-record-card/sz-entity-record-card.component';
-import { SzEntityRecordCardHeaderComponent } from './entity/sz-entity-record-card/sz-entity-record-card-header/sz-entity-record-card-header.component';
-import { SzEntityRecordCardContentComponent } from './entity/sz-entity-record-card/sz-entity-record-card-content/sz-entity-record-card-content.component';
+//import { SzEntityRecordCardComponent } from './entity/sz-entity-record-card/sz-entity-record-card.component';
+//import { SzEntityRecordCardHeaderComponent } from './entity/sz-entity-record-card/sz-entity-record-card-header/sz-entity-record-card-header.component';
+//import { SzEntityRecordCardContentComponent } from './entity/sz-entity-record-card/sz-entity-record-card-content/sz-entity-record-card-content.component';
 // graph components
 import { SzRelationshipNetworkComponent } from './graph/sz-relationship-network/sz-relationship-network.component';
 import { SzRelationshipNetworkInputComponent } from './graph/sz-relationship-network-input/sz-relationship-network-input.component';
 import { SzRelationshipNetworkLookupComponent } from './graph/sz-relationship-network-lookup/sz-relationship-network-lookup.component';
 import { SzRelationshipPathComponent } from './graph/sz-relationship-path/sz-relationship-path.component';
-import { SzEntityDetailGraphControlComponent } from './entity/detail/sz-entity-detail-graph/sz-entity-detail-graph-control.component';
-import { SzEntityDetailGraphFilterComponent } from './entity/detail/sz-entity-detail-graph/sz-entity-detail-graph-filter.component';
+//import { SzEntityDetailGraphControlComponent } from './entity/detail/sz-entity-detail-graph/sz-entity-detail-graph-control.component';
+//import { SzEntityDetailGraphFilterComponent } from './entity/detail/sz-entity-detail-graph/sz-entity-detail-graph-filter.component';
 import { SzGraphControlComponent } from './graph/sz-graph-control.component';
-import { SzStandaloneGraphComponent } from './entity/detail/sz-entity-detail-graph/sz-standalone-graph.component';
+//import { SzStandaloneGraphComponent } from './entity/detail/sz-entity-detail-graph/sz-standalone-graph.component';
 import { SzGraphFilterComponent } from './graph/sz-graph-filter.component';
 import { SzGraphComponent } from './graph/sz-graph.component';
 // search related
-import { SzSearchComponent } from './search/sz-search/sz-search.component';
-import { SzSearchIdentifiersPickerDialogComponent, SzSearchIdentifiersPickerSheetComponent } from './search/sz-search/sz-search-identifiers-picker.component';
-import { SzSearchByIdComponent } from './search/sz-search/sz-search-by-id.component';
+//import { SzSearchComponent } from '../../deprecated/search/sz-search/sz-search.component';
+//import { SzSearchIdentifiersPickerDialogComponent, SzSearchIdentifiersPickerSheetComponent } from '../../deprecated/search/sz-search/sz-search-identifiers-picker.component';
+//import { SzSearchByIdComponent } from '../../deprecated/search/sz-search/sz-search-by-id.component';
 import { SzEntityRecordViewerComponent } from './record/sz-entity-record-viewer.component';
-//import { SzSearchResultsComponent } from './search/sz-search-results/sz-search-results.component';
-//import { SzSearchResultCardComponent } from './search/sz-search-result-card/sz-search-result-card.component';
-//import { SzSearchResultCardContentComponent } from './search/sz-search-result-card/sz-search-result-card-content/sz-search-result-card-content.component';
-//import { SzSearchResultCardHeaderComponent } from './search/sz-search-result-card/sz-search-result-card-header/sz-search-result-card-header.component';
+//import { SzSearchResultsComponent } from '../../deprecated/search/sz-search-results/sz-search-results.component';
+//import { SzSearchResultCardComponent } from '../../deprecated/search/sz-search-result-card/sz-search-result-card.component';
+//import { SzSearchResultCardContentComponent } from '../../deprecated/search/sz-search-result-card/sz-search-result-card-content/sz-search-result-card-content.component';
+//import { SzSearchResultCardHeaderComponent } from '../../deprecated/search/sz-search-result-card/sz-search-result-card-header/sz-search-result-card-header.component';
 // why related
 import { SzWhyEntityComponent } from './why/sz-why-entity.component';
 import { SzWhyEntitiesComparisonComponent } from './why/sz-why-entities.component';
@@ -168,22 +168,22 @@ const SzGrpcEnvInjector = new InjectionToken<SzGrpcWebEnvironment>("SzGrpcWebEnv
         SzCrossSourceSummaryComponent,
         SzCrossSourceSummaryMatchKeyPickerDialog,
         SzDecimalPercentPipe,
-        SzEntityDetailComponent,
-        SzEntityDetailGraphControlComponent,
-        SzEntityDetailGraphComponent,
-        SzEntityDetailGraphFilterComponent,
-        SzEntityDetailHeaderComponent,
-        SzEntityDetailHeaderContentComponent,
-        SzEntityDetailHowReportComponent,
-        SzEntityDetailSectionSummaryComponent,
-        SzEntityDetailSectionHeaderComponent,
-        SzEntityDetailSectionCollapsibleCardComponent,
-        SzEntityDetailsSectionComponent,
+        //SzEntityDetailComponent,
+        //SzEntityDetailGraphControlComponent,
+        //SzEntityDetailGraphComponent,
+        //SzEntityDetailGraphFilterComponent,
+        //SzEntityDetailHeaderComponent,
+        //SzEntityDetailHeaderContentComponent,
+        //SzEntityDetailHowReportComponent,
+        //SzEntityDetailSectionSummaryComponent,
+        //SzEntityDetailSectionHeaderComponent,
+        //SzEntityDetailSectionCollapsibleCardComponent,
+        //SzEntityDetailsSectionComponent,
         //SzEntityMatchPillComponent,
-        SzEntityRecordCardComponent,
+        //SzEntityRecordCardComponent,
         SzEntityRecordViewerComponent,
-        SzEntityRecordCardHeaderComponent,
-        SzEntityRecordCardContentComponent,
+        //SzEntityRecordCardHeaderComponent,
+        //SzEntityRecordCardContentComponent,
         SzGraphControlComponent,
         SzGraphComponent,
         SzGraphFilterComponent,
@@ -198,7 +198,7 @@ const SzGrpcEnvInjector = new InjectionToken<SzGrpcWebEnvironment>("SzGrpcWebEnv
         SzHowVirtualEntityDialog,
         SzLicenseInfoComponent,
         SzOrderedMapEntries,
-        SzMultiSelectButtonComponent,
+        //SzMultiSelectButtonComponent,
         SzPoweredByComponent,
         SzPreferencesComponent,
         SzPrefDictComponent,
@@ -208,16 +208,16 @@ const SzGrpcEnvInjector = new InjectionToken<SzGrpcWebEnvironment>("SzGrpcWebEnv
         SzRelationshipNetworkLookupComponent,
         SzRelationshipPathComponent,
         SzElementResizeObserverDirective,
-        SzSearchComponent,
-        SzSearchByIdComponent,
-        SzSearchIdentifiersPickerDialogComponent,
-        SzSearchIdentifiersPickerSheetComponent,
+        //SzSearchComponent,
+        //SzSearchByIdComponent,
+        //SzSearchIdentifiersPickerDialogComponent,
+        //SzSearchIdentifiersPickerSheetComponent,
         //SzSearchResultsComponent,
         //SzSearchResultCardComponent,
         //SzSearchResultCardContentComponent,
         //SzSearchResultCardHeaderComponent,
         SzShortNumberPipe,
-        SzStandaloneGraphComponent,
+        //SzStandaloneGraphComponent,
         SzTooltipComponent,
         SzTooltipDirective,
         SzVennDiagramsComponent,
@@ -237,11 +237,11 @@ const SzGrpcEnvInjector = new InjectionToken<SzGrpcWebEnvironment>("SzGrpcWebEnv
         SzCrossSourceStatistics,
         SzCrossSourceSummaryComponent,
         SzDecimalPercentPipe,
-        SzEntityDetailGraphComponent,
-        SzEntityDetailComponent,
-        SzEntityDetailHowReportComponent,
-        SzEntityDetailGraphControlComponent,
-        SzEntityDetailGraphFilterComponent,
+        //SzEntityDetailGraphComponent,
+        //SzEntityDetailComponent,
+        //SzEntityDetailHowReportComponent,
+        //SzEntityDetailGraphControlComponent,
+        //SzEntityDetailGraphFilterComponent,
         SzEntityRecordViewerComponent,
         SzGraphComponent,
         SzGraphControlComponent,
@@ -263,11 +263,11 @@ const SzGrpcEnvInjector = new InjectionToken<SzGrpcWebEnvironment>("SzGrpcWebEnv
         SzRelationshipNetworkLookupComponent,
         SzRelationshipPathComponent,
         SzShortNumberPipe,
-        SzSearchComponent,
-        SzSearchByIdComponent,
+        //SzSearchComponent,
+        //SzSearchByIdComponent,
         //SzSearchResultsComponent,
         //SzSearchResultCardComponent,
-        SzStandaloneGraphComponent,
+        //SzStandaloneGraphComponent,
         SzVennDiagramsComponent,
         SzWhyEntitiesComparisonComponent,
         SzWhyEntityComponent,

@@ -1,7 +1,7 @@
 import { SzResolvedEntity } from "@senzing/rest-api-client-ng";
 import { SzSdkConfigAttr } from "../models/grpc/config";
-import { SzSdkEntityFeature } from "../models/grpc/engine";
-import { SzAttrClass } from "../models/SzFeatureTypes";
+import { SzSdkEntityFeature, SzSdkSearchResolvedEntity } from "../models/grpc/engine";
+import { SzAttrClass, SzFeatureType } from "../models/SzFeatureTypes";
 import { SzGrpcConfigManagerService } from "../services/grpc/configManager.service";
 import { SzResumeEntity } from "../models/SzResumeEntity";
 
@@ -35,7 +35,32 @@ export function getStringEntityFeatures(features: {
     return retMap;
 }
 
-export function bestEntityName(entity: SzResumeEntity): string {
-    let retVal = entity?.BEST_NAME? entity.BEST_NAME : entity?.ENTITY_NAME ? entity.ENTITY_NAME : undefined;
+export function getEntityFeaturesByType(features: {
+    [key: string] : SzSdkEntityFeature[]
+ }, fTypeToAttrClassMap: Map<SzFeatureType, SzAttrClass | SzAttrClass[]>): Map<SzFeatureType, SzSdkEntityFeature[]> {
+     let retMap = new Map<SzFeatureType, SzSdkEntityFeature[]>();
+     for(let fTypeCode in features){
+        let _fTypeCodeAsType = fTypeCode as SzFeatureType;
+         let groupKey = (fTypeToAttrClassMap && fTypeToAttrClassMap.has(_fTypeCodeAsType)) ? fTypeToAttrClassMap.get(_fTypeCodeAsType) as SzAttrClass : _fTypeCodeAsType;
+         let _values     = retMap.has(groupKey) ? retMap.get(groupKey) : [];
+         let _featValues = features[fTypeCode];
+         _featValues.forEach((feat)=> {
+            _values.push(feat);
+         });
+         retMap.set(groupKey, _values);
+     }
+     return retMap;
+ }
+
+
+
+export function bestEntityName(entity: SzResumeEntity | SzSdkSearchResolvedEntity): string {
+    let retVal = undefined;
+    if((entity as SzResumeEntity).BEST_NAME) {
+        retVal = (entity as SzResumeEntity).BEST_NAME;
+    }    
+    if((entity as SzSdkSearchResolvedEntity).ENTITY_NAME) {
+        retVal = (entity as SzSdkSearchResolvedEntity).ENTITY_NAME;
+    }
     return retVal;
 }

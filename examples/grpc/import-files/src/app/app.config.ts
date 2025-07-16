@@ -17,7 +17,6 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }), 
     provideRouter(routes),
-    importProvidersFrom( SenzingSdkModule.forRoot(restSdkEnv)),
     {provide: 'GRPC_ENVIRONMENT', useValue: grpcSdkEnv}
   ]
 };

@@ -9,6 +9,9 @@ import { SzSectionDataByDataSource, SzEntityDetailSectionData } from '../../../m
 import { SzDataSourceRecordsSelection, SzWhySelectionMode, SzWhySelectionModeBehavior } from '../../../models/data-source-record-selection';
 import { CommonModule } from '@angular/common';
 import { SzEntityDetailSectionHeaderComponentGrpc } from './header.component';
+import { SzRelatedEntityMatchLevel, SzResumeRecordsByDataSource, SzResumeRelatedEntitiesByMatchKey, SzResumeRelatedEntity } from '../../../../lib/models/SzResumeEntity';
+import { SzSdkEntityRecord } from '../../../models/grpc/engine';
+import { SzGrpcConfigManagerService } from '../../../services/grpc/configManager.service';
 
 /**
  * @internal
@@ -27,23 +30,34 @@ import { SzEntityDetailSectionHeaderComponentGrpc } from './header.component';
 export class SzEntityDetailsSectionComponentGrpc implements OnDestroy {
   /** subscription to notify subscribers to unbind */
   public unsubscribe$ = new Subject<void>();
-  _sectionData: SzEntityRecord[] | SzRelatedEntity[];
-  _sectionDataByDataSource: SzSectionDataByDataSource[];
-  _sectionDataByMatchKey: SzEntityRecord[] | SzRelatedEntity[];
+  _sectionRelatedEntities: SzResumeRelatedEntity[];
+  _sectionRecords: SzSdkEntityRecord[] 
+  _sectionRecordsByDataSource: SzResumeRecordsByDataSource;
+  _sectionEntitiesByMatchKey: SzResumeRelatedEntitiesByMatchKey;
   private _showWhyUtilities: boolean = false;
   private _whySelectionMode: SzWhySelectionModeBehavior = SzWhySelectionMode.NONE;
   public dataSourceIsSelectable: boolean = true;
 
-  @Input() entity: SzEntityRecord | SzRelatedEntity;
+  @Input() entity: SzRelatedEntity;
   @Input()
-  set sectionData(value) {
+  set sectionRelatedEntities(value: SzResumeRelatedEntity[]) {
     //console.log('setting section data: ', value);
-    this._sectionData = value;
-    this._sectionDataByDataSource = this.getSectionDataByDataSource(value);
-    this._sectionDataByMatchKey = this.getSectionDataByMatchKey(value);
+    this._sectionRelatedEntities = value;
+    //this._sectionDataByDataSource = this.getSectionDataByDataSource(value);
+    this._sectionEntitiesByMatchKey = this.getSectionEntitiesByMatchKey(value);
   }
-  get sectionData() {
-    return this._sectionData;
+  get sectionRelatedEntities() {
+    return this._sectionRelatedEntities;
+  }
+  @Input()
+  set sectionRecords(value: SzSdkEntityRecord[]) {
+    //console.log('setting section data: ', value);
+    this._sectionRecords = value;
+    this._sectionRecordsByDataSource = this.getSectionRecordsByDataSource(value);
+    //this._sectionDataByMatchKey = this.getSectionDataByMatchKey(value);
+  }
+  get sectionRecords() {
+    return this._sectionRecords;
   }
   @Input() sectionTitle: string;
   @Input() sectionCount: number;
@@ -101,7 +115,10 @@ export class SzEntityDetailsSectionComponentGrpc implements OnDestroy {
     this._whySelectionMode = value;
   }
 
-  constructor(public breakpointObserver: BreakpointObserver) { }
+  constructor(
+    public breakpointObserver: BreakpointObserver,
+    private configManager: SzGrpcConfigManagerService
+  ) { }
 
   /**
    * This is used to query for all columns displayed for an  
@@ -113,14 +130,25 @@ export class SzEntityDetailsSectionComponentGrpc implements OnDestroy {
     let retVal = [false, false, false, false];
     if(this.showByDataSource){
       let sectionDataRecords  = []; // we just want all possible displayed columns anyway
-      this._sectionDataByDataSource.forEach( (sectionData: SzSectionDataByDataSource) => {
-        if(sectionData && sectionData.records) {
-          sectionDataRecords  = sectionDataRecords.concat( sectionData.records );
-        }
-      });
+      
+      if(this._sectionRecordsByDataSource) {
+        this._sectionRecordsByDataSource.forEach((byDSPair)=>{
+          if(byDSPair && byDSPair.length > 0 && byDSPair[1]) {
+            sectionDataRecords  = sectionDataRecords.concat( byDSPair[1] );
+          }
+        });
+      }
+      if(this._sectionEntitiesByMatchKey) {
+        this._sectionEntitiesByMatchKey.forEach((byMKPair)=> {
+          if(byMKPair && byMKPair.length > 0 && byMKPair[1]) {
+            sectionDataRecords  = sectionDataRecords.concat( byMKPair[1] );
+          }
+        });
+      }
+      
       let _allRecordCols = [];
-      sectionDataRecords.forEach((sectionData: SzEntityRecord | SzRelatedEntity) => {
-        _allRecordCols.push( SzEntityRecordCardContentComponentGrpc.getColumnsThatWouldBeDisplayedForData( sectionData ) );
+      sectionDataRecords.forEach((sectionData: SzSdkEntityRecord | SzResumeRelatedEntity) => {
+        _allRecordCols.push( SzEntityRecordCardContentComponentGrpc.getColumnsThatWouldBeDisplayedForData( sectionData, this.configManager.fTypeToAttrClassMap ) );
       });
       // now condense to flattened array
       _allRecordCols.forEach((recordCols: boolean[]) => {
@@ -134,6 +162,12 @@ export class SzEntityDetailsSectionComponentGrpc implements OnDestroy {
       // TODO: do alignment for other sections
     }
     return retVal;
+  }
+  public getDataSourceRecordsAsMap(tuple: [string, SzSdkEntityRecord[]]) {
+    return new Map([tuple]) as SzResumeRecordsByDataSource;
+  }
+  public getRelatedEntitiesAsMap(tuple: [string, SzResumeRelatedEntity[]]) {
+    return new Map([tuple]) as SzResumeRelatedEntitiesByMatchKey;
   }
   public get showWhyUtilities(): boolean {
     //return this._showWhyUtilities;
@@ -217,54 +251,45 @@ export class SzEntityDetailsSectionComponentGrpc implements OnDestroy {
     return false;
   }
 
-  private getSectionDataByDataSource(sectionData): SzSectionDataByDataSource[] {
-    const _ret = sectionData;
-    const byDS = {};
+  private getSectionRecordsByDataSource(records: SzSdkEntityRecord[]): SzResumeRecordsByDataSource {
+    const _ret = new Map<string, SzSdkEntityRecord[]>();
     const dsAsArray = [];
     if (_ret) {
-      _ret.forEach(element => {
+      //records.forEach(element => {
         //console.log('\t\t item: ',element);
-        if ( element && element.records ) {
-          element.records.forEach( innerelement => {
+        if ( records && records.forEach ) {
+          records.forEach( innerelement => {
             //console.log('\t\t\trecords: ', element.records);
-            if ( !byDS[ innerelement.dataSource ]) { byDS[ innerelement.dataSource ] = {dataSource: innerelement.dataSource, records: []}; }
-            byDS[ innerelement.dataSource ].records.push(innerelement);
+            if (!_ret.has( innerelement.DATA_SOURCE) ) { _ret.set(innerelement.DATA_SOURCE, []); }
+            let _currentRecords = _ret.get(innerelement.DATA_SOURCE);
+            _currentRecords.push(innerelement);
+            _ret.set(innerelement.DATA_SOURCE, _currentRecords);
           });
-        } else if ( element && element.dataSource ) {
-          if ( !byDS[ element.dataSource ]) { byDS[ element.dataSource ] = {dataSource: element.dataSource, records: []}; }
-          byDS[ element.dataSource ].records.push(element);
         }
-      });
-    }
-    if (byDS) {
-      for (const _k in byDS) {
-        dsAsArray.push(byDS[_k]);
-      }
     }
     //if (_ret && _ret.length > 0) { console.log('records by source: ', dsAsArray); }
-    return dsAsArray;
+    return _ret;
   }
 
-  private getSectionDataByMatchKey(sectionData) {
-    const _ret = sectionData;
-
-    const _retByMK = {};
-    const _retByMKAsArray = [];
-    if(_ret && _ret.forEach) {
-      _ret.forEach(matchGroup => {
-        if(! _retByMK[ matchGroup.matchKey]) {
-          _retByMK[ matchGroup.matchKey] = {matchKey: matchGroup.matchKey, records: []};
+  private getSectionEntitiesByMatchKey(relatedEntities: SzResumeRelatedEntity[]): SzResumeRelatedEntitiesByMatchKey {
+    const _ret = new Map<string, SzResumeRelatedEntity[]>();
+    if(relatedEntities && relatedEntities.forEach) {
+      relatedEntities.forEach(relatedEntity => {
+        if(! _ret.has(relatedEntity.MATCH_KEY)) {
+          _ret.set(relatedEntity.MATCH_KEY, []);
         }
-        _retByMK[ matchGroup.matchKey].records.push(matchGroup);
+        let currentEntities = _ret.get(relatedEntity.MATCH_KEY);
+        currentEntities.push(relatedEntity);
+        _ret.set(relatedEntity.MATCH_KEY, currentEntities);
       });
     }
 
-    if (_retByMK) {
+    /*if (_retByMK) {
       for (const _k in _retByMK) {
         _retByMKAsArray.push(_retByMK[_k]);
       }
-    }
-    return _retByMKAsArray;
+    }*/
+    return _ret;
   }
 
   get showIcon(): boolean {

@@ -63,15 +63,15 @@
     [forceLayout]="_forceLayout"
     [layoutClasses]="_layoutEnforcers">
   </sz-entity-detail-section-how-report>
-
-  <sz-entity-details-section class="details-section datasources"
-    *ngIf="entity?.resolvedEntity?.records?.length && this.showMatchesSection"
+-->
+  <sz-entity-details-section-grpc class="details-section datasources"
+    *ngIf="this._matches.length && this.showMatchesSection"
     collapsedStatePrefsKey="recordsSectionCollapsed"
     (onCollapsedChange)="this.onSectionCollapsedChange('recordsSectionCollapsed', $event)"
-    [sectionData]="entity?.resolvedEntity?.records"
+    [sectionRecords]="this._matches"
     [sectionTitle]="'Matched Records'"
     sectionId="detail-section-1"
-    [sectionCount]="entity?.resolvedEntity?.records?.length"
+    [sectionCount]="this._matches?.length"
     [showWhyUtilities]="showRecordWhyUtilities"
     [whySelectionMode]="whySelectionMode"
     (onCompareRecordsForWhy)="onCompareRecordsForWhy($event)"
@@ -80,13 +80,14 @@
     [showNameDataInEntities]="showNameDataInMatchesSection"
     (dataSourceRecordsSelected)="onDataSourceRecordsSelected($event)"
     (entityRecordClick)="onEntityRecordClick($event)">
-  </sz-entity-details-section>
+  </sz-entity-details-section-grpc>
 
-  <sz-entity-details-section class="details-section possible"
+  this._possibleMatches?.length ? "{{this._possibleMatches?.length}}"
+  <sz-entity-details-section-grpc class="details-section possible"
     *ngIf="this._possibleMatches?.length && this.showPossibleMatchesSection"
     collapsedStatePrefsKey="possibleMatchesSectionCollapsed"
     (onCollapsedChange)="this.onSectionCollapsedChange('possibleMatchesSectionCollapsed', $event)"
-    [sectionData]="this._possibleMatches"
+    [sectionRelatedEntities]="this._possibleMatches"
     [sectionTitle]="'Possible Matches'"
     sectionId="detail-section-2"
     [sectionCount]="this._possibleMatches?.length"
@@ -98,8 +99,8 @@
     (onCollapsedChange)="this.onSectionCollapsedChange('possibleMatches', $event)"
     (entityRecordClick)="onEntityRecordClick($event)"
     (onCompareEntitiesForWhyNot)="onCompareEntitiesForWhyNot($event)">
-  </sz-entity-details-section>
-  <sz-entity-details-section class="details-section discovered"
+  </sz-entity-details-section-grpc>
+  <!--<sz-entity-details-section class="details-section discovered"
     *ngIf="this._discoveredRelationships?.length && this.showPossibleRelationshipsSection"
     collapsedStatePrefsKey="possibleRelationshipsSectionCollapsed"
     (onCollapsedChange)="this.onSectionCollapsedChange('possibleRelationshipsSectionCollapsed', $event)"

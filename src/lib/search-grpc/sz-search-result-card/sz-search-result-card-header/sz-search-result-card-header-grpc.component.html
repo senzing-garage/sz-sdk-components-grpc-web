@@ -1,0 +1,27 @@
+<div class="search-card__header--wrapper" [ngClass]="{'no-background': hideBackGroundColor}">
+    <i *ngIf="alert" class="senzing-alert search-card__header--alert"></i>
+    <header class="search-card__header">
+      <span>
+        <a class="search__link"
+           *ngIf="entityDetailsLink">
+          <span>{{ entityDetailsLinkName | titlecase}}&nbsp;</span>
+        </a>
+      </span>
+      <ng-template #bestName><a class="search__link">{{bestName}}</a></ng-template>
+      <div *ngIf="recordSummariesExist && showDataSources" class="breakdown-container">
+        <span *ngFor="let info of recordSummaries"
+              class="search-card__header--breakdown ellipsis">
+           | {{info?.DATA_SOURCE}} ({{info?.RECORD_COUNT}})<!-- {{info?.topRecordIds[0]}} -->
+        </span>
+      </div>
+    </header>
+    <div *ngIf="showMatchKey" class="search-card__header--matchkey">
+      <ng-container *ngIf="matchPills?.length > 0">
+        <sz-entity-match-pill
+          *ngFor="let pill of matchPills"
+          [text]="pill.text"
+          [plusMinus]="pill.plusMinus">
+        </sz-entity-match-pill>
+      </ng-container>
+    </div>
+  </div>

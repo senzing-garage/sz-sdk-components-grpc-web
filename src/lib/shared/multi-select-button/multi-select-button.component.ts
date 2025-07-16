@@ -1,5 +1,9 @@
+import { CommonModule } from '@angular/common';
 import { TemplateLiteral } from '@angular/compiler';
 import { Component, OnInit, Input, OnDestroy, AfterViewInit, Output, EventEmitter } from '@angular/core';
+import { MatBadgeModule } from '@angular/material/badge';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { Subject } from 'rxjs';
 
 /**
@@ -13,7 +17,8 @@ import { Subject } from 'rxjs';
     selector: 'sz-button-multi-select',
     templateUrl: './multi-select-button.component.html',
     styleUrls: ['./multi-select-button.component.scss'],
-    standalone: false
+    imports: [CommonModule, MatIconModule, MatTooltipModule, MatBadgeModule],
+    standalone: true
 })
 export class SzMultiSelectButtonComponent implements OnInit, OnDestroy, AfterViewInit {
     /** subscription to notify subscribers to unbind */

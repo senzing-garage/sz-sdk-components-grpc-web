@@ -4,7 +4,7 @@ import { Observable, Subject, take, takeUntil } from 'rxjs';
 import { SzProductLicenseResponse, SzProductVersionResponse } from '../../../lib/models/grpc/product';
 import { SzGrpcConfig } from './config.service';
 import { SzSdkConfigAttr, SzSdkConfigFeatureType, SzSdkConfigJson } from '../../models/grpc/config';
-import { SzAttrClass } from 'src/lib/models/SzFeatureTypes';
+import { SzAttrClass, SzFeatureType } from 'src/lib/models/SzFeatureTypes';
 
 @Injectable({
   providedIn: 'root'
@@ -16,7 +16,7 @@ export class SzGrpcConfigManagerService {
     private _config: SzGrpcConfig;
     public attrs: SzSdkConfigAttr[];
     public featureTypes: SzSdkConfigFeatureType[];
-    public fTypeToAttrClassMap: Map<string, SzAttrClass | SzAttrClass[]>;
+    public fTypeToAttrClassMap: Map<SzFeatureType, SzAttrClass | SzAttrClass[]>;
 
     public get defaultConfigId(): number {
         return this._defaultConfigId;
@@ -158,19 +158,19 @@ export class SzGrpcConfigManagerService {
         return retVal;
     }
 
-    private static getFTypeToAttrClassMap(attrs: SzSdkConfigAttr[]): Map<string, SzAttrClass | SzAttrClass[]> {
-        let expVal      = new Map<string, SzAttrClass[]>();
-        let retVal      = new Map<string, SzAttrClass | SzAttrClass[]>();
+    private static getFTypeToAttrClassMap(attrs: SzSdkConfigAttr[]): Map<SzFeatureType, SzAttrClass | SzAttrClass[]> {
+        let expVal      = new Map<SzFeatureType, SzAttrClass[]>();
+        let retVal      = new Map<SzFeatureType, SzAttrClass | SzAttrClass[]>();
 
         attrs.forEach((attr) => {
-            let fTypeCode = attr.FTYPE_CODE ? attr.FTYPE_CODE : "OTHER";
+            let fTypeCode = attr.FTYPE_CODE ? attr.FTYPE_CODE as SzFeatureType : "OTHER" as SzFeatureType;
             let attrClass = attr.ATTR_CLASS;
             let _v = expVal.has(fTypeCode) ? expVal.get(fTypeCode) : [];
             if(!_v.includes(attrClass)) { _v.push(attr.ATTR_CLASS); }
             expVal.set(fTypeCode, _v);
             if(!attr.FTYPE_CODE){
                 // add a separate entry where the "ATTR_CODE" is the key
-                expVal.set(attr.ATTR_CODE, [attrClass]);
+                expVal.set(attr.ATTR_CODE as SzFeatureType, [attrClass]);
             }
             
         });

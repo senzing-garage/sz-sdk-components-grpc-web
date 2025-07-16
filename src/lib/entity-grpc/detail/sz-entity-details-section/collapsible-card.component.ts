@@ -11,6 +11,8 @@ import { SzMultiSelectButtonComponent } from '../../../shared/multi-select-butto
 
 import { SzEntityRecordCardHeaderComponentGrpc } from '../../sz-entity-record-card/sz-entity-record-card-header/sz-entity-record-card-header.component';
 import { SzEntityRecordCardContentComponentGrpc } from '../../sz-entity-record-card/sz-entity-record-card-content/sz-entity-record-card-content.component';
+import { SzResumeRecordsByDataSource, SzResumeRelatedEntitiesByMatchKey, SzResumeRelatedEntity } from '../../../models/SzResumeEntity';
+import { SzSdkEntityRecord } from 'src/lib/models/grpc/engine';
 
 /**
  * @internal
@@ -20,7 +22,11 @@ import { SzEntityRecordCardContentComponentGrpc } from '../../sz-entity-record-c
     selector: 'sz-entity-detail-section-collapsible-card-grpc',
     templateUrl: './collapsible-card.component.html',
     styleUrls: ['./collapsible-card.component.scss'],
-    imports: [CommonModule, SzEntityRecordCardHeaderComponentGrpc, SzEntityRecordCardContentComponentGrpc]
+    imports: [CommonModule, 
+      SzEntityRecordCardHeaderComponentGrpc, 
+      SzEntityRecordCardContentComponentGrpc,
+      SzMultiSelectButtonComponent
+    ]
 })
 export class SzEntityDetailSectionCollapsibleCardComponentGrpc implements OnInit, OnDestroy {
   @ViewChild('messages') private messagesContainer: HTMLElement;
@@ -29,7 +35,7 @@ export class SzEntityDetailSectionCollapsibleCardComponentGrpc implements OnInit
 
   @Input() showIcon = true;
   @Input() headerIcon: string;
-  @Input() cardTitle: string;
+  //@Input() cardTitle: string;
   @Input() public layoutClasses: string[] = [];
 
   @Input() public showNameDataInEntities: boolean = true;
@@ -87,11 +93,14 @@ export class SzEntityDetailSectionCollapsibleCardComponentGrpc implements OnInit
 
   @Input() displayType: string = 'entity';
   @Input() truncateResults: boolean = true;
-  @Input() cardData: SzEntityDetailSectionData | SzSectionDataByDataSource | undefined;
-  
+
+  //@Input() cardData: SzEntityDetailSectionData | SzSectionDataByDataSource | undefined;
+  @Input() entitiesByMatchKey: SzResumeRelatedEntitiesByMatchKey;
+  @Input() recordsByDataSource: SzResumeRecordsByDataSource;
+
   isOpen: boolean = false;
   matchPills: { text: string, ambiguous: boolean, plusMinus: string }[];
-  headerTitleText: string;
+  //headerTitleText: string;
 
   @Output()
   public entityRecordClick: EventEmitter<number> = new EventEmitter<number>();
@@ -111,25 +120,34 @@ export class SzEntityDetailSectionCollapsibleCardComponentGrpc implements OnInit
     this.unsubscribe$.next();
     this.unsubscribe$.complete();
   }
-  // DO NOT DELETE THIS
-  // The compiler is dumb and things that property "cardData" is of type "never" which 
-  // is literally NEVER true. it is NEVER "never" and always <SzEntityDetailSectionData | SzSectionDataByDataSource>
-  get cardDataAsAny(): any {
-    return this.cardData as any;
-  }
 
   get recordCount() {
-    return (this.cardData && this.cardData.records) ? this.cardData.records.length : 0;
+    let retVal = 0;
+    this.recordsByDataSource && this.recordsByDataSource.forEach((records, key)=> {
+      retVal += records.length;
+    })
+    return retVal;
   }
+
+  public get cardTitle() {
+    let retValue = '';
+    if(this.recordsByDataSource && this.recordsByDataSource.size > 0 &&  this.recordsByDataSource.keys.length === 1) {
+      retValue =  this.recordsByDataSource.keys[0];
+    } else if(this.entitiesByMatchKey && this.entitiesByMatchKey.size > 0 &&  this.entitiesByMatchKey.keys.length === 1) {
+      retValue =  this.entitiesByMatchKey.keys[0];
+    }
+    return retValue;
+  }
+
   /** is responsible for deciding whether or not the 'selected' css class is applied
    * to the "sz-entity-record-card-content" component when it's a record
    */
-  public isRecordSelected(value: SzEntityRecord) {
-    if(this.isMultiSelect && value.dataSource && value.recordId) {
+  public isRecordSelected(value: SzSdkEntityRecord) {
+    if(this.isMultiSelect && value.DATA_SOURCE && value.RECORD_ID) {
       let dataSources = Object.keys(this._dataSourceRecordsSelected);
-      if(dataSources.indexOf(value.dataSource) > -1) {
+      if(dataSources.indexOf(value.DATA_SOURCE) > -1) {
         // datasource exists, now check for record
-        return this._dataSourceRecordsSelected[value.dataSource].indexOf(value.recordId) > -1 ? true : false;
+        return this._dataSourceRecordsSelected[value.DATA_SOURCE].indexOf(value.RECORD_ID) > -1 ? true : false;
       }
     }
     return false;
@@ -138,28 +156,27 @@ export class SzEntityDetailSectionCollapsibleCardComponentGrpc implements OnInit
   /** is responsible for deciding whether or not the 'selected' css class is applied
    * to the "sz-entity-record-card-content" component when it's an entity
    */
-  public isRelatedEntitySelected(value: SzEntityRecord) {
-
-    /*
-    if(this.isMultiSelect && value.dataSource && value.recordId) {
-      let dataSources = Object.keys(this._dataSourceRecordsSelected);
-      if(dataSources.indexOf(value.dataSource) > -1) {
-        // datasource exists, now check for record
-        return this._dataSourceRecordsSelected[value.dataSource].indexOf(value.recordId) > -1 ? true : false;
-      }
-    }
-    */
+  public isRelatedEntitySelected(value: SzResumeRelatedEntity) {
     return false;
   }
   
 
   ngOnInit() {
     //console.log('CARD DATA: ', this.cardData);
-    this.matchPills = this.createPillInfo(this.cardData);
+    this.matchPills = this.createPillInfo(this.entitiesByMatchKey);
     //console.log('MATCH PILLS! ', this.matchPills);
     //this.matchPills = this.createMatchPillInfo(this.cardData.records);
-    this.headerTitleText = !this.isEntityRecord(this.cardData) && this.cardData && (this.cardData as any).dataSource ? (this.cardData as any).dataSource + (this.recordCount > 0 ? '(' + this.recordCount + ')' : '') : '';
-
+    /*if(this.isEntityRecord()) {
+      // showing records
+      let _title = '';
+      this.recordsByDataSource.forEach((values, matchKey)=>{
+        values.forEach((record)=>{
+          record.DATA_SOURCE
+        })
+      })
+    } else if(this.entitiesByMatchKey && this.entitiesByMatchKey.size > 0){
+      // showing entities
+    }*/
     this.prefs.entityDetail.prefsChanged.pipe(
       takeUntil(this.unsubscribe$)
     ).subscribe( this.onPrefsChange.bind(this) );
@@ -246,8 +263,8 @@ export class SzEntityDetailSectionCollapsibleCardComponentGrpc implements OnInit
     return retArr.join(' ');
   }
 
-  isEntityRecord(data: SzEntityDetailSectionData | SzEntityRecord): data is SzEntityRecord {
-    return (this.displayType === 'entity');
+  isEntityRecord(): boolean {
+    return !(this.recordsByDataSource && this.recordsByDataSource.size > 0 && !this.entitiesByMatchKey);
     //return (<EntityRecord>data).relationshipData !== undefined;
   }
 
@@ -339,16 +356,21 @@ export class SzEntityDetailSectionCollapsibleCardComponentGrpc implements OnInit
     return false;
   }
 
-  private createPillInfo(data: SzEntityDetailSectionData | SzSectionDataByDataSource): { text: string, ambiguous: boolean, plusMinus: string }[] {
-    if(data && ((data as SzEntityDetailSectionData).matchKey)) {
-      const pills = (data as SzEntityDetailSectionData).matchKey
-      .split(/[-](?=\w)/)
-      .filter(i => !!i)
-      .map(item => item.startsWith('+') ? item : `-${item}`)
-      .map(item => {
-        return { text: item.replace('(Ambiguous)', ''), plusMinus: item.startsWith('+') ? 'plus' : 'minus', ambiguous: (item.indexOf('(Ambiguous)') > -1) };
-      });
-      return pills;
+  private createPillInfo(data: SzResumeRelatedEntitiesByMatchKey | SzResumeRecordsByDataSource): { text: string, ambiguous: boolean, plusMinus: string }[] {
+    if(data && ((data as SzResumeRelatedEntitiesByMatchKey).size > 0)) {
+      let retVal = [];
+      let relatedEntities = (data as SzResumeRelatedEntitiesByMatchKey);
+      relatedEntities.forEach((value, key)=>{
+        const pills = key
+        .split(/[-](?=\w)/)
+        .filter(i => !!i)
+        .map(item => item.startsWith('+') ? item : `-${item}`)
+        .map(item => {
+          return { text: item.replace('(Ambiguous)', ''), plusMinus: item.startsWith('+') ? 'plus' : 'minus', ambiguous: (item.indexOf('(Ambiguous)') > -1) };
+        });
+        retVal = retVal.concat(pills);
+      })
+      return retVal;
     }
     return undefined;
   }

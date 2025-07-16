@@ -1,7 +1,9 @@
+import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
 import {
   SzEntityRecord
 } from '@senzing/rest-api-client-ng';
+import { SzEntityRecordCardContentComponentGrpc } from '../entity-grpc/sz-entity-record-card/sz-entity-record-card-content/sz-entity-record-card-content.component';
 
 /**
  * A component for displaying the result(s) of the sz-search-by-id component
@@ -33,7 +35,9 @@ import {
     selector: 'sz-entity-record-viewer',
     templateUrl: './sz-entity-record-viewer.component.html',
     styleUrls: ['./sz-entity-record-viewer.component.scss'],
-    standalone: false
+    imports: [
+      CommonModule, SzEntityRecordCardContentComponentGrpc
+    ]
 })
 export class SzEntityRecordViewerComponent {
   /** the record to display */

@@ -11,12 +11,12 @@ import {
   EntityDataService as SzEntityDataService,
   SzEntityData
 } from '@senzing/rest-api-client-ng';
-import { SzEntitySearchParams } from '../../models/entity-search';
-import { SzSearchService } from '../../services/sz-search.service';
-import { JSONScrubber } from '../../common/utils';
-import { SzConfigurationService } from '../../services/sz-configuration.service';
-import { SzPrefsService } from '../../services/sz-prefs.service';
-import { SzDataSourcesService } from '../../services/sz-datasources.service';
+import { SzEntitySearchParams } from '../../../src/lib/models/entity-search';
+import { SzSearchService } from '../../../src/lib/services/sz-search.service';
+import { JSONScrubber } from '../../../src/lib/common/utils';
+import { SzConfigurationService } from '../../../src/lib/services/sz-configuration.service';
+import { SzPrefsService } from '../../../src/lib/services/sz-prefs.service';
+import { SzDataSourcesService } from '../../../src/lib/services/sz-datasources.service';
 
 /** @internal */
 export interface SzSearchByIdFormParams {

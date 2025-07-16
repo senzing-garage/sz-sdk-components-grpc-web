@@ -6,11 +6,11 @@
   [ngClass]="layoutClasses"
   (click)="onRecordCardContentClicked($event); truncateResults=!truncateResults">
     <div class="search-card__content--column otherData" #columnOne  *ngIf="showColumnOne">
-      <div class="line" *ngIf="entity?.recordId && showRecordIdWhenNative"><span [class.ellipsis]="truncateResults">Record Id: {{entity.recordId}}</span></div>
+      <div class="line" *ngIf="record?.RECORD_ID && showRecordIdWhenNative"><span [class.ellipsis]="truncateResults">Record Id: {{record?.RECORD_ID}}</span></div>
       <div class="line" [class.truncated]="i >= truncateOtherDataAt && truncateResults"
         *ngFor="let otherData of otherData; let i = index">
         <span *ngIf="(i < truncateOtherDataAt || truncateOtherDataAt < 0 || !truncateResults) && showOtherData" [class.ellipsis]="truncateResults">
-          {{otherData}}
+          {{otherData.FEAT_DESC}}
         </span>
       </div>
       <span class="ellipsis-toggle" matTooltip="truncatedTooltip"
@@ -18,9 +18,9 @@
       *ngIf="columnOneTotal > truncateOtherDataAt && truncateResults">...</span>
     </div>
     <div class="search-card__content--column nameData attrData" #columnTwo *ngIf="showColumnTwo">
-      <div class="line" [class.truncated]="i >= maxLinesToDisplay && truncateResults" *ngFor="let nameAttributeData of getNameAndAttributeData(nameData, attributeData); let i = index">
+      <div class="line" [class.truncated]="i >= maxLinesToDisplay && truncateResults" *ngFor="let nameAttributeData of nameAndAttributeData; let i = index">
         <span *ngIf="i < maxLinesToDisplay || !truncateResults" [class.ellipsis]="truncateResults">
-          {{nameAttributeData}}
+          {{nameAttributeData.FEAT_DESC}}
         </span>
       </div>
       <span class="ellipsis-toggle" matTooltip="truncatedTooltip"
@@ -28,12 +28,12 @@
       *ngIf="columnTwoTotal > maxLinesToDisplay && truncateResults">...</span>
     </div>
     <div class="search-card__content--column addressData addressPhoneData" #columnThree *ngIf="showColumnThree">
-      <div class="line" [class.truncated]="i >= maxLinesToDisplay && truncateResults" *ngFor="let addressPhoneData of getAddressAndPhoneData(addressData, phoneData);
+      <div class="line" [class.truncated]="i >= maxLinesToDisplay && truncateResults" *ngFor="let addressPhoneData of addressAndPhoneData;
       let i = index">
         <span *ngIf="i < maxLinesToDisplay || !truncateResults"
         [class.linked-attribute]="isLinkedAttribute(addressPhoneData)"
         [class.ellipsis]="truncateResults">
-          {{addressPhoneData}}
+          {{addressPhoneData.FEAT_DESC}}
         </span>
       </div>
       <span class="ellipsis-toggle" matTooltip="truncatedTooltip"
@@ -45,7 +45,7 @@
         <span *ngIf="i < maxLinesToDisplay || !truncateResults"
         [class.linked-attribute]="isLinkedAttribute(identificationData)"
         [class.ellipsis]="truncateResults">
-          {{identificationData}}
+          {{identificationData.FEAT_DESC}}
         </span>
       </div>
       <span class="ellipsis-toggle" matTooltip="truncatedTooltip"

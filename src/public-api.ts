@@ -7,7 +7,7 @@ export * from '@senzing/rest-api-client-ng';
 
 /** utilities */
 export * from './lib/common/utils';
-export * from './lib/entity/entity-utils';
+export * from './lib/common/entity-utils';
 
 /** services */
 export * from './lib/services/sz-message-bundle.service';
@@ -36,14 +36,14 @@ export * from './lib/services/sz-how-ui.service';
   export { SzBulkDataLoadSummaryComponent } from './lib/bulk-data/sz-bulk-data-load-summary.component';
   */
 
-export * from './lib/search/sz-search/sz-search.component';
-export { SzSearchByIdComponent, SzSearchByIdFormParams } from './lib/search/sz-search/sz-search-by-id.component';
+//export * from '../deprecated/search/sz-search/sz-search.component';
+//export { SzSearchByIdComponent, SzSearchByIdFormParams } from '../deprecated/search/sz-search/sz-search-by-id.component';
 export { SzEntityRecordViewerComponent } from './lib/record/sz-entity-record-viewer.component';
 //export * from './lib/search/sz-search-results/sz-search-results.component';
 //export * from './lib/search/sz-search-result-card/sz-search-result-card.component';
-export * from './lib/entity/detail/sz-entity-detail.component';
-export * from './lib/entity/detail/sz-entity-detail-graph/sz-entity-detail-graph.component';
-export * from './lib/entity/detail/sz-entity-detail-how-report/sz-entity-detail-how-report.component';
+//export * from './lib/entity/detail/sz-entity-detail.component';
+//export * from './lib/entity/detail/sz-entity-detail-graph/sz-entity-detail-graph.component';
+//export * from './lib/entity/detail/sz-entity-detail-how-report/sz-entity-detail-how-report.component';
 
 /** graph related */
 export { SzRelationshipNetworkComponent } from './lib/graph/sz-relationship-network/sz-relationship-network.component';
@@ -53,10 +53,10 @@ export { SzRelationshipPathComponent } from './lib/graph/sz-relationship-path/sz
 export { SzGraphComponent } from './lib/graph/sz-graph.component';
 export * from './lib/graph/sz-graph-control.component';
 export * from './lib/graph/sz-graph-filter.component';
-export { SzEntityDetailGraphComponent } from './lib/entity/detail/sz-entity-detail-graph/sz-entity-detail-graph.component';
-export { SzStandaloneGraphComponent } from './lib/entity/detail/sz-entity-detail-graph/sz-standalone-graph.component';
-export * from './lib/entity/detail/sz-entity-detail-graph/sz-entity-detail-graph-control.component';
-export * from './lib/entity/detail/sz-entity-detail-graph/sz-entity-detail-graph-filter.component';
+//export { SzEntityDetailGraphComponent } from './lib/entity/detail/sz-entity-detail-graph/sz-entity-detail-graph.component';
+//export { SzStandaloneGraphComponent } from './lib/entity/detail/sz-entity-detail-graph/sz-standalone-graph.component';
+//export * from './lib/entity/detail/sz-entity-detail-graph/sz-entity-detail-graph-control.component';
+//export * from './lib/entity/detail/sz-entity-detail-graph/sz-entity-detail-graph-filter.component';
 /* charts */
 export { SzRecordStatsDonutChart } from './lib/charts/records-by-datasources/sz-donut.component'
 /** shared */
