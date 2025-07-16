@@ -22,7 +22,7 @@ import { SzSearchResultCardGrpcComponent } from '../sz-search-result-card/sz-sea
     selector: 'sz-search-results-grpc',
     templateUrl: './sz-search-results.component.html',
     styleUrls: ['./sz-search-results.component.scss'],
-    imports: [CommonModule, SzSearchResultCardGrpcComponent]
+    imports: [CommonModule, TitleCasePipe, SzSearchResultCardGrpcComponent]
 })
 export class SzSearchResultsGrpcComponent implements OnInit, OnDestroy {
     /** subscription to notify subscribers to unbind */
@@ -233,8 +233,11 @@ export class SzSearchResultsGrpcComponent implements OnInit, OnDestroy {
             'DRIVERS_LICENSE_NUMBER':'DL#'
             }
             let retVal = {attr: key, value: this._searchValue[key]};                  // temp const
-            if(humanKeys[retVal.attr]){ retVal.attr = humanKeys[retVal.attr]; };      // repl enum val with human readable
-            retVal.attr = this.titleCasePipe.transform(retVal.attr.replace(/_/g,' ')); // titlecase trans
+            if(humanKeys[retVal.attr]){ retVal.attr = humanKeys[retVal.attr]; };    // repl enum val with human readable
+            
+            let _tCasePipe : TitleCasePipe = new TitleCasePipe();
+            retVal.attr = _tCasePipe.transform(retVal.attr.replace(/_/g,' ')); // titlecase trans
+            //retVal.attr = this.titleCasePipe.transform(retVal.attr.replace(/_/g,' ')); // titlecase trans
 
             return retVal
         })
@@ -366,7 +369,6 @@ export class SzSearchResultsGrpcComponent implements OnInit, OnDestroy {
     }
 
     constructor(
-        private titleCasePipe: TitleCasePipe,
         private prefs: SzPrefsService,
         private cd: ChangeDetectorRef,
         public dialog: MatDialog

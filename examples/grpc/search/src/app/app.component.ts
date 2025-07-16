@@ -1,14 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { Component, ViewChild } from '@angular/core';
 import { 
-  SzEntityDetailComponent, SzEntityIdentifier, SzEntitySearchParams
+  SzEntityIdentifier, SzEntitySearchParams
 } from '@senzing/sdk-components-grpc-web';
 
 // new grpc components
 import {
   SzSearchGrpcComponent, 
   SzSearchResultsGrpcComponent,
-  SzEntityDetailComponentGrpc,
   SzGrpcConfigManagerService
 } from '@senzing/sdk-components-grpc-web';
 // new grpc models
@@ -26,8 +25,7 @@ import {
   selector: 'app-root',
   imports: [
     CommonModule,
-    SzSearchGrpcComponent, SzSearchResultsGrpcComponent,
-    SzEntityDetailComponentGrpc
+    SzSearchGrpcComponent, SzSearchResultsGrpcComponent
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
@@ -41,15 +39,15 @@ export class AppComponent {
   public _showEntityDetail   = false;
   public _showHowReport      = false;
   public set showGraphMatchKeys(value: boolean) {
-    if (this.entityDetailComponent){
-      this.entityDetailComponent.showGraphMatchKeys = value;
-    }
+    //if (this.entityDetailComponent){
+    //  this.entityDetailComponent.showGraphMatchKeys = value;
+    //}
   }
   public get showGraphMatchKeys(): boolean {
-    if (this.entityDetailComponent){
+    //if (this.entityDetailComponent){
       // console.log('showGraphMatchKeys: ', this.entityDetailComponent.showGraphMatchKeys);
-      return this.entityDetailComponent.showGraphMatchKeys;
-    }
+    //  return this.entityDetailComponent.showGraphMatchKeys;
+    //}
    return false;
   }
 
@@ -70,7 +68,7 @@ export class AppComponent {
     return false;
   }
   @ViewChild('searchBox') searchBox: SzSearchGrpcComponent;
-  @ViewChild(SzEntityDetailComponent) entityDetailComponent: SzEntityDetailComponent;
+  //@ViewChild(SzEntityDetailComponentGrpc) entityDetailComponent: SzEntityDetailComponentGrpc;
 
   onSearchException(err: Error) {
     throw (err.message);

@@ -87,7 +87,7 @@ import { SzGraphComponent } from './graph/sz-graph.component';
 //import { SzSearchComponent } from '../../deprecated/search/sz-search/sz-search.component';
 //import { SzSearchIdentifiersPickerDialogComponent, SzSearchIdentifiersPickerSheetComponent } from '../../deprecated/search/sz-search/sz-search-identifiers-picker.component';
 //import { SzSearchByIdComponent } from '../../deprecated/search/sz-search/sz-search-by-id.component';
-import { SzEntityRecordViewerComponent } from './record/sz-entity-record-viewer.component';
+//import { SzEntityRecordViewerComponent } from './record/sz-entity-record-viewer.component';
 //import { SzSearchResultsComponent } from '../../deprecated/search/sz-search-results/sz-search-results.component';
 //import { SzSearchResultCardComponent } from '../../deprecated/search/sz-search-result-card/sz-search-result-card.component';
 //import { SzSearchResultCardContentComponent } from '../../deprecated/search/sz-search-result-card/sz-search-result-card-content/sz-search-result-card-content.component';
@@ -181,7 +181,7 @@ const SzGrpcEnvInjector = new InjectionToken<SzGrpcWebEnvironment>("SzGrpcWebEnv
         //SzEntityDetailsSectionComponent,
         //SzEntityMatchPillComponent,
         //SzEntityRecordCardComponent,
-        SzEntityRecordViewerComponent,
+        //SzEntityRecordViewerComponent,
         //SzEntityRecordCardHeaderComponent,
         //SzEntityRecordCardContentComponent,
         SzGraphControlComponent,
@@ -242,7 +242,7 @@ const SzGrpcEnvInjector = new InjectionToken<SzGrpcWebEnvironment>("SzGrpcWebEnv
         //SzEntityDetailHowReportComponent,
         //SzEntityDetailGraphControlComponent,
         //SzEntityDetailGraphFilterComponent,
-        SzEntityRecordViewerComponent,
+        //SzEntityRecordViewerComponent,
         SzGraphComponent,
         SzGraphControlComponent,
         SzGraphFilterComponent,
@@ -323,6 +323,10 @@ export class SenzingSdkModule {
           {
             provide: 'GRPC_ENVIRONMENT',
             useFactory: grpcEnvFactory ? grpcEnvFactory : SzDefaultGrpcEnvFactory
+          },
+          {
+            provide: 'REST_ENVIRONMENT',
+            useFactory: apiConfigFactory ? apiConfigFactory : SzDefaultRestConfigurationFactory
           },
           {provide: LocationStrategy, useClass: PathLocationStrategy}
         ]

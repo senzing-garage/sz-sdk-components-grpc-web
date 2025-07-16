@@ -23,6 +23,7 @@ import { SzGrpcEngineService } from './grpc/engine.service';
 import { SzGrpcConfigManagerService } from './grpc/configManager.service';
 import { SzEngineFlags } from '@senzing/sz-sdk-typescript-grpc-web';
 import { SzSdkSearchResolvedEntity, SzSdkSearchResponse, SzSdkSearchResult } from '../models/grpc/engine';
+import { SzSdkConfigAttr } from '../models/grpc/config';
 
 export interface SzSearchEvent {
   params: SzEntitySearchParams,
@@ -42,7 +43,7 @@ export class SzSearchService {
   constructor(
     private configManagerService: SzGrpcConfigManagerService,
     private engineService: SzGrpcEngineService,
-    private entityDataService: EntityDataService
+    //private entityDataService: EntityDataService
     ) {}
 
   /**
@@ -126,7 +127,7 @@ export class SzSearchService {
   /**
    * @alias getAttributeTypes
   */
-  public getMappingAttributes(): Observable<SzAttributeType[]> {
+  public getMappingAttributes(): Observable<SzSdkConfigAttr[]> {
     return this.getAttributeTypes();
   }
   /**
@@ -134,17 +135,13 @@ export class SzSearchService {
    *
    * @memberof SzSearchService
    */
-  public getAttributeTypes(): Observable<SzAttributeType[]> {
-    let _retSubject = new Subject<SzAttributeType[]>();
+  public getAttributeTypes(): Observable<SzSdkConfigAttr[]> {
+    let _retSubject = new Subject<SzSdkConfigAttr[]>();
     let _retVal     = _retSubject.asObservable();Observable
 
     // get attributes
     this.configManagerService.config.then((conf) => {
-      conf.getAttributeTypes().pipe(
-        take(0)
-      ).subscribe((attrs)=>{
-        _retSubject.next(attrs);
-      })
+      _retSubject.next(conf.attributes)
     })
     return _retVal;
   }

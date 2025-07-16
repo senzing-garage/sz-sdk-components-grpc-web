@@ -25,7 +25,7 @@ export class SzGrpcConfigManagerService {
     get config(): Promise<SzGrpcConfig> {
         let retVal = new Promise<SzGrpcConfig>((resolve, reject)=>{
             if(!this._config) {
-                this.szEnvironment?.configManager?.getDefaultConfigId().then((resp: number) => {
+                this.szGrpcEnvironment?.configManager?.getDefaultConfigId().then((resp: number) => {
                     this._defaultConfigId = resp;
                     this.createConfig(this.defaultConfigId).pipe(
                         take(1),
@@ -44,12 +44,23 @@ export class SzGrpcConfigManagerService {
         })
         return retVal;
     }
-
+    public getConfigRegistry(): Subject<string> {
+        let retVal = new Subject<string>();
+        console.log(`getting configid's from grpc...`);
+        if(this.szGrpcEnvironment && this.szGrpcEnvironment.configManager) {
+          this.szGrpcEnvironment?.configManager?.getConfigRegistry().then((resp: string) => {
+            retVal.next(resp);
+          }).catch((err)=>{ retVal.error(err); })
+        } else {
+          retVal.error(`could not access configManager class`)
+        }
+        return retVal;
+    }
     public getDefaultConfigId(): Subject<number> {
         let retVal = new Subject<number>();
         console.log(`getting default configid from grpc...`);
-        if(this.szEnvironment && this.szEnvironment.configManager) {
-          this.szEnvironment?.configManager?.getDefaultConfigId().then((resp: number) => {
+        if(this.szGrpcEnvironment && this.szGrpcEnvironment.configManager) {
+          this.szGrpcEnvironment?.configManager?.getDefaultConfigId().then((resp: number) => {
             this._defaultConfigId = resp;
             retVal.next(resp);
           }).catch((err)=>{ retVal.error(err); })
@@ -62,8 +73,8 @@ export class SzGrpcConfigManagerService {
     public createConfig(configId: number)
     public createConfig(configId?: number) {
         let retVal = new Subject<SzGrpcConfig>();
-        if(this.szEnvironment && this.szEnvironment.configManager) {
-            this.szEnvironment?.configManager?.createConfig(configId).then((conf) => {
+        if(this.szGrpcEnvironment && this.szGrpcEnvironment.configManager) {
+            this.szGrpcEnvironment?.configManager?.createConfig(configId).then((conf) => {
                 this._config                = new SzGrpcConfig(conf);
                 this.attrs                  = SzGrpcConfigManagerService.getAttrs(this._config);
                 this.featureTypes           = SzGrpcConfigManagerService.getFeatures(this._config);
@@ -77,8 +88,8 @@ export class SzGrpcConfigManagerService {
     }
     public registerConfig(configDefinition: string, comment?: string) {
         let retVal = new Subject<number>();
-        if(this.szEnvironment && this.szEnvironment.configManager) {
-            this.szEnvironment?.configManager.registerConfig(configDefinition, comment).then((resp) => {
+        if(this.szGrpcEnvironment && this.szGrpcEnvironment.configManager) {
+            this.szGrpcEnvironment?.configManager.registerConfig(configDefinition, comment).then((resp) => {
                 retVal.next(resp);
             }).catch((err)=>{ retVal.error(err); })
         } else {
@@ -90,8 +101,8 @@ export class SzGrpcConfigManagerService {
     public setDefaultConfig(configDefinition: string, comment: string);
     public setDefaultConfig(configDefinition: string, comment?: string) {
         let retVal = new Subject<number>();
-        if(this.szEnvironment && this.szEnvironment.configManager) {
-            this.szEnvironment?.configManager.setDefaultConfig(configDefinition, comment).then((resp) => {
+        if(this.szGrpcEnvironment && this.szGrpcEnvironment.configManager) {
+            this.szGrpcEnvironment?.configManager.setDefaultConfig(configDefinition, comment).then((resp) => {
                 retVal.next(resp);
             }).catch((err)=>{ retVal.error(err); })
         } else {
@@ -101,8 +112,8 @@ export class SzGrpcConfigManagerService {
     }
     public replaceDefaultConfigId(currentDefaultConfigId: number, newDefaultConfigId: number) {
         let retVal = new Subject<string>();
-        if(this.szEnvironment && this.szEnvironment.configManager) {
-            this.szEnvironment?.configManager.replaceDefaultConfigId(currentDefaultConfigId, newDefaultConfigId).then((resp) => {
+        if(this.szGrpcEnvironment && this.szGrpcEnvironment.configManager) {
+            this.szGrpcEnvironment?.configManager.replaceDefaultConfigId(currentDefaultConfigId, newDefaultConfigId).then((resp) => {
                 retVal.next(resp);
             }).catch((err)=>{ retVal.error(err); })
         } else {
@@ -112,7 +123,7 @@ export class SzGrpcConfigManagerService {
     }
     constructor(
         // Make GRPC Environment an injection token
-        @Inject('GRPC_ENVIRONMENT') private szEnvironment: SzGrpcWebEnvironment
+        @Inject('GRPC_ENVIRONMENT') private szGrpcEnvironment: SzGrpcWebEnvironment
     ) {
         // get the default config
         this.config.then((config)=>{

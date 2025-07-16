@@ -8,7 +8,7 @@ import { SenzingSdkModule, SzRestConfiguration } from '@senzing/sdk-components-g
 const grpcSdkEnv = new SzGrpcWebEnvironment({
     connectionString: `http://localhost:8260/grpc`
 });
-const restSdkEnv = () => new SzRestConfiguration({
+const restSdkEnv = new SzRestConfiguration({
   'basePath': '/api',
   'withCredentials': true
 });
@@ -17,7 +17,7 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }), 
     provideRouter(routes),
-    importProvidersFrom( SenzingSdkModule.forRoot(restSdkEnv)),
-    {provide: 'GRPC_ENVIRONMENT', useValue: grpcSdkEnv}
+    {provide: 'GRPC_ENVIRONMENT', useValue: grpcSdkEnv},
+    {provide: 'REST_ENVIRONMENT', useValue: restSdkEnv}
   ]
 };

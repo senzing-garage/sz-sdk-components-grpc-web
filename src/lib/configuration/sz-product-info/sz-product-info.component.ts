@@ -47,7 +47,7 @@ export class SzProductInfoComponent implements OnDestroy {
       
       this.SdkEnvironment?.configManager.createConfig().then((config) => {
         console.log(`got config`, config.definition);
-        config.getDataSources().then((dataSources: {DSRC_ID: number, DSRC_CODE: string}[]) => {
+        config.getDataSourceRegistry().then((dataSources: {DSRC_ID: number, DSRC_CODE: string}[]) => {
           console.log(`got datasources: `, dataSources);
           this.result = dataSources.map((ds)=> { return JSON.stringify(ds) })?.join('\n');
         })

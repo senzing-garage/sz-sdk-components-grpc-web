@@ -159,7 +159,7 @@ export class SzImportFileComponent implements OnInit, OnDestroy {
   private getDataSources() {
     let retVal = new Subject<SzSdkDataSource[]>();
     this.configManagerService.config.then((conf)=> {
-      conf.getDataSources().pipe(
+      conf.dataSources.pipe(
         takeUntil(this.unsubscribe$),
         take(1)
       ).subscribe((dsResp: SzSdkDataSource[]) =>{
@@ -270,7 +270,7 @@ export class SzImportFileComponent implements OnInit, OnDestroy {
       if(dataSourcesToCreate && dataSourcesToCreate.length > 0) {
         // first create datasources
         console.log('creating datasources..', dataSourcesToCreate)
-        this.addDataSources(dataSourcesToCreate).pipe(
+        this.registerDataSources(dataSourcesToCreate).pipe(
           takeUntil(this.unsubscribe$)
         ).subscribe((dataSources)=>{
           this.addRecords(recordsToLoad).pipe(
@@ -306,7 +306,7 @@ export class SzImportFileComponent implements OnInit, OnDestroy {
     this.results      = undefined;
   }
 
-  public addDataSources(dataSources: SzImportedFilesAnalysisDataSource[]) {
+  public registerDataSources(dataSources: SzImportedFilesAnalysisDataSource[]) {
     let retVal = new Subject<string[]>();
     let _dataSourcesToAdd = dataSources.filter((dsItem) => {
       return !dsItem.exists && isNotNull(dsItem.name);
@@ -317,7 +317,7 @@ export class SzImportFileComponent implements OnInit, OnDestroy {
 
     if(_dataSourcesToAdd.length > 0) {
       this.configManagerService.config.then((conf)=>{
-        conf.addDataSources(_dataSourcesToAdd).pipe(
+        conf.registerDataSources(_dataSourcesToAdd).pipe(
           takeUntil(this.unsubscribe$)
         ).subscribe((resp) => {
           console.log(`added datasources: `, resp);

@@ -35,7 +35,8 @@ import { SzSdkEntityFeature, SzSdkEntityRecord } from '../../../models/grpc/engi
     selector: 'sz-entity-detail-header-grpc',
     templateUrl: './header.component.html',
     styleUrls: ['./header.component.scss'],
-    imports: [CommonModule, MatButtonModule, MatIconModule, MatTooltipModule,
+    imports: [
+      CommonModule, MatButtonModule, MatIconModule, MatTooltipModule,
       SzEntityDetailSectionSummaryComponentGrpc, SzEntityDetailHeaderContentComponentGrpc
     ]
 })

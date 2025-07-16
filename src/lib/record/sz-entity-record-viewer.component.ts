@@ -4,6 +4,8 @@ import {
   SzEntityRecord
 } from '@senzing/rest-api-client-ng';
 import { SzEntityRecordCardContentComponentGrpc } from '../entity-grpc/sz-entity-record-card/sz-entity-record-card-content/sz-entity-record-card-content.component';
+import { NgxJsonViewerModule } from 'ngx-json-viewer';
+import { SzSdkEntityRecord } from '../models/grpc/engine';
 
 /**
  * A component for displaying the result(s) of the sz-search-by-id component
@@ -36,23 +38,24 @@ import { SzEntityRecordCardContentComponentGrpc } from '../entity-grpc/sz-entity
     templateUrl: './sz-entity-record-viewer.component.html',
     styleUrls: ['./sz-entity-record-viewer.component.scss'],
     imports: [
-      CommonModule, SzEntityRecordCardContentComponentGrpc
+      CommonModule, SzEntityRecordCardContentComponentGrpc,
+      NgxJsonViewerModule
     ]
 })
 export class SzEntityRecordViewerComponent {
   /** the record to display */
-  private _record: SzEntityRecord;
+  private _record: SzSdkEntityRecord;
   /** set the record to display */
-  @Input() public set record(value: SzEntityRecord | string) {
+  @Input() public set record(value: SzSdkEntityRecord | string) {
     if((value as SzEntityRecord).recordId) {
-      this._record = (value as SzEntityRecord);
+      this._record = (value as SzSdkEntityRecord);
     } else {
       // assume string
-      this._record = JSON.parse(value as string);
+      this._record = JSON.parse(value as string) as SzSdkEntityRecord;
     }
   };
   /** return the record data */
-  public get record() {
+  public get record(): SzSdkEntityRecord {
     return this._record;
   }
   /** show the JSON data for this.record<SzEntityRecord> */

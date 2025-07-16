@@ -8,12 +8,12 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 
 import {
-  ConfigService,
+  //ConfigService,
   Configuration as SzRestConfiguration,
   ConfigurationParameters as SzRestConfigurationParameters,
-  SzAttributeSearchResult,
-  SzAttributeType,
-  SzAttributeTypesResponse
+  //SzAttributeSearchResult,
+  //SzAttributeType,
+  //SzAttributeTypesResponse
 } from '@senzing/rest-api-client-ng';
 
 import { SzEntitySearchParams } from '../../models/entity-search';
@@ -29,6 +29,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { SzSdkSearchResolvedEntity, SzSdkSearchResult } from '../../models/grpc/engine';
+import { SzSdkConfigAttr } from '../../models/grpc/config';
+import { SzGrpcConfigManagerService } from '../../services/grpc/configManager.service';
 
 /** @internal */
 interface SzSearchFormParams {
@@ -403,7 +405,7 @@ export class SzSearchGrpcComponent implements OnInit, OnDestroy {
    * @memberof SzSearchComponent
    * @internal
    */
-  public matchingAttributes: SzAttributeType[];
+  public matchingAttributes: SzSdkConfigAttr[];
 
   // ---------------------- individual field visibility setters ----------------------------------
   /** hide the search button */
@@ -633,12 +635,12 @@ export class SzSearchGrpcComponent implements OnInit, OnDestroy {
     return this._layoutClasses;
   }
 
-  private _attributeTypesFromServer: SzAttributeType[];
+  private _attributeTypesFromServer: SzSdkConfigAttr[];
   @Input('attributeTypes')
-  public set inputAttributeTypes(value: SzAttributeType[]) {
+  public set inputAttributeTypes(value: SzSdkConfigAttr[]) {
     // strip out non-identifiers
-    value = value.filter( (attr: SzAttributeType) => {
-      return (attr.attributeClass === 'IDENTIFIER');
+    value = value.filter( (attr: SzSdkConfigAttr) => {
+      return (attr.ATTR_CLASS === 'IDENTIFIER');
     });
 
     // store for caching
@@ -650,16 +652,16 @@ export class SzSearchGrpcComponent implements OnInit, OnDestroy {
     this.matchingAttributes = this.filterAttributeTypesByAllowedTypes(value, this.allowedTypeAttributes);
   }
 
-  public get inputAttributeTypes(): SzAttributeType[] {
+  public get inputAttributeTypes(): SzSdkConfigAttr[] {
     return this._attributeTypesFromServer;
   }
 
-  private filterAttributeTypesByAllowedTypes( attributeTypes: SzAttributeType[], allowedTypes: string[] ) {
-    let retTypes: SzAttributeType[] = attributeTypes;
+  private filterAttributeTypesByAllowedTypes( attributeTypes: SzSdkConfigAttr[], allowedTypes: string[] ) {
+    let retTypes: SzSdkConfigAttr[] = attributeTypes;
 
     if(allowedTypes && allowedTypes.length > 0) {
-      retTypes = attributeTypes.filter( (attr: SzAttributeType) => {
-        return (allowedTypes.indexOf( attr.attributeCode) > -1);
+      retTypes = attributeTypes.filter( (attr: SzSdkConfigAttr) => {
+        return (allowedTypes.indexOf( attr.ATTR_CODE) > -1);
       });
     }
     return retTypes
@@ -751,37 +753,37 @@ export class SzSearchGrpcComponent implements OnInit, OnDestroy {
     ]
 
     if(this.matchingAttributes && this.matchingAttributes.find) {
-      let matchingAttribute = this.matchingAttributes.find((attr: SzAttributeType) => {
-        return attr.attributeCode === selectedValue;
+      let matchingAttribute = this.matchingAttributes.find((attr: SzSdkConfigAttr) => {
+        return attr.ATTR_CODE === selectedValue;
       });
 
-      if(matchingAttribute && matchingAttribute.attributeCode) {
+      if(matchingAttribute && matchingAttribute.ATTR_CODE) {
         // primary checks
-        if(attrsAreNumbers.indexOf && attrsAreNumbers.indexOf(matchingAttribute.attributeCode) > -1) {
+        if(attrsAreNumbers.indexOf && attrsAreNumbers.indexOf(matchingAttribute.ATTR_CODE) > -1) {
           retVal = "Number";
-        } else if(attrsAreScreenNames.indexOf && attrsAreScreenNames.indexOf(matchingAttribute.attributeCode) > -1) {
+        } else if(attrsAreScreenNames.indexOf && attrsAreScreenNames.indexOf(matchingAttribute.ATTR_CODE) > -1) {
           retVal = "Screen Name";
-        } else if(attrsArePlace.indexOf && attrsArePlace.indexOf(matchingAttribute.attributeCode) > -1) {
+        } else if(attrsArePlace.indexOf && attrsArePlace.indexOf(matchingAttribute.ATTR_CODE) > -1) {
           retVal = "Place";
-        } else if(attrsAreCountry.indexOf && attrsAreCountry.indexOf(matchingAttribute.attributeCode) > -1) {
+        } else if(attrsAreCountry.indexOf && attrsAreCountry.indexOf(matchingAttribute.ATTR_CODE) > -1) {
           retVal = "Country";
-        } else if(attrsAreDateTime.indexOf && attrsAreDateTime.indexOf(matchingAttribute.attributeCode) > -1) {
+        } else if(attrsAreDateTime.indexOf && attrsAreDateTime.indexOf(matchingAttribute.ATTR_CODE) > -1) {
           retVal = "Date Time";
         }
         // fallthrough checks
-        if(retVal === "" && matchingAttribute.attributeCode && matchingAttribute.attributeCode.indexOf) {
+        if(retVal === "" && matchingAttribute.ATTR_CODE && matchingAttribute.ATTR_CODE.indexOf) {
           // check code itself for clue
-          if(matchingAttribute.attributeCode.indexOf("_DT") > -1) {
+          if(matchingAttribute.ATTR_CODE.indexOf("_DT") > -1) {
             retVal = "Date Time"
-          } else if(matchingAttribute.attributeCode.indexOf("_NUMBER") > -1) {
+          } else if(matchingAttribute.ATTR_CODE.indexOf("_NUMBER") > -1) {
             retVal = "Number"
-          } else if(matchingAttribute.attributeCode.indexOf("_DATE") > -1) {
+          } else if(matchingAttribute.ATTR_CODE.indexOf("_DATE") > -1) {
             retVal = "Date"
-          } else if(matchingAttribute.attributeCode.indexOf("_STATE") > -1) {
+          } else if(matchingAttribute.ATTR_CODE.indexOf("_STATE") > -1) {
             retVal = "State"
-          } else if(matchingAttribute.attributeCode.indexOf("EMAIL_ADDRESS") > -1) {
+          } else if(matchingAttribute.ATTR_CODE.indexOf("EMAIL_ADDRESS") > -1) {
             retVal = "user@domain.com"
-          } else if(matchingAttribute.attributeCode.indexOf("WEBSITE_ADDRESS") > -1) {
+          } else if(matchingAttribute.ATTR_CODE.indexOf("WEBSITE_ADDRESS") > -1) {
             retVal = "http://www.website.com"
           }
         }
@@ -804,10 +806,10 @@ export class SzSearchGrpcComponent implements OnInit, OnDestroy {
         }
       });
   
-      dialogRef.afterClosed().subscribe((result: SzAttributeType[]) => {
+      dialogRef.afterClosed().subscribe((result: SzSdkConfigAttr[]) => {
         if(result) {
-          let newAllowedList = result.map((attrObj: SzAttributeType) => {
-            return attrObj.attributeCode;
+          let newAllowedList = result.map((attrObj: SzSdkConfigAttr) => {
+            return attrObj.ATTR_CODE;
           });
           this.prefs.searchForm.allowedTypeAttributes = newAllowedList;
           //this.allowedTypeAttributes = newAllowedList;
@@ -827,10 +829,10 @@ export class SzSearchGrpcComponent implements OnInit, OnDestroy {
 
       bottomSheetRef.afterDismissed().pipe(
         first()
-      ).subscribe((result: SzAttributeType[]) => {        
+      ).subscribe((result: SzSdkConfigAttr[]) => {        
         if(result) {
-          let newAllowedList = result.map((attrObj: SzAttributeType) => {
-            return attrObj.attributeCode;
+          let newAllowedList = result.map((attrObj: SzSdkConfigAttr) => {
+            return attrObj.ATTR_CODE;
           });
           this.prefs.searchForm.allowedTypeAttributes = newAllowedList;
         }
@@ -843,16 +845,16 @@ export class SzSearchGrpcComponent implements OnInit, OnDestroy {
    * @internal
    * @returns SzAttributeType[]
    */
-  public orderedAttributes(): SzAttributeType[] {
+  public orderedAttributes(): SzSdkConfigAttr[] {
     if(this.matchingAttributes && this.matchingAttributes.sort){
       const matchingAttrs =  this.matchingAttributes.sort((a, b) => {
         let returnVal = 0;
 
-        if (a.attributeCode.match(/^PASSPORT/)) {
+        if (a.ATTR_CODE.match(/^PASSPORT/)) {
           returnVal = returnVal - 1;
         }
 
-        if (b.attributeCode.match(/^PASSPORT/)) {
+        if (b.ATTR_CODE.match(/^PASSPORT/)) {
           returnVal = returnVal + 1;
         }
 
@@ -879,7 +881,8 @@ export class SzSearchGrpcComponent implements OnInit, OnDestroy {
 
   constructor(
     private fb: UntypedFormBuilder,
-    private configService: ConfigService,
+    //private configService: ConfigService,
+    private configManager: SzGrpcConfigManagerService,
     private cd: ChangeDetectorRef,
     private apiConfigService: SzConfigurationService,
     private prefs: SzPrefsService,
@@ -1030,20 +1033,14 @@ export class SzSearchGrpcComponent implements OnInit, OnDestroy {
   @Input()
   public updateAttributeTypes = (): void => {
     // get attributes
-    this.configService.getAttributeTypes()
-    .pipe(
-      takeUntil(this.unsubscribe$),
-      map( (resp: SzAttributeTypesResponse) => resp.data.attributeTypes ),
-      first()
-    )
-    .subscribe((attributeTypes: SzAttributeType[]) => {
-      // yup
+    this.configManager.config.then((config)=>{
+      let attributeTypes = config.attributes;
       this.inputAttributeTypes = attributeTypes;
       this.cd.markForCheck();
       this.cd.detectChanges();
-    }, (err)=> {
-      this.searchException.next( err ); //TODO: remove in breaking change release
-      this.exception.next( err );
+    }).catch((err)=>{
+      console.error(err);
+      this.exception.next(err);
     });
   }
 

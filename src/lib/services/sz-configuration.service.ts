@@ -122,7 +122,7 @@ export class SzConfigurationService {
   }
 
   constructor(
-    @Inject(SzRestConfiguration) public apiConfiguration: SzRestConfiguration,
+    @Inject('REST_ENVIRONMENT') readonly apiConfiguration: SzRestConfiguration,
     public prefs: SzPrefsService
   ) {}
 }
