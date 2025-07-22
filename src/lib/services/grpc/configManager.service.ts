@@ -44,6 +44,14 @@ export class SzGrpcConfigManagerService {
         })
         return retVal;
     }
+    public get features(): Observable<SzSdkConfigFeatureType[]> {
+        let retSub  = new Subject<SzSdkConfigFeatureType[]>();
+        this.config.then((config: SzGrpcConfig)=> {
+            let _retVal = SzGrpcConfigManagerService.getFeatures(this._config);
+            retSub.next(_retVal);
+        });
+        return retSub.asObservable();
+    }
     public getConfigRegistry(): Subject<string> {
         let retVal = new Subject<string>();
         console.log(`getting configid's from grpc...`);

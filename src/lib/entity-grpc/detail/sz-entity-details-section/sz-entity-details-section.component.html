@@ -11,11 +11,11 @@
   <ng-container *ngIf="showByDataSource">
     <sz-entity-detail-section-collapsible-card-grpc
       class="by-datasource"
-      *ngFor="let dataSourceRecords of _sectionRecordsByDataSource; let ind = index"
+      *ngFor="let dataSourceRecords of _sectionRecordsByDataSource | keyvalue"
       [showIcon]="showIcon"
       [headerIcon]="headerIcon"
       displayType="record"
-      [showWhyUtilities]="showWhyUtilities && ind === 0"
+      [showWhyUtilities]="showWhyUtilities"
       (onCompareRecordsForWhy)="_onCompareRecordsForWhy($event)"
       [recordsByDataSource]="getDataSourceRecordsAsMap(dataSourceRecords)"
       [collapsedStatePrefsKey]="this.collapsedStatePrefsKey"
@@ -32,15 +32,14 @@
       (entityRecordClick)="onEntityRecordClick($event)">
     </sz-entity-detail-section-collapsible-card-grpc>
   </ng-container>
-  <!--
   <ng-container *ngIf="showEntitiesByMatchKey">
     <sz-entity-detail-section-collapsible-card-grpc
       class="by-matchkey"
-      *ngFor="let entitiesByMatchKey of _sectionDataByMatchKey"
+      *ngFor="let entitiesByMatchKey of _sectionEntitiesByMatchKey | keyvalue"
       [showIcon]="showIcon"
       [headerIcon]="headerIcon"
       displayType="entity"
-      [relatedEntities]="getRelatedEntitiesAsMap(entitiesByMatchKey)"
+      [entitiesByMatchKey]="getRelatedEntitiesAsMap(entitiesByMatchKey)"
       [truncateResults]="true"
       [collapsedStatePrefsKey]="this.collapsedStatePrefsKey"
       [layoutClasses]="_layoutClasses"
@@ -55,14 +54,14 @@
       class="by-match-key">
     </sz-entity-detail-section-collapsible-card-grpc>
   </ng-container>
-  <ng-container *ngIf="!showByDataSource && !showEntitiesByMatchKey">
+  <!--<ng-container *ngIf="!showByDataSource && !showEntitiesByMatchKey">
     <sz-entity-detail-section-collapsible-card-grpc
       class="by-entity"
-      *ngFor="let cardData of sectionData"
+      *ngFor="let relatedEntity of _sectionEntities"
       [showIcon]="showIcon"
       [headerIcon]="headerIcon"
       displayType="entity"
-      [cardData]="cardData"
+      [entities]="relatedEntity"
       [collapsedStatePrefsKey]="this.collapsedStatePrefsKey"
       [layoutClasses]="_layoutClasses"
       (onCollapsedChange)="this.onCollapsibleCardStateChange($event)"
@@ -74,7 +73,6 @@
       (entityRecordClick)="onEntityRecordClick($event)"
       (entityRecordWhyNotClick)="onEntityRecordWhyNotClick($event)">
     </sz-entity-detail-section-collapsible-card-grpc>
-  </ng-container>
--->
+  </ng-container>-->
 </div>
 

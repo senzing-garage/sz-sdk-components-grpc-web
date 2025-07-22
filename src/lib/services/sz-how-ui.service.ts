@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, Subject, tap } from 'rxjs';
+import { Observable, Subject, take, tap } from 'rxjs';
 import { v4 as uuidv4} from 'uuid';
 import {
   EntityDataService as SzEntityDataService,
@@ -7,9 +7,11 @@ import {
   SzResolutionStep,
   SzHowEntityResponse
 } from '@senzing/rest-api-client-ng';
-import { SzConfigDataService } from '../services/sz-config-data.service';
+//import { SzConfigDataService } from '../services/sz-config-data.service';
 import { SzPrefsService } from './sz-prefs.service';
 import { SzResolutionStepDisplayType, SzResolutionStepListItemType, SzResolutionStepNode } from '../models/data-how';
+import { SzGrpcEngineService } from './grpc/engine.service';
+import { SzGrpcConfigManagerService } from './grpc/configManager.service';
 
 /**
  * Provides methods, eventing, and utilities used to display the 
@@ -23,7 +25,8 @@ import { SzResolutionStepDisplayType, SzResolutionStepListItemType, SzResolution
 })
 export class SzHowUIService {
   /** @internal */
-  private static _entityDataService: SzEntityDataService;
+  //private static _entityDataService: SzEntityDataService;
+  private static _engineGrpcService: SzGrpcEngineService;
   /** @internal */
   private _expandedNodes: string[]            = [];
   /** @internal */
@@ -410,7 +413,7 @@ export class SzHowUIService {
    * @param entityId 
    */
   public getHowDataForEntity(entityId: SzEntityIdentifier): Observable<SzHowEntityResponse> {
-    return this.entityDataService.howEntityByEntityID(
+    return this.engineDataService.howEntityByEntityId(
         entityId as number
     ).pipe(
       tap((r) => {
@@ -1035,11 +1038,13 @@ export class SzHowUIService {
    * @param prefs 
    */
   constructor(
-    public configDataService: SzConfigDataService,
-    public entityDataService: SzEntityDataService,
+    //public configDataService: SzConfigDataService,
+    //public entityDataService: SzEntityDataService,
+    public configManagerService: SzGrpcConfigManagerService,
+    public engineDataService: SzGrpcEngineService,
     public prefs: SzPrefsService
   ) {
-    SzHowUIService._entityDataService = entityDataService;
+    SzHowUIService._engineGrpcService = engineDataService;
     /** get the list of features ordered by what is specific in the config response */
     this.getFeatureTypeOrderFromConfig();
   }
@@ -1051,8 +1056,8 @@ export class SzHowUIService {
    * entity came together.
    * @param entityId 
    */
-  public static getHowDataForEntity(entityId: SzEntityIdentifier): Observable<SzHowEntityResponse> {
-    return this._entityDataService.howEntityByEntityID(
+  public static getHowDataForEntity(entityId: SzEntityIdentifier): Observable<any> {
+    return this._engineGrpcService.howEntityByEntityId(
         entityId as number
     )
   }
@@ -1189,7 +1194,7 @@ export class SzHowUIService {
   }
   /** get the features from the api server config endpoint */
   private getFeatureTypeOrderFromConfig() {
-    this.configDataService.getOrderedFeatures().subscribe((res: any)=>{
+    this.configManagerService.features.pipe(take(1)).subscribe((res: any)=>{
       this._orderedFeatureTypes = res;
       console.log('getFeatureTypeOrderFromConfig: ', res);
     });

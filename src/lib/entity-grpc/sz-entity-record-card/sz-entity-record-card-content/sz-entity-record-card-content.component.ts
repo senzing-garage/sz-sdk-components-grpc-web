@@ -106,7 +106,7 @@ export class SzEntityRecordCardContentComponentGrpc implements OnInit {
     return this._searchResult;
   }
   @Input() public set record(value: SzSdkEntityRecord) {
-    this.record = value;
+    this._record = value;
   }
   public get record() {
     return this._record;
@@ -281,7 +281,8 @@ export class SzEntityRecordCardContentComponentGrpc implements OnInit {
     return retVal;
   }
   get columnTwoTotal(): number {
-    return (this.nameData.concat(this.attributeData).length);
+    return this.nameData && this.attributeData ? (this.nameData.concat(this.attributeData).length) : this.nameData ? this.nameData.length : this.attributeData ? this.attributeData.length : 0;
+    //return (this.nameData.concat(this.attributeData).length);
   }
   get showColumnTwo(): boolean {
     const nameAndAttrData = this.nameAndAttributeData;
@@ -293,7 +294,8 @@ export class SzEntityRecordCardContentComponentGrpc implements OnInit {
     return retVal;
   }
   get columnThreeTotal(): number {
-    return (this.addressData.concat(this.phoneData).length);
+    return this.addressData && this.phoneData ? (this.addressData.concat(this.phoneData).length) : this.addressData ? this.addressData.length : this.phoneData ? this.phoneData.length : 0;
+    //return (this.addressData.concat(this.phoneData).length);
   }
   get showColumnThree(): boolean {
     const phoneAndAddrData = this.addressAndPhoneData;
@@ -305,10 +307,10 @@ export class SzEntityRecordCardContentComponentGrpc implements OnInit {
     return retVal;
   }
   get columnFourTotal(): number {
-    return this.identifierData.length;
+    return this.identifierData ? this.identifierData.length : 0;
   }
   public get showColumnFour(): boolean {
-    let retVal  = (this.identifierData.length > 0);
+    let retVal  = ( this.identifierData && this.identifierData.length > 0);
     // check "columnsShown[3]" for override
     if(this.columnsShown && this.columnsShown[3] === true) {
       retVal = true;
@@ -376,6 +378,19 @@ export class SzEntityRecordCardContentComponentGrpc implements OnInit {
     return this._featuresByType;
   }
 
+  public getAttrText(value: SzSdkEntityFeature) {
+    let retVal;
+    if(value && value.FEAT_DESC) {
+      retVal = value.FEAT_DESC;
+      if(value.USAGE_TYPE) {
+        retVal = `${value.USAGE_TYPE}: ${value.FEAT_DESC}`;
+      } else if(value.LABEL) {
+        retVal = `${value.LABEL}: ${value.FEAT_DESC}`;
+      }
+    }
+    return retVal;
+  }
+
   get otherData(): SzSdkEntityFeature[] | undefined {
     let _features = this.featuresByType;
     return _features.has(SzFeatureType.OTHER) ? _features.get(SzFeatureType.OTHER) : undefined;
@@ -405,7 +420,7 @@ export class SzEntityRecordCardContentComponentGrpc implements OnInit {
     let _features         = this.featuresByType;
     let _attributes       = _features.has(SzFeatureType.ATTRIBUTE)      ? _features.get(SzFeatureType.ATTRIBUTE)      : undefined;
     let _characteristics  = _features.has(SzFeatureType.CHARACTERISTIC) ? _features.get(SzFeatureType.CHARACTERISTIC) : undefined;
-    let _retVal: SzSdkEntityFeature[] | undefined;
+    let _retVal: SzSdkEntityFeature[] | undefined = _attributes || _characteristics ? [] : undefined;
     if(_attributes) {
       _retVal  = _retVal.concat(_attributes);
     }
@@ -435,7 +450,7 @@ export class SzEntityRecordCardContentComponentGrpc implements OnInit {
   get nameAndAttributeData(): SzSdkEntityFeature[] | undefined {
     let _names      = this.nameData;
     let _attributes = this.attributeData;
-    let _retVal: SzSdkEntityFeature[] | undefined;
+    let _retVal: SzSdkEntityFeature[] | undefined = _names || _attributes ? [] : undefined;
     if(_names)      { _retVal  = _retVal.concat(_names); }
     if(_attributes) { _retVal  = _retVal.concat(_attributes); }
     return _retVal;
@@ -444,7 +459,7 @@ export class SzEntityRecordCardContentComponentGrpc implements OnInit {
   get addressAndPhoneData(): SzSdkEntityFeature[] | undefined {
     let _addresses  = this.addressData;
     let _phones     = this.phoneData;
-    let _retVal: SzSdkEntityFeature[] | undefined;
+    let _retVal: SzSdkEntityFeature[] | undefined = _addresses || _phones ? [] : undefined;
     if(_addresses)  { _retVal  = _retVal.concat(_addresses); }
     if(_phones)     { _retVal  = _retVal.concat(_phones); }
     return _retVal;

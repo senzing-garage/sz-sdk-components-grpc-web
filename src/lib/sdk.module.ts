@@ -26,7 +26,7 @@ import { SzDataSourcesService } from './services/sz-datasources.service';
 import { SzAdminService } from './services/sz-admin.service';
 import { SzBulkDataService } from './services/sz-bulk-data.service';
 import { SzCSSClassService } from './services/sz-css-class.service';
-import { SzConfigDataService } from './services/sz-config-data.service';
+//import { SzConfigDataService } from './services/sz-config-data.service';
 import { SzElementResizeService } from './services/sz-element-resize-listener.service';
 /** pipes */
 import { SzShortNumberPipe } from './pipes/shortnumber.pipe'
@@ -285,7 +285,7 @@ const SzGrpcEnvInjector = new InjectionToken<SzGrpcWebEnvironment>("SzGrpcWebEnv
         SzMessageBundleService,
         SzAdminService,
         SzBulkDataService,
-        SzConfigDataService,
+        //SzConfigDataService,
         SzConfigurationService,
         SzCSSClassService,
         SzDataMartService,

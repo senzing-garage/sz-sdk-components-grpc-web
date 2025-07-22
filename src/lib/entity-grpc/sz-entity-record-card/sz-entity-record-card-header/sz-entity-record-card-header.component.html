@@ -10,9 +10,14 @@
     </span>
     <ng-template #bestName><a class="search__link">{{this.bestName | titlecase}}</a></ng-template>
     <div *ngIf="breakDownInfoExist" class="breakdown-container">
-      <span *ngFor="let info of breakDownInfo"
+      <span *ngFor="let summary of recordSummaries"
             class="search-card__header--breakdown ellipsis">
-            <span class="search-card__header--breakdown--charsep">|</span>{{info?.DATA_SOURCE}}<span *ngIf="info?.RECORD_COUNT > 1"> ({{info?.RECORD_COUNT}})</span><span class="record-id" *ngIf="info?.RECORD_COUNT <= 1 && info?.TOP_RECORD_IDS[0] && showRecordIdWhenSingleRecord">: {{info?.TOP_RECORD_IDS}}</span>
+            <span class="search-card__header--breakdown--charsep">|</span>
+            {{summary?.DATA_SOURCE}}
+            <span *ngIf="summary?.RECORD_COUNT > 1"> ({{summary?.RECORD_COUNT}})</span>
+            <span class="record-id" *ngIf="showTopRecordIdsForSummary(summary)">
+              : {{summary?.TOP_RECORD_IDS}}
+            </span>
       </span>
     </div>
   </header>

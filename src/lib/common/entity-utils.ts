@@ -8,7 +8,7 @@ import { SzResumeEntity } from "../models/SzResumeEntity";
 
 export function getStringEntityFeatures(features: {
    [key: string] : SzSdkEntityFeature[]
-}, groupByAttributeClass = false, fTypeToAttrClassMap?: Map<string, SzAttrClass | SzAttrClass[]>): Map<string, string[]> {
+}, groupByAttributeClass = false, fTypeToAttrClassMap?: Map<string, SzAttrClass | SzAttrClass[]>, includeUsageType?: boolean, includeFeatureType?: boolean): Map<string, string[]> {
     let retMap = new Map<string, string[]>();
     for(let fTypeCode in features){
         let groupKey = (groupByAttributeClass && fTypeToAttrClassMap && fTypeToAttrClassMap.has(fTypeCode)) ? fTypeToAttrClassMap.get(fTypeCode) as SzAttrClass : fTypeCode;
@@ -27,7 +27,13 @@ export function getStringEntityFeatures(features: {
         let _featValues = features[fTypeCode];
         _featValues.forEach((feat)=> {
             feat.FEAT_DESC_VALUES.forEach((featDesc)=>{
-                _values.push(featDesc.FEAT_DESC);
+                let _fVal = featDesc.FEAT_DESC;
+                if(includeUsageType && feat.USAGE_TYPE) {
+                    _fVal = `${feat.USAGE_TYPE}: ${featDesc.FEAT_DESC}`;
+                } else if(includeFeatureType) {
+                    _fVal = `${fTypeCode}: ${featDesc.FEAT_DESC}`;
+                }
+                _values.push(_fVal);
             })
         });
         retMap.set(groupKey, _values);
@@ -45,6 +51,8 @@ export function getEntityFeaturesByType(features: {
          let _values     = retMap.has(groupKey) ? retMap.get(groupKey) : [];
          let _featValues = features[fTypeCode];
          _featValues.forEach((feat)=> {
+            let _fVal = feat;
+            if(!_fVal.LABEL) { _fVal.LABEL = fTypeCode; }
             _values.push(feat);
          });
          retMap.set(groupKey, _values);
@@ -56,10 +64,10 @@ export function getEntityFeaturesByType(features: {
 
 export function bestEntityName(entity: SzResumeEntity | SzSdkSearchResolvedEntity): string {
     let retVal = undefined;
-    if((entity as SzResumeEntity).BEST_NAME) {
+    if(entity && (entity as SzResumeEntity).BEST_NAME) {
         retVal = (entity as SzResumeEntity).BEST_NAME;
     }    
-    if((entity as SzSdkSearchResolvedEntity).ENTITY_NAME) {
+    if(entity && (entity as SzSdkSearchResolvedEntity).ENTITY_NAME) {
         retVal = (entity as SzSdkSearchResolvedEntity).ENTITY_NAME;
     }
     return retVal;

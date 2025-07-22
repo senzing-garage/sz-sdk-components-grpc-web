@@ -7,7 +7,7 @@ import { BreakpointObserver, BreakpointState } from '@angular/cdk/layout';
 import { SzEntityRecordCardContentComponentGrpc } from '../../sz-entity-record-card/sz-entity-record-card-content/sz-entity-record-card-content.component';
 import { SzSectionDataByDataSource, SzEntityDetailSectionData } from '../../../models/entity-detail-section-data';
 import { SzDataSourceRecordsSelection, SzWhySelectionMode, SzWhySelectionModeBehavior } from '../../../models/data-source-record-selection';
-import { CommonModule } from '@angular/common';
+import { CommonModule, KeyValue } from '@angular/common';
 import { SzEntityDetailSectionHeaderComponentGrpc } from './header.component';
 import { SzRelatedEntityMatchLevel, SzResumeRecordsByDataSource, SzResumeRelatedEntitiesByMatchKey, SzResumeRelatedEntity } from '../../../../lib/models/SzResumeEntity';
 import { SzSdkEntityRecord } from '../../../models/grpc/engine';
@@ -54,7 +54,6 @@ export class SzEntityDetailsSectionComponentGrpc implements OnDestroy {
     //console.log('setting section data: ', value);
     this._sectionRecords = value;
     this._sectionRecordsByDataSource = this.getSectionRecordsByDataSource(value);
-    //this._sectionDataByMatchKey = this.getSectionDataByMatchKey(value);
   }
   get sectionRecords() {
     return this._sectionRecords;
@@ -163,11 +162,13 @@ export class SzEntityDetailsSectionComponentGrpc implements OnDestroy {
     }
     return retVal;
   }
-  public getDataSourceRecordsAsMap(tuple: [string, SzSdkEntityRecord[]]) {
-    return new Map([tuple]) as SzResumeRecordsByDataSource;
+  
+  public getDataSourceRecordsAsMap(tuple: KeyValue<string, SzSdkEntityRecord[]>) {
+  //public getDataSourceRecordsAsMap(tuple: [string, SzSdkEntityRecord[]]) {
+    return new Map([[tuple.key, tuple.value]]) as SzResumeRecordsByDataSource;
   }
-  public getRelatedEntitiesAsMap(tuple: [string, SzResumeRelatedEntity[]]) {
-    return new Map([tuple]) as SzResumeRelatedEntitiesByMatchKey;
+  public getRelatedEntitiesAsMap(tuple: KeyValue<string, SzResumeRelatedEntity[]>) {
+    return new Map([[tuple.key, tuple.value]]) as SzResumeRelatedEntitiesByMatchKey;
   }
   public get showWhyUtilities(): boolean {
     //return this._showWhyUtilities;

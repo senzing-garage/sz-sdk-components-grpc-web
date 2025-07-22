@@ -65,7 +65,7 @@
   </sz-entity-detail-section-how-report>
 -->
   <sz-entity-details-section-grpc class="details-section datasources"
-    *ngIf="this._matches.length && this.showMatchesSection"
+    *ngIf="this._matches?.length && this.showMatchesSection"
     collapsedStatePrefsKey="recordsSectionCollapsed"
     (onCollapsedChange)="this.onSectionCollapsedChange('recordsSectionCollapsed', $event)"
     [sectionRecords]="this._matches"
@@ -81,8 +81,6 @@
     (dataSourceRecordsSelected)="onDataSourceRecordsSelected($event)"
     (entityRecordClick)="onEntityRecordClick($event)">
   </sz-entity-details-section-grpc>
-
-  this._possibleMatches?.length ? "{{this._possibleMatches?.length}}"
   <sz-entity-details-section-grpc class="details-section possible"
     *ngIf="this._possibleMatches?.length && this.showPossibleMatchesSection"
     collapsedStatePrefsKey="possibleMatchesSectionCollapsed"
@@ -100,11 +98,11 @@
     (entityRecordClick)="onEntityRecordClick($event)"
     (onCompareEntitiesForWhyNot)="onCompareEntitiesForWhyNot($event)">
   </sz-entity-details-section-grpc>
-  <!--<sz-entity-details-section class="details-section discovered"
+  <sz-entity-details-section-grpc class="details-section discovered"
     *ngIf="this._discoveredRelationships?.length && this.showPossibleRelationshipsSection"
     collapsedStatePrefsKey="possibleRelationshipsSectionCollapsed"
     (onCollapsedChange)="this.onSectionCollapsedChange('possibleRelationshipsSectionCollapsed', $event)"
-    [sectionData]="this._discoveredRelationships"
+    [sectionRelatedEntities]="this._discoveredRelationships"
     [sectionTitle]="'Possible Relationships'"
     sectionId="detail-section-3"
     [sectionCount]="this._discoveredRelationships?.length"
@@ -115,12 +113,12 @@
     [whySelectionMode]="whySelectionMode"
     (entityRecordClick)="onEntityRecordClick($event)"
     (onCompareEntitiesForWhyNot)="onCompareEntitiesForWhyNot($event)">
-  </sz-entity-details-section>
-  <sz-entity-details-section class="details-section disclosed"
+  </sz-entity-details-section-grpc>
+  <sz-entity-details-section-grpc class="details-section disclosed"
     *ngIf="this._disclosedRelationships?.length && this.showDisclosedSection"
     collapsedStatePrefsKey="disclosedRelationshipsSectionCollapsed"
     (onCollapsedChange)="this.onSectionCollapsedChange('disclosedRelationshipsSectionCollapsed', $event)"
-    [sectionData]="this._disclosedRelationships"
+    [sectionRelatedEntities]="this._disclosedRelationships"
     [sectionTitle]="'Disclosed Relationships'"
     sectionId="detail-section-4"
     [sectionCount]="this._disclosedRelationships?.length"
@@ -128,6 +126,5 @@
     [layoutClasses]="_layoutEnforcers"
     [showNameDataInEntities]="showNameDataInDisclosedSection"
     (entityRecordClick)="onEntityRecordClick($event)">
-  </sz-entity-details-section>
--->
+  </sz-entity-details-section-grpc>
 </div>

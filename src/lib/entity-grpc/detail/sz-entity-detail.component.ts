@@ -806,7 +806,7 @@ export class SzEntityDetailComponentGrpc implements OnInit, OnDestroy, AfterView
     private cd: ChangeDetectorRef,
     public dialog: MatDialog,
     private howUIService: SzHowUIService,
-    private entityDataService: SzEntityDataService,
+    //private entityDataService: SzEntityDataService,
     public overlay: Overlay,
     public prefs: SzPrefsService,
     private searchService: SzSearchService,
@@ -887,6 +887,11 @@ export class SzEntityDetailComponentGrpc implements OnInit, OnDestroy, AfterView
     /*if(this.graphComponent && this.graphComponent.reload) {
       this.graphComponent.reload(this.entityId);
     }*/
+    console.log('\matches: ', this._matches);
+    console.log('\tpossible matches: ', this._possibleMatches);
+    console.log('\tdiscovered: ', this._discoveredRelationships);
+    console.log('\tdisclosed: ', this._disclosedRelationships);
+
     this.dataChanged.next(this.entity);
   }
 
@@ -1008,7 +1013,7 @@ export class SzEntityDetailComponentGrpc implements OnInit, OnDestroy, AfterView
     // periodically check if how report available
 
     // trigger re-evaluation
-    this.entityDataService.reevaluateEntity(entityId as number).pipe(
+    this.engineService.reevaluateEntity(entityId as number).pipe(
       takeUntil(this.unsubscribe$),
       take(1)
     )
@@ -1089,6 +1094,14 @@ export class SzEntityDetailComponentGrpc implements OnInit, OnDestroy, AfterView
       ).subscribe({
         next: (entity: any) => {
           this.entity = entity;
+          this.onEntityDataChanged();
+          this.requestEnd.emit( entity );
+          this.dataChanged.next( entity );
+          /*if(this._showEntityHowFunction && (this._dynamicHowFeatures === true || 
+            this._showHowFunctionWarnings === true)) {
+            // check to see if entity has how steps, if not disable how functions
+            this.checkIfEntityHasHowSteps();
+          }*/
         },
         error: (err)=> {
           this.requestEnd.emit( err );

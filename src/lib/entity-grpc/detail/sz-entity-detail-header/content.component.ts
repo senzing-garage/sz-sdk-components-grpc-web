@@ -70,7 +70,7 @@ export class SzEntityDetailHeaderContentComponentGrpc implements OnDestroy, OnIn
   public get entityFeatures(): Map<string, string[]> {
     if(!this._entityFeatures && this.entity) {
       let _features = this.entity.FEATURES;
-      let _featuresAsStrings = getStringEntityFeatures(_features, true, this.configManager.fTypeToAttrClassMap);
+      let _featuresAsStrings = getStringEntityFeatures(_features, true, this.configManager.fTypeToAttrClassMap, true, true);
       this._entityFeatures = _featuresAsStrings;
     }
     return this._entityFeatures;

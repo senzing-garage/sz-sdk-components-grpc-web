@@ -60,8 +60,8 @@
     margin: auto auto 1em auto;
   }
 
-  
-  sz-entity-record-card-content, .sz-entity-record-card-content {
+  sz-entity-record-card-content, .sz-entity-record-card-content,
+  sz-entity-record-card-content-grpc, .sz-entity-record-card-content-grpc {
     display: var(--sz-entity-detail-section-record-card-display);
     background-color: var(--sz-entity-detail-section-record-card-background-color);
     margin: var(--sz-entity-detail-section-record-card-margin);

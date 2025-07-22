@@ -20,7 +20,11 @@ export class SzConfigDataService {
     private _config: any;
     private _orderedFeatureTypes: string[] | undefined;
 
-    constructor(public configDataService: SzConfigService) {}
+    constructor(
+        public configDataService: SzConfigService
+    ) {
+        
+    }
 
     /** get the active config from the api/poc server */
     getActiveConfig() {

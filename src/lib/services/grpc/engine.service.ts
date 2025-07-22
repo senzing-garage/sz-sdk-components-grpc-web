@@ -119,7 +119,7 @@ export class SzGrpcEngineService {
         })
       }
       return retVal.asObservable();
-  }
+    }
     public reinitialize(configId: number) {
         let retVal = new Subject<unknown>();
         console.log(`reinitialize engine with #${configId}...`);
@@ -129,6 +129,37 @@ export class SzGrpcEngineService {
           })
         }
         return retVal.asObservable();
+    }
+    public reevaluateEntity(entityId: number, flags: BigInt | number = 0): Observable<any | SzError> {
+      let retVal = new Subject<any | SzError>();
+      console.log(`reevaluate entity by id from grpc...`);
+      if(this.szEnvironment && this.szEnvironment.engine) {
+        this.szEnvironment?.engine?.reevaluateEntity(entityId, flags).then((resp) => {
+          retVal.next(JSON.parse(resp as string));
+        })
+      }
+      return retVal.asObservable();
+    }
+    public reevaluateRecord(dataSourceCode: string, recordId: string, flags?: BigInt | number): Observable<any | SzError> {
+      let retVal = new Subject<any | SzError>();
+      console.log(`reevaluate entity by id from grpc...`);
+      if(this.szEnvironment && this.szEnvironment.engine) {
+        this.szEnvironment?.engine?.reevaluateRecord(dataSourceCode, recordId, flags).then((resp) => {
+          retVal.next(JSON.parse(resp as string));
+        })
+      }
+      return retVal.asObservable();
+    }
+
+    public howEntityByEntityId(entityId: number, flags?: BigInt | number): Observable<any | SzError> {
+      let retVal = new Subject<any | SzError>();
+      console.log(`how report by id from grpc...`);
+      if(this.szEnvironment && this.szEnvironment.engine) {
+        this.szEnvironment?.engine?.howEntityByEntityId(entityId, flags).then((resp) => {
+          retVal.next(JSON.parse(resp as string));
+        })
+      }
+      return retVal.asObservable();
     }
     
     constructor(

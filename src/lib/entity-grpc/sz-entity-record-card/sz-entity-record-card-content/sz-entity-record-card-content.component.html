@@ -10,7 +10,7 @@
       <div class="line" [class.truncated]="i >= truncateOtherDataAt && truncateResults"
         *ngFor="let otherData of otherData; let i = index">
         <span *ngIf="(i < truncateOtherDataAt || truncateOtherDataAt < 0 || !truncateResults) && showOtherData" [class.ellipsis]="truncateResults">
-          {{otherData.FEAT_DESC}}
+          {{getAttrText(otherData)}}
         </span>
       </div>
       <span class="ellipsis-toggle" matTooltip="truncatedTooltip"
@@ -20,7 +20,7 @@
     <div class="search-card__content--column nameData attrData" #columnTwo *ngIf="showColumnTwo">
       <div class="line" [class.truncated]="i >= maxLinesToDisplay && truncateResults" *ngFor="let nameAttributeData of nameAndAttributeData; let i = index">
         <span *ngIf="i < maxLinesToDisplay || !truncateResults" [class.ellipsis]="truncateResults">
-          {{nameAttributeData.FEAT_DESC}}
+          {{getAttrText(nameAttributeData)}}
         </span>
       </div>
       <span class="ellipsis-toggle" matTooltip="truncatedTooltip"
@@ -33,7 +33,7 @@
         <span *ngIf="i < maxLinesToDisplay || !truncateResults"
         [class.linked-attribute]="isLinkedAttribute(addressPhoneData)"
         [class.ellipsis]="truncateResults">
-          {{addressPhoneData.FEAT_DESC}}
+          {{getAttrText(addressPhoneData)}}
         </span>
       </div>
       <span class="ellipsis-toggle" matTooltip="truncatedTooltip"
@@ -45,7 +45,7 @@
         <span *ngIf="i < maxLinesToDisplay || !truncateResults"
         [class.linked-attribute]="isLinkedAttribute(identificationData)"
         [class.ellipsis]="truncateResults">
-          {{identificationData.FEAT_DESC}}
+          {{getAttrText(identificationData)}}
         </span>
       </div>
       <span class="ellipsis-toggle" matTooltip="truncatedTooltip"

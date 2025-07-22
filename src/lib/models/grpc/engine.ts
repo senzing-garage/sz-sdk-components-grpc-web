@@ -13,7 +13,8 @@ export interface SzSdkEntityFeature {
         FEAT_DESC: string, LIB_FEAT_ID: number
     }[]
     LIB_FEAT_ID: number
-    USAGE_TYPE?: string
+    USAGE_TYPE?: string,
+    LABEL?: string
 }
 export interface SzSdkSearchRecordSummary {DATA_SOURCE: string, RECORD_COUNT: number}
 export interface SzSdkSearchResolvedEntity{

@@ -4,7 +4,8 @@
 
 
   .layout-rail {
-    sz-entity-detail-section-collapsible-card, .sz-entity-detail-section-collapsible-card {
+    sz-entity-detail-section-collapsible-card, .sz-entity-detail-section-collapsible-card,
+    sz-entity-detail-section-collapsible-card-grpc, .sz-entity-detail-section-collapsible-card-grpc {
       border-top: var(--sz-entity-detail-section-lo-rail-border-top);
       border-left: var(--sz-entity-detail-section-lo-rail-border-left);
       border-right: var(--sz-entity-detail-section-lo-rail-border-right);
@@ -16,7 +17,8 @@
   }
 
 
-  sz-entity-detail-section-collapsible-card, .sz-entity-detail-section-collapsible-card {
+  sz-entity-detail-section-collapsible-card, .sz-entity-detail-section-collapsible-card,
+  sz-entity-detail-section-collapsible-card-grpc, .sz-entity-detail-section-collapsible-card-grpc {
     display: block;
     background: var(--sz-entity-detail-section-background);
     color: var(--sz-entity-detail-section-color);

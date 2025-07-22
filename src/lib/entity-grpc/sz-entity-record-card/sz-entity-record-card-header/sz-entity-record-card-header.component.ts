@@ -88,7 +88,7 @@ export class SzEntityRecordCardHeaderComponentGrpc implements OnInit, OnDestroy 
     }
   }
 
-  get breakDownInfo(): SzSdkEntityRecordSummary[] {
+  get recordSummaries(): SzSdkEntityRecordSummary[] {
     if (this.searchResult && this.searchResult.ENTITY.RESOLVED_ENTITY.RECORD_SUMMARY) {
       return this.searchResult.ENTITY.RESOLVED_ENTITY.RECORD_SUMMARY;
     } else if(this.entity && this.entity.RECORD_SUMMARY) {
@@ -124,6 +124,10 @@ export class SzEntityRecordCardHeaderComponentGrpc implements OnInit, OnDestroy 
       return this.entity.ENTITY_ID;
     }
     return false;
+  }
+
+  public showTopRecordIdsForSummary(recordSummary: SzSdkEntityRecordSummary): boolean {
+    return recordSummary.RECORD_COUNT <= 1 && recordSummary.TOP_RECORD_IDS && recordSummary.TOP_RECORD_IDS.length > 0 && recordSummary.TOP_RECORD_IDS[0] && this.showRecordIdWhenSingleRecord
   }
 
   public onEntityDetailLinkClick(entityId: number | boolean): void {

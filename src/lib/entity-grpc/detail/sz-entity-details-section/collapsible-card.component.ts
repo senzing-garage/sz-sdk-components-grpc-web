@@ -13,6 +13,7 @@ import { SzEntityRecordCardHeaderComponentGrpc } from '../../sz-entity-record-ca
 import { SzEntityRecordCardContentComponentGrpc } from '../../sz-entity-record-card/sz-entity-record-card-content/sz-entity-record-card-content.component';
 import { SzResumeRecordsByDataSource, SzResumeRelatedEntitiesByMatchKey, SzResumeRelatedEntity } from '../../../models/SzResumeEntity';
 import { SzSdkEntityRecord } from 'src/lib/models/grpc/engine';
+import { SzEntityMatchPillComponent } from '../../sz-entity-match-pill/sz-entity-match-pill.component';
 
 /**
  * @internal
@@ -25,7 +26,8 @@ import { SzSdkEntityRecord } from 'src/lib/models/grpc/engine';
     imports: [CommonModule, 
       SzEntityRecordCardHeaderComponentGrpc, 
       SzEntityRecordCardContentComponentGrpc,
-      SzMultiSelectButtonComponent
+      SzMultiSelectButtonComponent,
+      SzEntityMatchPillComponent
     ]
 })
 export class SzEntityDetailSectionCollapsibleCardComponentGrpc implements OnInit, OnDestroy {
@@ -95,8 +97,23 @@ export class SzEntityDetailSectionCollapsibleCardComponentGrpc implements OnInit
   @Input() truncateResults: boolean = true;
 
   //@Input() cardData: SzEntityDetailSectionData | SzSectionDataByDataSource | undefined;
-  @Input() entitiesByMatchKey: SzResumeRelatedEntitiesByMatchKey;
-  @Input() recordsByDataSource: SzResumeRecordsByDataSource;
+  private _entitiesByMatchKey: SzResumeRelatedEntitiesByMatchKey;
+  @Input() set entitiesByMatchKey(value: SzResumeRelatedEntitiesByMatchKey) {
+    this._entitiesByMatchKey = value;
+    this.matchPills = this.createPillInfo(value);
+    console.log(`entitiesByMatchKey: `, value);
+  }
+  public get entitiesByMatchKey() {
+    return this._entitiesByMatchKey;
+  }
+  private _recordsByDataSource: SzResumeRecordsByDataSource;
+  @Input() set recordsByDataSource(value: SzResumeRecordsByDataSource) {
+    this._recordsByDataSource = value;
+    console.log(`recordsByDataSource: `, value);
+  }
+  public get recordsByDataSource() {
+    return this._recordsByDataSource;
+  }
 
   isOpen: boolean = false;
   matchPills: { text: string, ambiguous: boolean, plusMinus: string }[];
@@ -131,10 +148,11 @@ export class SzEntityDetailSectionCollapsibleCardComponentGrpc implements OnInit
 
   public get cardTitle() {
     let retValue = '';
-    if(this.recordsByDataSource && this.recordsByDataSource.size > 0 &&  this.recordsByDataSource.keys.length === 1) {
-      retValue =  this.recordsByDataSource.keys[0];
-    } else if(this.entitiesByMatchKey && this.entitiesByMatchKey.size > 0 &&  this.entitiesByMatchKey.keys.length === 1) {
-      retValue =  this.entitiesByMatchKey.keys[0];
+    let keys = this.recordsByDataSource ? [...this.recordsByDataSource.keys()] : undefined;
+    //let keys = this.recordsByDataSource ? [...this.recordsByDataSource.keys()] : this.entitiesByMatchKey ? [...this.entitiesByMatchKey.keys()] : undefined;
+    if(keys && keys.length > 0 && keys[0]) {
+      retValue =  keys.join(' | ');
+      console.log(`cardTitle: "${retValue}"`, keys);
     }
     return retValue;
   }
@@ -360,6 +378,7 @@ export class SzEntityDetailSectionCollapsibleCardComponentGrpc implements OnInit
     if(data && ((data as SzResumeRelatedEntitiesByMatchKey).size > 0)) {
       let retVal = [];
       let relatedEntities = (data as SzResumeRelatedEntitiesByMatchKey);
+
       relatedEntities.forEach((value, key)=>{
         const pills = key
         .split(/[-](?=\w)/)
