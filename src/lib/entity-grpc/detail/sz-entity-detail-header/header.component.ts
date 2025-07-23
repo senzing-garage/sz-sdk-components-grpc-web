@@ -15,8 +15,8 @@ import {
   SzResolvedEntity,
   SzEntityIdentifier
 } from '@senzing/rest-api-client-ng';
-import { SzRelationshipNetworkComponent } from '../../../graph/sz-relationship-network/sz-relationship-network.component';
 
+import { SzRelationshipNetworkComponent } from '../../../graph-grpc/sz-relationship-network/sz-relationship-network.component';
 import { bestEntityName } from '../../../common/entity-utils';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';

@@ -1,0 +1,144 @@
+import { Component, HostBinding, Input, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { MatIcon } from '@angular/material/icon';
+import {
+  SzRelatedEntity,
+  SzResolvedEntity
+} from '@senzing/rest-api-client-ng';
+import { SzGraphNodeFilterPair, SzNetworkGraphInputs } from '../../../models/graph';
+import { SzPrefsService } from '../../../services/sz-prefs.service';
+import { SzGraphComponentGrpc } from '../../../graph-grpc/sz-graph.component';
+import { SzCSSClassService } from '../../../services/sz-css-class.service';
+import { SzRelationshipNetworkComponent } from '../../../graph-grpc/sz-relationship-network/sz-relationship-network.component';
+import { SzGraphFilterComponent } from '../../../graph-grpc/sz-graph-filter.component';
+import { SzGraphControlComponent } from '../../../graph-grpc/sz-graph-control.component';
+import { SzResumeEntity, SzResumeRelatedEntity } from '../../../models/SzResumeEntity';
+
+/**
+ * @internal
+ * @export
+ */
+@Component({
+    selector: 'sz-entity-detail-graph',
+    templateUrl: './sz-entity-detail-graph.component.html',
+    styleUrls: ['./sz-entity-detail-graph.component.scss'],
+    imports: [
+      CommonModule, MatIcon, 
+      SzRelationshipNetworkComponent, 
+      SzGraphFilterComponent, SzGraphControlComponent
+    ]
+})
+export class SzEntityDetailGraphComponent extends SzGraphComponentGrpc {
+  @Input() public override title: string = "Relationships at a Glance";
+
+  /** data passed in from parent component
+   * used in sz-entity-detail.component.
+   * passes in entity node data needed for context display
+   * @deprecated
+  */
+  private _data: {
+    resolvedEntity: SzResumeEntity,
+    relatedEntities: SzResumeRelatedEntity[]
+  }
+
+  /** data passed in from parent component
+   * used in sz-entity-detail.component.
+   * passes in entity node data needed for context display
+   * @deprecated
+  */
+  @Input() public set data(value: {
+    resolvedEntity: SzResumeEntity,
+    relatedEntities: SzResumeRelatedEntity[]
+  }) {
+    this._data = value;
+    if(value && value.resolvedEntity) {
+      this._graphIds = [ value.resolvedEntity.ENTITY_ID ];
+    }
+  }
+
+  /** data passed in from parent component
+   * used in sz-entity-detail.component.
+   * passes in entity node data needed for context display
+   *
+   * @deprecated
+  */
+  public get data(): {
+    resolvedEntity: SzResumeEntity,
+    relatedEntities: SzResumeRelatedEntity[]
+  } {
+    return this._data;
+  }
+
+  @Input() public captureMouseWheel: boolean = true;
+  @Output() public scrollWheelEvent: EventEmitter<WheelEvent> = new EventEmitter<WheelEvent>()
+
+  @HostBinding('class.open') get cssClssOpen() { 
+    return this.expanded; 
+  }
+  @HostBinding('class.closed') get cssClssClosed() { 
+    return !this.expanded; 
+  }
+
+  /** since we're embedding this graph inside another component 
+   * we will always ignore filters "UNLESS" the filter tray is shown
+   */
+  public get ignoreFilters(): boolean {
+    return this.showFiltersControl ? false : true;
+  }
+
+  _inputs: SzNetworkGraphInputs;
+
+  constructor(
+    public _p_prefs: SzPrefsService,
+    private _p_cd: ChangeDetectorRef,
+    private _p_css: SzCSSClassService
+  ) {
+    super(_p_prefs, _p_cd, _p_css)
+  }
+
+  /** toggle collapsed/expanded state of graph */
+  toggleExpanded(evt: Event) {
+    this.expanded = !this.expanded;
+    if(this.expanded !== !this.prefs.entityDetail.graphSectionCollapsed) {
+      this.prefs.entityDetail.graphSectionCollapsed = !this.expanded;
+    }
+  }
+
+  /**
+   * Older style data passing, comes from the SzNetworkInputs->XMLHTTPRequest->mutation->event
+   * @deprecated
+   */
+   onNetworkLoaded(inputs: SzNetworkGraphInputs) {
+    this._inputs = inputs;
+  }
+
+  /**
+   * handler for when the user performs a mouse wheel scroll event
+   */
+  public onGraphScrollEvent(evt: Event) {
+    //this.scrollWheelEvent.emit(evt);
+  }
+  /**
+   * 
+   * @deprecated use entityNodeFilters property instead
+   */
+  public get entityNodeFilterByDataSource(): SzGraphNodeFilterPair[] {
+    return this.entityNodeFilters;
+  }
+  /** 
+   * for detail graph view we only want filters on if the user 
+   * can select them.
+   */
+  override get entityNodeFilters(): SzGraphNodeFilterPair[] {
+    let _ret = [];
+    if(this.dataSourcesFiltered && this.showFiltersControl) {
+      _ret = this.dataSourcesFiltered.map( (_name) => {
+        return {
+          selectorFn: this.isEntityNodeInDataSource.bind(this, false, _name),
+          selectorArgs: _name
+        };
+      });
+    }
+    return _ret;
+  }
+}

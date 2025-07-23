@@ -110,11 +110,19 @@ export class SzGrpcEngineService {
       }
       return retVal.asObservable();
     }
-    public findNetworkByEntityId(entityId: number, maxDegrees?: number, buildOutDegrees?: number, buildOutMaxEntities?: number, flags: BigInt | number = SzEngineFlags.SZ_ENTITY_DEFAULT_FLAGS): Observable<any | SzError> {
+    entityIds: string | Array<number | string>
+    public findNetworkByEntityId(entityId: string, maxDegrees?: number, buildOutDegrees?: number, buildOutMaxEntities?: number, flags?: BigInt)
+    public findNetworkByEntityId(entityId: number, maxDegrees?: number, buildOutDegrees?: number, buildOutMaxEntities?: number, flags?: BigInt)
+    public findNetworkByEntityId(entityIds: Array<number | string>, maxDegrees?: number, buildOutDegrees?: number, buildOutMaxEntities?: number, flags?: BigInt)
+    public findNetworkByEntityId(entityIds: string | number | Array<number | string>, maxDegrees?: number, buildOutDegrees?: number, buildOutMaxEntities?: number, flags: BigInt | number = SzEngineFlags.SZ_ENTITY_DEFAULT_FLAGS): Observable<any | SzError> {
       let retVal = new Subject<string | SzError>();
       console.log(`find network by id from grpc...`);
       if(this.szEnvironment && this.szEnvironment.engine) {
-        this.szEnvironment?.engine?.findNetworkByEntityId([entityId], maxDegrees, buildOutDegrees, buildOutMaxEntities, flags).then((resp) => {
+        // convert single string to array with 1 string
+        entityIds = typeof entityIds === 'string' ? [entityIds as string] : entityIds;
+        // convert single number to array with 1 string
+        entityIds = typeof entityIds === 'number' ? [`${entityIds as number}`] : entityIds;
+        this.szEnvironment?.engine?.findNetworkByEntityId(entityIds, maxDegrees, buildOutDegrees, buildOutMaxEntities, flags).then((resp) => {
           retVal.next(JSON.parse(resp as string));
         })
       }

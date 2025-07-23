@@ -46,13 +46,13 @@ export { SzEntityRecordViewerComponent } from './lib/record/sz-entity-record-vie
 //export * from './lib/entity/detail/sz-entity-detail-how-report/sz-entity-detail-how-report.component';
 
 /** graph related */
-export { SzRelationshipNetworkComponent } from './lib/graph/sz-relationship-network/sz-relationship-network.component';
-export { SzRelationshipNetworkInputComponent } from './lib/graph/sz-relationship-network-input/sz-relationship-network-input.component';
-export { SzRelationshipNetworkLookupComponent } from './lib/graph/sz-relationship-network-lookup/sz-relationship-network-lookup.component';
-export { SzRelationshipPathComponent } from './lib/graph/sz-relationship-path/sz-relationship-path.component';
-export { SzGraphComponent } from './lib/graph/sz-graph.component';
-export * from './lib/graph/sz-graph-control.component';
-export * from './lib/graph/sz-graph-filter.component';
+//export { SzRelationshipNetworkComponent } from './lib/graph/sz-relationship-network/sz-relationship-network.component';
+//export { SzRelationshipNetworkInputComponent } from './lib/graph/sz-relationship-network-input/sz-relationship-network-input.component';
+//export { SzRelationshipNetworkLookupComponent } from './lib/graph/sz-relationship-network-lookup/sz-relationship-network-lookup.component';
+//export { SzRelationshipPathComponent } from './lib/graph/sz-relationship-path/sz-relationship-path.component';
+//export { SzGraphComponent } from './lib/graph/sz-graph.component';
+//export * from './lib/graph/sz-graph-control.component';
+//export * from './lib/graph/sz-graph-filter.component';
 //export { SzEntityDetailGraphComponent } from './lib/entity/detail/sz-entity-detail-graph/sz-entity-detail-graph.component';
 //export { SzStandaloneGraphComponent } from './lib/entity/detail/sz-entity-detail-graph/sz-standalone-graph.component';
 //export * from './lib/entity/detail/sz-entity-detail-graph/sz-entity-detail-graph-control.component';

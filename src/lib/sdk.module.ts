@@ -73,16 +73,16 @@ import { SzPrefDictComponent } from './configuration/sz-preferences/sz-pref-dict
 //import { SzEntityRecordCardHeaderComponent } from './entity/sz-entity-record-card/sz-entity-record-card-header/sz-entity-record-card-header.component';
 //import { SzEntityRecordCardContentComponent } from './entity/sz-entity-record-card/sz-entity-record-card-content/sz-entity-record-card-content.component';
 // graph components
-import { SzRelationshipNetworkComponent } from './graph/sz-relationship-network/sz-relationship-network.component';
-import { SzRelationshipNetworkInputComponent } from './graph/sz-relationship-network-input/sz-relationship-network-input.component';
-import { SzRelationshipNetworkLookupComponent } from './graph/sz-relationship-network-lookup/sz-relationship-network-lookup.component';
-import { SzRelationshipPathComponent } from './graph/sz-relationship-path/sz-relationship-path.component';
+//import { SzRelationshipNetworkComponent } from './graph/sz-relationship-network/sz-relationship-network.component';
+//import { SzRelationshipNetworkInputComponent } from './graph/sz-relationship-network-input/sz-relationship-network-input.component';
+//import { SzRelationshipNetworkLookupComponent } from './graph/sz-relationship-network-lookup/sz-relationship-network-lookup.component';
+//import { SzRelationshipPathComponent } from './graph/sz-relationship-path/sz-relationship-path.component';
 //import { SzEntityDetailGraphControlComponent } from './entity/detail/sz-entity-detail-graph/sz-entity-detail-graph-control.component';
 //import { SzEntityDetailGraphFilterComponent } from './entity/detail/sz-entity-detail-graph/sz-entity-detail-graph-filter.component';
-import { SzGraphControlComponent } from './graph/sz-graph-control.component';
+//import { SzGraphControlComponent } from './graph/sz-graph-control.component';
 //import { SzStandaloneGraphComponent } from './entity/detail/sz-entity-detail-graph/sz-standalone-graph.component';
-import { SzGraphFilterComponent } from './graph/sz-graph-filter.component';
-import { SzGraphComponent } from './graph/sz-graph.component';
+//import { SzGraphFilterComponent } from './graph/sz-graph-filter.component';
+//import { SzGraphComponent } from './graph/sz-graph.component';
 // search related
 //import { SzSearchComponent } from '../../deprecated/search/sz-search/sz-search.component';
 //import { SzSearchIdentifiersPickerDialogComponent, SzSearchIdentifiersPickerSheetComponent } from '../../deprecated/search/sz-search/sz-search-identifiers-picker.component';
@@ -184,9 +184,9 @@ const SzGrpcEnvInjector = new InjectionToken<SzGrpcWebEnvironment>("SzGrpcWebEnv
         //SzEntityRecordViewerComponent,
         //SzEntityRecordCardHeaderComponent,
         //SzEntityRecordCardContentComponent,
-        SzGraphControlComponent,
-        SzGraphComponent,
-        SzGraphFilterComponent,
+        //SzGraphControlComponent,
+        //SzGraphComponent,
+        //SzGraphFilterComponent,
         SzHowEntityComponent,
         SzHowFinalEntityCardComponent,
         SzHowNavComponent,
@@ -203,10 +203,10 @@ const SzGrpcEnvInjector = new InjectionToken<SzGrpcWebEnvironment>("SzGrpcWebEnv
         SzPreferencesComponent,
         SzPrefDictComponent,
         SzRecordStatsDonutChart,
-        SzRelationshipNetworkComponent,
-        SzRelationshipNetworkInputComponent,
-        SzRelationshipNetworkLookupComponent,
-        SzRelationshipPathComponent,
+        //SzRelationshipNetworkComponent,
+        //SzRelationshipNetworkInputComponent,
+        //SzRelationshipNetworkLookupComponent,
+        //SzRelationshipPathComponent,
         SzElementResizeObserverDirective,
         //SzSearchComponent,
         //SzSearchByIdComponent,
@@ -243,9 +243,9 @@ const SzGrpcEnvInjector = new InjectionToken<SzGrpcWebEnvironment>("SzGrpcWebEnv
         //SzEntityDetailGraphControlComponent,
         //SzEntityDetailGraphFilterComponent,
         //SzEntityRecordViewerComponent,
-        SzGraphComponent,
-        SzGraphControlComponent,
-        SzGraphFilterComponent,
+        //SzGraphComponent,
+        //SzGraphControlComponent,
+        //SzGraphFilterComponent,
         SzHowEntityComponent,
         SzHowNavComponent,
         SzHowSingletonCardComponent,
@@ -258,10 +258,10 @@ const SzGrpcEnvInjector = new InjectionToken<SzGrpcWebEnvironment>("SzGrpcWebEnv
         SzPoweredByComponent,
         SzPreferencesComponent,
         SzRecordStatsDonutChart,
-        SzRelationshipNetworkComponent,
-        SzRelationshipNetworkInputComponent,
-        SzRelationshipNetworkLookupComponent,
-        SzRelationshipPathComponent,
+        //SzRelationshipNetworkComponent,
+        //SzRelationshipNetworkInputComponent,
+        //SzRelationshipNetworkLookupComponent,
+        //SzRelationshipPathComponent,
         SzShortNumberPipe,
         //SzSearchComponent,
         //SzSearchByIdComponent,

@@ -274,6 +274,9 @@ export class SzEntityRecordCardContentComponentGrpc implements OnInit {
         retVal = true;
       }
     }
+    if(this._record && this._record.RECORD_ID) {
+      retVal = true;
+    }
     // check "columnsShown[0]" for override
     if(this.columnsShown && this.columnsShown[0] === true) {
       retVal = true;

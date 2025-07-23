@@ -131,7 +131,7 @@ export class SzEntityDetailHeaderContentComponentGrpc implements OnDestroy, OnIn
     return 0;
   }
   get showColumnOne(): boolean {
-    return (this.entity && this.entityFeatures.has('OTHER') && this.entityFeatures.get('OTHER').length > 0) && this.showOtherData;
+    return this.hasRecordId || (this.entity && this.entityFeatures.has('OTHER') && this.entityFeatures.get('OTHER').length > 0) && this.showOtherData;
   }
   get columnTwoTotal(): number {
     return (this.nameData.concat(this.attributeData).length);

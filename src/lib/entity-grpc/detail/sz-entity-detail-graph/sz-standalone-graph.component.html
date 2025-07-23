@@ -1,0 +1,102 @@
+<!-- start graph entity context menu template -->
+<ng-template #graphNodeContextMenu let-entityEvt>
+  <ul class="graph-context-menu">
+      <li>#{{entityEvt?.entityId}}</li>
+      <li [class.disabled]="!isGraphEntityRemovable(entityEvt)" (click)="hideGraphEntity(entityEvt)">Hide Entity</li>
+  </ul>
+</ng-template>
+<!-- end graph entity context menu template -->
+<!-- start graph link context menu template -->
+<ng-template #graphLinkContextMenu let-linkEvt>
+<ul class="graph-context-menu">
+    <li (click)="openWhyReportForGraphRelationship(linkEvt)">Show "Why Not" Report</li>
+</ul>
+</ng-template>
+<!-- end graph link context menu template -->
+<!-- start graph container -->
+<div #graphContainer class="sz-graph-container">
+    <div *ngIf="showZoomControl" class="zoom-control-container"
+    [class.top-left]="zoomControlPosition == 'top-left'"
+    [class.top-right]="zoomControlPosition == 'top-right'"
+    [class.bottom-right]="zoomControlPosition == 'bottom-right'"
+    [class.bottom-left]="zoomControlPosition == 'bottom-left'">
+      <span><button class="zoom-out" (click)="zoomOut()"></button></span>
+      <input disabled="disabled" type="range" min="1" max="100" [value]="graphZoom" class="slider">
+      <span><button class="zoom-in" (click)="zoomIn()"></button></span>
+    </div>
+    <sz-relationship-network #graph class="sz-relationship-network-graph"
+      [class.filters-showing]="this.showFiltersControl"
+      svgViewBox="150 50 400 300"
+      svgPreserveAspectRatio="xMinYMid meet"
+      [entityIds]="graphIds"
+      [maxDegrees]="maxDegrees"
+      [buildOut]="buildOut"
+      [linkGravity]="5"
+      [highlight]="entityNodeColors"
+      [filter]="entityNodeFilters"
+      [includes]="entityMatchTokenFilter"
+      [expandByDefaultWhenLessThan]="expandByDefaultWhenLessThan"
+      [showLinkLabels]="_showLinkLabels"
+      [suppressL1InterLinks]="_suppressL1InterLinks"
+      (contextMenuClick)="onRightClick($event)"
+      (entityClick)="onEntityClick($event)"
+      (relationshipClick)="onLinkClick($event)"
+      (relationshipContextMenuClick)="onLinkRightClick($event)"
+      (noResults)="onNoResults($event)"
+      (onTotalRelationshipsCountUpdated)="onTotalRelationshipsCountUpdated($event)"
+      (onDataLoaded)="onGraphDataLoaded($event)"
+      (onDataUpdated)="onGraphDataUpdated($event)"
+      (scaleChanged)="onGraphZoom($event)"
+      [noMaxEntitiesLimit]="unlimitedMaxEntities"
+      [noMaxScopeLimit]="unlimitedMaxScope"
+      [maxEntities]="maxEntities"></sz-relationship-network>  
+    <sz-graph-control *ngIf="showMatchKeyControl" class="sz-graph-control"
+      [showLinkLabels]="_showLinkLabels"
+      (optionChanged)="onOptionChange($event)"
+    ></sz-graph-control>
+  
+    <sz-graph-filter *ngIf="showFiltersControl" class="sz-graph-filter"
+        [ngStyle]="{'width.px': filterWidth}"
+        [class.top-left]="filterControlPosition == 'top-left'"
+        [class.top-right]="filterControlPosition == 'top-right'"
+        [class.bottom-right]="filterControlPosition == 'bottom-right'"
+        [class.bottom-left]="filterControlPosition == 'bottom-left'"
+        [showLinkLabels]="_showLinkLabels"
+        (optionChanged)="onOptionChange($event)"
+        (matchKeyTokenSelectionScopeChanged)="onFilterMatchKeyTokenSelectionScopeChanged($event)"
+        [showDataSources]="filterShowDataSources"
+        [showMatchKeys]="filterShowMatchKeys"
+        [showMatchKeyTokens]="filterShowMatchKeyTokens"
+        [showMatchKeyFilters]="showMatchKeyFilters"
+        [matchKeyTokenSelectionScope]="matchKeyTokenSelectionScope"
+        [showMatchKeyTokenFilters]="showMatchKeyTokenFilters"
+        [showMatchKeyTokenSelectAll]="showMatchKeyTokenSelectAll"
+        [showTooltips]="showFilterTooltips"
+        [showCoreMatchKeyTokenChips]="showCoreMatchKeyTokenChips"
+        [showExtraneousMatchKeyTokenChips]="showExtraneousMatchKeyTokenChips"
+        [maxEntitiesLimit]="maxEntitiesFilterLimit"
+    ></sz-graph-filter>
+  
+    <svg class="popout-icon"
+        [class.top-left]="popOutIconPosition == 'top-left'"
+        [class.top-right]="popOutIconPosition == 'top-right'"
+        [class.bottom-right]="popOutIconPosition == 'bottom-right'"
+        [class.bottom-left]="popOutIconPosition == 'bottom-left'" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+        viewBox="0 0 64 64"
+        (click)="onPopOutClick()"
+        *ngIf="showPopOutIcon"
+        enable-background="new 0 0 64 64" xml:space="preserve">
+      <g>
+        <g><g><polygon points="53,56 8,56 8,11 30,11 30,3 0,3 0,64 61,64 61,34 53,34"/></g></g>
+        <g><g><polygon points="42,0 50,8 33,25 39,31 56,14 64,23 64,0"/></g></g>
+       </g>
+    </svg>
+  </div>
+  <!--
+    showLinkLabels: {{ showLinkLabels }}<br/>
+    _suppressL1InterLinks: {{ _suppressL1InterLinks }}<br/>
+    matchKeyTokenSelectionScope: {{matchKeyTokenSelectionScope}}<br/>
+    filterControlPosition: "{{ filterControlPosition }}"<br/>
+    entityIds: {{ graphIds }} 
+  -->
+<!-- end graph container -->

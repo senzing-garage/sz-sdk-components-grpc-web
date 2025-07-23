@@ -34,6 +34,7 @@ import { SzEngineFlags } from '@senzing/sz-sdk-typescript-grpc-web';
 import { SzSdkEntityRecord, SzSdkFindNetworkResponse } from '../../models/grpc/engine';
 import { SzRelatedEntityMatchLevel, SzResumeEntity, SzResumeRelatedEntity } from '../../models/SzResumeEntity';
 import { SzEntityDetailsSectionComponentGrpc } from './sz-entity-details-section/sz-entity-details-section.component';
+import { SzEntityDetailGraphComponent } from './sz-entity-detail-graph/sz-entity-detail-graph.component';
 
 /**
  * The Entity Detail Component.
@@ -66,7 +67,8 @@ import { SzEntityDetailsSectionComponentGrpc } from './sz-entity-details-section
     styleUrls: ['./sz-entity-detail.component.scss'],
     imports: [CommonModule, 
       SzEntityDetailHeaderComponentGrpc, 
-      SzEntityDetailsSectionComponentGrpc
+      SzEntityDetailsSectionComponentGrpc,
+      SzEntityDetailGraphComponent
     ]
 })
 export class SzEntityDetailComponentGrpc implements OnInit, OnDestroy, AfterViewInit {
