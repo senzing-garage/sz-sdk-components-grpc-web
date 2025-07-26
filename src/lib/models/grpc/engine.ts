@@ -77,7 +77,7 @@ export interface SzSdkRelatedEntity  extends SzSdkBaseEntity {
     IS_DISCLOSED?: 0 | 1,
     MATCH_KEY: string,
     MATCH_LEVEL_CODE: SzSdkSearchMatchLevel,
-    RECORDS?: SzSdkEntityRelatedRecord
+    RECORDS?: SzSdkEntityRelatedRecord[]
 }
 
 export interface SzSdkResolvedEntity extends SzSdkBaseEntity {
@@ -87,7 +87,7 @@ export interface SzSdkResolvedEntity extends SzSdkBaseEntity {
 
 export interface SzSdkEntityResponse {
     RELATED_ENTITIES: SzSdkRelatedEntity[],
-    RESOLVED_ENTITY: SzSdkResolvedEntity[]
+    RESOLVED_ENTITY: SzSdkResolvedEntity
 }
 
 export interface SzSdkFindNetworkNetworkLink {
@@ -101,6 +101,15 @@ export interface SzSdkFindNetworkNetworkLink {
 }
 
 export interface SzSdkFindNetworkResponse {
+    ENTITIES: {
+        RELATED_ENTITIES: SzSdkRelatedEntity[],
+        RESOLVED_ENTITY: SzSdkResolvedEntity
+    }[],
+    ENTITY_NETWORK_LINKS: SzSdkFindNetworkNetworkLink[],
+    ENTITY_PATHS: any
+}
+
+export interface SzGraphNetworkResponse extends SzSdkFindNetworkResponse {
     ENTITIES: {
         RELATED_ENTITIES: SzSdkRelatedEntity[],
         RESOLVED_ENTITY: SzSdkResolvedEntity

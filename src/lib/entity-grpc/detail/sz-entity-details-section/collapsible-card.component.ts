@@ -101,7 +101,7 @@ export class SzEntityDetailSectionCollapsibleCardComponentGrpc implements OnInit
   @Input() set entitiesByMatchKey(value: SzResumeRelatedEntitiesByMatchKey) {
     this._entitiesByMatchKey = value;
     this.matchPills = this.createPillInfo(value);
-    console.log(`entitiesByMatchKey: `, value);
+    //console.log(`entitiesByMatchKey: `, value);
   }
   public get entitiesByMatchKey() {
     return this._entitiesByMatchKey;
@@ -109,7 +109,7 @@ export class SzEntityDetailSectionCollapsibleCardComponentGrpc implements OnInit
   private _recordsByDataSource: SzResumeRecordsByDataSource;
   @Input() set recordsByDataSource(value: SzResumeRecordsByDataSource) {
     this._recordsByDataSource = value;
-    console.log(`recordsByDataSource: `, value);
+    //console.log(`recordsByDataSource: `, value);
   }
   public get recordsByDataSource() {
     return this._recordsByDataSource;
@@ -152,7 +152,7 @@ export class SzEntityDetailSectionCollapsibleCardComponentGrpc implements OnInit
     //let keys = this.recordsByDataSource ? [...this.recordsByDataSource.keys()] : this.entitiesByMatchKey ? [...this.entitiesByMatchKey.keys()] : undefined;
     if(keys && keys.length > 0 && keys[0]) {
       retValue =  keys.join(' | ');
-      console.log(`cardTitle: "${retValue}"`, keys);
+      //console.log(`cardTitle: "${retValue}"`, keys);
     }
     return retValue;
   }

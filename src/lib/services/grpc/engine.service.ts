@@ -4,6 +4,8 @@ import { Observable, Subject, take, takeUntil } from 'rxjs';
 import { SzProductLicenseResponse, SzProductVersionResponse } from '../../models/grpc/product';
 import { SzGrpcConfig } from './config.service';
 import { isNotNull } from '../../common/utils';
+import { SzSdkEntityResponse, SzSdkFindNetworkResponse } from '../../models/grpc/engine';
+import { SzNetorkGraphCompositeResponse } from '../../models/SzNetworkGraph';
 
 @Injectable({
   providedIn: 'root'
@@ -62,7 +64,7 @@ export class SzGrpcEngineService {
         return retVal;
     }
     public getEntityByEntityId(entityId: number, flags: BigInt | number = SzEngineFlags.SZ_ENTITY_DEFAULT_FLAGS): Observable<any | SzError> {
-        let retVal = new Subject<string | SzError>();
+        let retVal = new Subject<SzSdkEntityResponse | SzError>();
         console.log(`getting entity by id from grpc...`);
         if(this.szEnvironment && this.szEnvironment.engine) {
           this.szEnvironment?.engine?.getEntityByEntityId(entityId, flags).then((resp) => {
@@ -70,6 +72,54 @@ export class SzGrpcEngineService {
           })
         }
         return retVal.asObservable();
+    }
+
+    public getEntitiesByEntityId(entityIds: Array<string | number>, flags: BigInt | number = SzEngineFlags.SZ_ENTITY_DEFAULT_FLAGS): Observable<any | SzError> {
+      let retVal    = new Subject<SzSdkEntityResponse[] | SzError>();
+      let requests  = [];
+      console.log(`getting entities by id from grpc...`);
+      if(this.szEnvironment && this.szEnvironment.engine) {
+        requests = entityIds.map((entityId) => {
+          return this.szEnvironment?.engine?.getEntityByEntityId(entityId as number, flags)
+        });
+        Promise.all(requests).then((resp: string[]) => {
+          let _retResp = resp.map((_r) => {
+            return JSON.parse(_r as string);
+          });
+          console.log(`\t\tgetEntitiesByEntityId(${(entityIds as Array<number | string>).join(',')}): all promises resolved`, _retResp);
+          retVal.next(_retResp);
+        }).catch((error) => {
+          throw error;
+        })
+      }
+      return retVal.asObservable();
+    }
+    public getGraphEntityNetwork(entityIds: Array<number | string>, maxDegrees?: number, buildOutDegrees?: number, buildOutMaxEntities?: number, flags: BigInt | number = SzEngineFlags.SZ_ENTITY_DEFAULT_FLAGS): Observable<SzNetorkGraphCompositeResponse | SzError> {
+      let retVal    = new Subject<SzNetorkGraphCompositeResponse | SzError>();
+      let requests  = [];
+
+      if(this.szEnvironment && this.szEnvironment.engine) {
+        requests = entityIds.map((entityId) => {
+          return this.szEnvironment?.engine?.getEntityByEntityId(entityId as number, flags)
+        });
+        requests.push( this.szEnvironment?.engine?.findNetworkByEntityId(entityIds, maxDegrees, buildOutDegrees, buildOutMaxEntities, flags) )
+        
+        Promise.all(requests).then((resp: string[]) => {
+          let networkResponse = JSON.parse( resp.pop() as string)
+          let _retResp: SzNetorkGraphCompositeResponse = {
+            ENTITY_RESPONSES: resp.map((_r) => {
+              return JSON.parse(_r as string);
+            }),
+            NETWORK_RESPONSES: [networkResponse]
+          }
+
+          console.log(`\t\tgetEntitiesByEntityId(${(entityIds as Array<number | string>).join(',')}): all promises resolved`, _retResp);
+          retVal.next(_retResp);
+        }).catch((error) => {
+          throw error;
+        })
+      }
+      return retVal.asObservable();
     }
     public searchByAttributes(attributes: string | Map<any, any> | {[key: string] : any}, flags: BigInt | number = SzEngineFlags.SZ_SEARCH_BY_ATTRIBUTES_DEFAULT_FLAGS, searchProfile: string = ""): Observable<any | SzError> {
         let retVal = new Subject<string | SzError>();
@@ -115,7 +165,7 @@ export class SzGrpcEngineService {
     public findNetworkByEntityId(entityId: number, maxDegrees?: number, buildOutDegrees?: number, buildOutMaxEntities?: number, flags?: BigInt)
     public findNetworkByEntityId(entityIds: Array<number | string>, maxDegrees?: number, buildOutDegrees?: number, buildOutMaxEntities?: number, flags?: BigInt)
     public findNetworkByEntityId(entityIds: string | number | Array<number | string>, maxDegrees?: number, buildOutDegrees?: number, buildOutMaxEntities?: number, flags: BigInt | number = SzEngineFlags.SZ_ENTITY_DEFAULT_FLAGS): Observable<any | SzError> {
-      let retVal = new Subject<string | SzError>();
+      let retVal = new Subject<SzSdkFindNetworkResponse | SzError>();
       console.log(`find network by id from grpc...`);
       if(this.szEnvironment && this.szEnvironment.engine) {
         // convert single string to array with 1 string
@@ -123,6 +173,7 @@ export class SzGrpcEngineService {
         // convert single number to array with 1 string
         entityIds = typeof entityIds === 'number' ? [`${entityIds as number}`] : entityIds;
         this.szEnvironment?.engine?.findNetworkByEntityId(entityIds, maxDegrees, buildOutDegrees, buildOutMaxEntities, flags).then((resp) => {
+          console.log(`\t\tfindNetworkByEntityId(${(entityIds as Array<number | string>).join(',')}) promises resolved: `, JSON.parse(resp as string));
           retVal.next(JSON.parse(resp as string));
         })
       }
