@@ -455,7 +455,7 @@ export class SzRelationshipNetworkComponent implements AfterViewInit, OnDestroy 
     if(this.reloadOnIdChange && _changed && this._entityIds && this._entityIds.some( (eId) => { return _oldIds && _oldIds.indexOf(eId) < 0; })) {
       this.reload( this._entityIds.map((eId) => { return parseInt(eId); }) );
     }
-    console.log('sdk-graph-components/sz-relationship-network.component: entityIds setter( '+_changed+' )', this._entityIds);
+    //console.log('sdk-graph-components/sz-relationship-network.component: entityIds setter( '+_changed+' )', this._entityIds);
   }
   public get entityIds(): SzEntityIdentifier | SzEntityIdentifier[] {
     return this._entityIds;
@@ -1685,7 +1685,7 @@ export class SzRelationshipNetworkComponent implements AfterViewInit, OnDestroy 
   /**
    * make graph network request using input parameters
    */
-  private getNetwork(entityIds: Array<number | string>, maxDegrees: number, buildOut: number, maxEntities: number) {
+  private getNetworkBlorp(entityIds: Array<number | string>, maxDegrees: number, buildOut: number, maxEntities: number) {
     let _lastPrimaryRequestParameters = {
       entityIds: entityIds,
       maxDegrees: maxDegrees,
@@ -1756,7 +1756,25 @@ export class SzRelationshipNetworkComponent implements AfterViewInit, OnDestroy 
         console.time('graph expand')
       }catch(err){}
     }
-    return this.engineService.findNetworkByEntityId(
+
+    return this.engineService.getGraphEntityNetwork(
+      _entityIds,
+      1,
+      0,
+      100
+    ).pipe(
+      map(this.asGraphInputs.bind(this)),
+      tap((result) => {
+        console.log(`getNextLayerForEntities: after asGraphInputs: `, result)
+        if(console.time){
+          try {
+            console.timeEnd('graph expand')
+          }catch(err){}
+        }
+      })
+    );
+
+    /*return this.engineService.findNetworkByEntityId(
       _entityIds,
       1,
       0,
@@ -1770,6 +1788,7 @@ export class SzRelationshipNetworkComponent implements AfterViewInit, OnDestroy 
           }
         })
       );
+    */
   }
 
   /** zoom in to the graph relative to current position */
@@ -2616,6 +2635,9 @@ export class SzRelationshipNetworkComponent implements AfterViewInit, OnDestroy 
         this.getNodeByIdQuery(d.entityId).attr('class', this.getEntityNodeClass.bind(this));
         this.getNextLayerForEntities(d.relatedEntities, d.entityId).pipe(
           take(1),
+          tap((networkComposite)=>{
+            console.log(`expandNodeAndRelated: `, d, networkComposite);
+          }),
           map(this.asGraph.bind(this)),
           map(this.addExistingNodeData.bind(this)),
           map(this.addLinksToNodeData.bind(this))
@@ -3437,14 +3459,14 @@ export class SzRelationshipNetworkComponent implements AfterViewInit, OnDestroy 
 
       // Identify queried nodes and the nodes and links that connect them.
       entityPaths.forEach( (entPath) => {
-        if (!queriedEntityIds.includes(entPath.startEntityId)) {
-          queriedEntityIds.push(entPath.startEntityId);
+        if (!queriedEntityIds.includes(entPath.START_ENTITY_ID)) {
+          queriedEntityIds.push(entPath.START_ENTITY_ID);
         }
-        if (!queriedEntityIds.includes(entPath.endEntityId)) {
-          queriedEntityIds.push(entPath.endEntityId);
+        if (!queriedEntityIds.includes(entPath.END_ENTITY_ID)) {
+          queriedEntityIds.push(entPath.END_ENTITY_ID);
         }
 
-        const pathIds = entPath.entityIds;
+        const pathIds = entPath.ENTITIES;
         pathIds.forEach( (pEntId) => {
           if (!coreEntityIds.includes(pEntId)) {
             coreEntityIds.push(pEntId);
@@ -3708,7 +3730,7 @@ export class SzRelationshipNetworkComponent implements AfterViewInit, OnDestroy 
     const entityIndex   = [];
     const entitiesData  = data && data.nodes ? data.nodes : [];
 
-    //console.log('addLinksToNodeData: entities: ', entitiesData, this);
+    console.log('addLinksToNodeData: entities: ', entitiesData, this);
     if(entitiesData && entitiesData.forEach) {
       const matchKeyCategoriesByEntityId: {[key: number]: string[]} = {};
 
@@ -3719,7 +3741,7 @@ export class SzRelationshipNetworkComponent implements AfterViewInit, OnDestroy 
         entityIndex.push(entityId);
 
         relatedEntities.forEach(relatedEntity => {
-          const relatedEntityId = relatedEntity.entityId;
+          const relatedEntityId = relatedEntity.ENTITY_ID;
           const linkArr = [entityId, relatedEntityId].sort();
           const linkKey = {firstId: linkArr[0], secondId: linkArr[1]};
           let isRelatedToFocalEntity = false;
@@ -3728,7 +3750,7 @@ export class SzRelationshipNetworkComponent implements AfterViewInit, OnDestroy 
             isRelatedToFocalEntity = this.focalEntities.some((focalEnt: SzEntityIdentifier) => { 
               return (
                 parseSzIdentifier(focalEnt) === parseSzIdentifier(entityInfo.entityId) || 
-                parseSzIdentifier(focalEnt) === parseSzIdentifier(relatedEntity.entityId));
+                parseSzIdentifier(focalEnt) === parseSzIdentifier(relatedEntityId));
             }) ? true : false;
           }
           let _relatedMatchCategory = SzRelationshipNetworkComponent.tokenizeMatchKey(relatedEntity.matchKey);

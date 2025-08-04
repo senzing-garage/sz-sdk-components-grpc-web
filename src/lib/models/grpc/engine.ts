@@ -103,6 +103,12 @@ export interface SzSdkFindNetworkNetworkLink {
     IS_AMBIGUOUS?: 0 | 1
 }
 
+export interface SzSdkFindNetworkNetworkPath {
+    START_ENTITY_ID: number, 
+    END_ENTITY_ID: number, 
+    ENTITIES: number[]
+}
+
 export interface SzFindNetworkEntity {
     RELATED_ENTITIES: SzSdkRelatedEntity[],
     RESOLVED_ENTITY: SzSdkResolvedEntity
@@ -111,7 +117,7 @@ export interface SzFindNetworkEntity {
 export interface SzSdkFindNetworkResponse {
     ENTITIES: SzFindNetworkEntity[],
     ENTITY_NETWORK_LINKS: SzSdkFindNetworkNetworkLink[],
-    ENTITY_PATHS: any
+    ENTITY_PATHS: SzSdkFindNetworkNetworkPath[]
 }
 
 export interface SzGraphNetworkResponse extends SzSdkFindNetworkResponse {
@@ -120,5 +126,5 @@ export interface SzGraphNetworkResponse extends SzSdkFindNetworkResponse {
         RESOLVED_ENTITY: SzSdkResolvedEntity
     }[],
     ENTITY_NETWORK_LINKS: SzSdkFindNetworkNetworkLink[],
-    ENTITY_PATHS: any
+    ENTITY_PATHS: SzSdkFindNetworkNetworkPath[]
 }
