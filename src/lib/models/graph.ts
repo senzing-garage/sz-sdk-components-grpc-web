@@ -58,7 +58,7 @@ export interface SzEntityNetworkMatchKeyTokens {
   }
 }
 
-export interface SzNetworkGraphInputs {
+/*export interface SzNetworkGraphInputs {
   data;
   showLinkLabels: boolean;
-}
+}*/

@@ -4,7 +4,8 @@ import { takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { SzEntityData, SzEntityIdentifier, SzEntityNetworkData } from '@senzing/rest-api-client-ng';
 import { SzGraphControlComponent } from './sz-graph-control.component';
-import { SzGraphNodeFilterPair, SzEntityNetworkMatchKeyTokens, SzMatchKeyTokenComposite, SzNetworkGraphInputs, SzMatchKeyTokenFilterScope } from '../models/graph';
+import { SzGraphNodeFilterPair, SzEntityNetworkMatchKeyTokens, SzMatchKeyTokenComposite, SzMatchKeyTokenFilterScope } from '../models/graph';
+import { SzNetorkGraphCompositeResponse, SzNetworkGraphInputs } from '../models/SzNetworkGraph';
 import { SzRelationshipNetworkComponent } from './sz-relationship-network/sz-relationship-network.component';
 import { parseBool, parseSzIdentifier, sortDataSourcesByIndex } from '../common/utils';
 import { SzDataSourceComposite } from '../models/data-sources';
@@ -543,9 +544,9 @@ export class SzGraphComponentGrpc implements OnInit, OnDestroy {
   /** event is emitted when the graph components data is updated or loaded */
   @Output() dataLoading: EventEmitter<boolean> = new EventEmitter<boolean>();
   /** event is emitted when the graph components data is updated or loaded */
-  @Output() dataLoaded: EventEmitter<SzEntityNetworkData> = new EventEmitter<SzEntityNetworkData>();
+  @Output() dataLoaded: EventEmitter<SzNetorkGraphCompositeResponse> = new EventEmitter<SzNetorkGraphCompositeResponse>();
   /** event is emitted when the graph components data is updated or loaded */
-  @Output() dataUpdated: EventEmitter<SzEntityNetworkData> = new EventEmitter<SzEntityNetworkData>();
+  @Output() dataUpdated: EventEmitter<SzNetorkGraphCompositeResponse> = new EventEmitter<SzNetorkGraphCompositeResponse>();
   /** event is emitted when the collection of matchkeys present in graph dislay change */
   @Output() matchKeysChange: EventEmitter<any> = new EventEmitter<string[]>();
   /** event is emitted when the collection of matchkey tokens present in graph dislay change */
@@ -629,7 +630,7 @@ export class SzGraphComponentGrpc implements OnInit, OnDestroy {
    * from data.
   */
   public onGraphDataLoaded(inputs: SzNetworkGraphInputs) {
-    if(inputs.data && inputs.data.entities) {
+    if(inputs.data && inputs.data.ENTITY_RESPONSES) {
       this.filterShowDataSources  = SzRelationshipNetworkComponent.getDataSourcesFromEntityNetworkData(inputs.data);
       let _matchKeyTokens         = SzRelationshipNetworkComponent.getMatchKeyTokensFromEntityData(inputs.data, this.graphIds);
       let matchKeyTokens          = this.getMatchKeyTokenComposites( _matchKeyTokens );

@@ -5,7 +5,7 @@ import {
   SzRelatedEntity,
   SzResolvedEntity
 } from '@senzing/rest-api-client-ng';
-import { SzGraphNodeFilterPair, SzNetworkGraphInputs } from '../../../models/graph';
+import { SzGraphNodeFilterPair } from '../../../models/graph';
 import { SzPrefsService } from '../../../services/sz-prefs.service';
 import { SzGraphComponentGrpc } from '../../../graph-grpc/sz-graph.component';
 import { SzCSSClassService } from '../../../services/sz-css-class.service';
@@ -13,6 +13,7 @@ import { SzRelationshipNetworkComponent } from '../../../graph-grpc/sz-relations
 import { SzGraphFilterComponent } from '../../../graph-grpc/sz-graph-filter.component';
 import { SzGraphControlComponent } from '../../../graph-grpc/sz-graph-control.component';
 import { SzResumeEntity, SzResumeRelatedEntity } from '../../../models/SzResumeEntity';
+import { SzNetworkGraphInputs } from '../../../models/SzNetworkGraph';
 
 /**
  * @internal

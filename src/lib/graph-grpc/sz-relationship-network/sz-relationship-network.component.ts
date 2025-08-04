@@ -20,11 +20,11 @@ import {
 import { map, tap, first, takeUntil, take, filter } from 'rxjs/operators';
 import { Subject, Observable, BehaviorSubject, forkJoin, timer, of } from 'rxjs';
 import { parseSzIdentifier, parseBool, isValueTypeOfArray, areArrayMembersEqual } from '../../common/utils';
-import { SzNetworkGraphInputs, SzGraphTooltipEntityModel, SzGraphTooltipLinkModel, SzGraphNodeFilterPair, SzEntityNetworkMatchKeyTokens } from '../../../lib/models/graph';
+import { SzGraphTooltipEntityModel, SzGraphTooltipLinkModel, SzGraphNodeFilterPair, SzEntityNetworkMatchKeyTokens } from '../../../lib/models/graph';
 //import { SzSearchService } from '../../services/sz-search.service';
 import { SzGrpcEngineService } from '../../services/grpc/engine.service';
-import { SzSdkEntityResponse, SzSdkFindNetworkResponse, SzSdkRelatedEntity, SzSdkResolvedEntity } from '../../models/grpc/engine';
-import { SzNetorkGraphCompositeResponse } from '../../models/SzNetworkGraph';
+import { SzFindNetworkEntity, SzSdkEntityFeatures, SzSdkEntityResponse, SzSdkFindNetworkResponse, SzSdkRelatedEntity, SzSdkResolvedEntity, SzSdkSearchMatchLevel } from '../../models/grpc/engine';
+import { SzNetorkGraphCompositeResponse, SzNetworkGraphInputs } from '../../models/SzNetworkGraph';
 
 /**
  * Provides a SVG of a relationship network diagram via D3.
@@ -1469,13 +1469,25 @@ export class SzRelationshipNetworkComponent implements AfterViewInit, OnDestroy 
 
       this.getNetworkCompositeGrpc(this._entityIds, this._maxDegrees, _maxBuildOut, _maxEntities).pipe(
         takeUntil(this.unsubscribe$),
-
-        tap((data)=> {
-          console.log(`getNetworkCompositeGrpc Response: `,data);
+        map(this.asGraphInputs.bind(this)),
+        tap( (gdata: SzNetworkGraphInputs) => {
+          //console.warn('SzRelationshipNetworkGraph: g1 = ', gdata);
+          if(gdata && gdata.data && !SzRelationshipNetworkComponent.responseHasEntities(gdata.data) || !gdata || gdata && !gdata.data) {
+            this._requestNoResults.next(true);
+          }
+          let totalEntities = 0;
+          if(gdata && gdata.data) {
+            let entitiesById = SzRelationshipNetworkComponent.getEntityIdsFromNetworkData(gdata.data);
+            totalEntities = entitiesById.size;
+            this.onTotalRelationshipsCountUpdated.emit(totalEntities);
+          }
+          if(this._expandByDefaultWhenLessThan > 0 && totalEntities > 0 && totalEntities <= this._expandByDefaultWhenLessThan) {
+            this._ignoreFilters = true;
+          }
+          this._dataLoaded.next(gdata);
+          this._requestComplete.next(true);
         })
-      ).subscribe((response)=>{
-        // cool
-      })
+      ).subscribe( this.render.bind(this) );
     }
     /** set up pan and zoom if enabled */
     if(this._zoomEnabled) {
@@ -1527,7 +1539,7 @@ export class SzRelationshipNetworkComponent implements AfterViewInit, OnDestroy 
   }
 
   
-  private getNetworkCompositeGrpc(entityIds: Array<string | number>, maxDegrees: number, buildOut: number, maxEntities: number) {
+  private getNetworkCompositeGrpc(entityIds: Array<string | number>, maxDegrees: number, buildOut: number, maxEntities: number): Observable<SzNetorkGraphCompositeResponse> {
     console.log(`!!!!!!!!!!!!!!!!! getNetworkCompositeGrpc !!!!!!!!!!!!!!!!!`);
     let returnSubject     = new Subject<SzNetorkGraphCompositeResponse>();
     let returnObserveable = returnSubject.asObservable();
@@ -1603,7 +1615,7 @@ export class SzRelationshipNetworkComponent implements AfterViewInit, OnDestroy 
     });
     return returnObserveable;
   }
-
+  /*
   private getNetworkCompositeLLL(entityIds: Array<string | number>, maxDegrees: number, buildOut: number, maxEntities: number) {
     let returnSubject     = new Subject<SzEntityNetworkResponse>();
     let returnObserveable = returnSubject.asObservable();
@@ -1663,21 +1675,11 @@ export class SzRelationshipNetworkComponent implements AfterViewInit, OnDestroy 
             console.timeEnd('graph composite data')
           }catch(err){}
         }
-        /*
-        mappedResp.data.entities.map((entityData: SzEntityData) => {
-          let retVal = entityData;
-          if(entityData.resolvedEntity && entityData.resolvedEntity.entityId === entityResp.data.resolvedEntity.entityId){
-            // this is the primary entity
-            // SUPERSIZE IT!
-            entityData.resolvedEntity   = entityResp.data.resolvedEntity;
-            entityData.relatedEntities  = entityResp.data.relatedEntities;
-          }
-          return retVal;
-        })*/
         //returnSubject.next(modifiedResp);
     });
     return returnObserveable
   }
+  */
 
 
   /**
@@ -1791,7 +1793,7 @@ export class SzRelationshipNetworkComponent implements AfterViewInit, OnDestroy 
       }catch(err){}
     }
     this._renderStarted.next(true);
-    //console.log('@senzing/sdk-components-grpc-web/sz-relationship-network.render(): ', gdata, this._filterFn);
+    console.log('@senzing/sdk-components-grpc-web/sz-relationship-network.render(): ', gdata, this._filterFn);
     this.loadedData = gdata;
     this.addSvg(gdata);
     // publish out event
@@ -1841,8 +1843,8 @@ export class SzRelationshipNetworkComponent implements AfterViewInit, OnDestroy 
         first(),
         map( this.asGraphInputs.bind(this) ),
         tap( (gdata: SzNetworkGraphInputs) => {
-          //console.log('SzRelationshipNetworkGraph: g1 = ', gdata);
-          if(gdata && gdata.data && gdata.data.entities && gdata.data.entities.length == 0) {
+          console.log('SzRelationshipNetworkGraph: g1 = ', gdata);
+          if(!SzRelationshipNetworkComponent.responseHasEntities(gdata.data)) {
             this._requestNoResults.next(true);
           }
           // send requestComplete
@@ -1853,10 +1855,10 @@ export class SzRelationshipNetworkComponent implements AfterViewInit, OnDestroy 
     }
   }
   /** take the result from getNetwork and transpose to SzNetworkGraphInputs class  */
-  asGraphInputs(graphResponse: SzEntityNetworkResponse) : SzNetworkGraphInputs {
+  asGraphInputs(graphResponse: SzNetorkGraphCompositeResponse) : SzNetworkGraphInputs {
     const _showLinkLabels = this.showLinkLabels;
     return new class implements SzNetworkGraphInputs {
-      data = graphResponse.data; // SzEntityNetworkData
+      data = graphResponse; // SzNetorkGraphCompositeResponse
       showLinkLabels = _showLinkLabels;
     };
   }
@@ -3402,245 +3404,254 @@ export class SzRelationshipNetworkComponent implements AfterViewInit, OnDestroy 
    * primary data model shaper.
    */
   private asGraph(inputs: SzNetworkGraphInputs) : {nodes: any[] } {
-    const showLinkLabels = inputs.showLinkLabels;
+    const showLinkLabels    = inputs.showLinkLabels;
+    const networkResponses  = inputs.data.NETWORK_RESPONSES;
+    const nodes             = [];
+    const links             = [];
+
+    networkResponses.forEach((networkResponse: SzSdkFindNetworkResponse, respInd) => {
+      const entityPaths = networkResponse ? networkResponse.ENTITY_PATHS : undefined;
+      const entitiesData = networkResponse ? networkResponse.ENTITIES : undefined;
+      const entityIndex = [];
+      const linkIndex = [];
+      const queriedEntityIds = [];
+      const primaryEntityIds = this._entityIds ? this._entityIds : [];
+      const coreEntityIds = [];
+      const coreLinkIds = [];
+      const primaryEntities = this._entityIds && this._entityIds.map ? this._entityIds.map( (_val) => {
+        return parseInt(_val)
+      }) : [];
+      const relatedMatchKeysByEntityId: {[key: number]: string[]} = {};
+      const matchKeyCategoriesByEntityId: {[key: number]: string[]} = {};
+      const matchKeyCoreCategoriesByEntityId: {[key: number]: string[]} = {};
+
+      // grab the directly related to core node entity Ids first
+      let   relatedToPrimaryEntities = [];
+      entitiesData.forEach(entNode => {
+        let _isCore = primaryEntities.indexOf( entNode.RESOLVED_ENTITY.ENTITY_ID ) > -1;
+        // grab the directly related entity Ids off this entity
+        if(_isCore && entNode.RELATED_ENTITIES && entNode.RELATED_ENTITIES.length > 0) {
+          relatedToPrimaryEntities = relatedToPrimaryEntities.concat( entNode.RELATED_ENTITIES.map((relEnt) => { return relEnt.ENTITY_ID; }) );
+        }
+      });
+
+      // Identify queried nodes and the nodes and links that connect them.
+      entityPaths.forEach( (entPath) => {
+        if (!queriedEntityIds.includes(entPath.startEntityId)) {
+          queriedEntityIds.push(entPath.startEntityId);
+        }
+        if (!queriedEntityIds.includes(entPath.endEntityId)) {
+          queriedEntityIds.push(entPath.endEntityId);
+        }
+
+        const pathIds = entPath.entityIds;
+        pathIds.forEach( (pEntId) => {
+          if (!coreEntityIds.includes(pEntId)) {
+            coreEntityIds.push(pEntId);
+          }
+        });
+        pathIds.forEach( (pEntId, pEntInd) => {
+          const linkArr = [pathIds[pEntInd], pathIds[pEntInd + 1]].sort();
+          const linkKey = {firstId: linkArr[0], secondId: linkArr[1]};
+          if (!SzRelationshipNetworkComponent.hasKey(coreLinkIds, linkKey)) {
+            coreLinkIds.push(linkKey);
+          }
+        });
+      });
+
+      console.log(`asGraph[${respInd}]: `,entitiesData);
+
+      // we have to aggregate match keys first so we have them all on next pass
+      //console.log('-------------------- start match key map routine --------------------');
+      entitiesData.forEach(entNode => {
+        let _resolvedEntId = entNode.RESOLVED_ENTITY.ENTITY_ID;
+        //console.log(`\t#${entNode.resolvedEntity.entityId} (${entNode.resolvedEntity.entityName})`,entNode);
+        if(entNode.RESOLVED_ENTITY) {
+
+        }
+        if(entNode.RELATED_ENTITIES && entNode.RELATED_ENTITIES.forEach){
+          entNode.RELATED_ENTITIES.forEach((_relatedEnt: SzSdkRelatedEntity) => {
+            let _relatedEntId = _relatedEnt.ENTITY_ID;
+            let _relatedMatchCategory = SzRelationshipNetworkComponent.tokenizeMatchKey(_relatedEnt.MATCH_KEY);
+            let _relatedEntityIsPrimary = primaryEntities.indexOf(_relatedEntId) > -1 || primaryEntities.indexOf(_resolvedEntId) > -1;
+            //console.log(`\t\t${_relatedEntId}(${_relatedEnt.entityName}) match keys: ${_relatedEntityIsPrimary}`,_relatedMatchCategory);
+            /*
+            if(_relatedEntityIsPrimary) {
+              // this is a core relationship
+              if(!matchKeyCoreCategoriesByEntityId[ _relatedEntId ] || matchKeyCoreCategoriesByEntityId[ _relatedEntId ] === undefined) {
+                matchKeyCoreCategoriesByEntityId[ _relatedEntId ] = [];
+              }
+              if(matchKeyCoreCategoriesByEntityId[ _relatedEntId ] && matchKeyCoreCategoriesByEntityId[ _relatedEntId ].concat) {
+                let concatVals = [];
+                _relatedMatchCategory.forEach((mkArr) => {
+                  concatVals = concatVals.concat(mkArr);
+                });
+
+                matchKeyCoreCategoriesByEntityId[ _relatedEntId ] = matchKeyCoreCategoriesByEntityId[ _relatedEntId ].concat(concatVals);
+                // de-dupe values
+                matchKeyCoreCategoriesByEntityId[ _relatedEntId ] = matchKeyCoreCategoriesByEntityId[ _relatedEntId ].filter((value, index, self) => {
+                  return self.indexOf(value) === index;
+                });
+              }
+            }*/
+            if(_relatedMatchCategory && _relatedMatchCategory.length == 2) {
+              //console.log(`\t\t\thas match key categories..`);
+              if(
+                (_relatedMatchCategory && _relatedMatchCategory[0] && _relatedMatchCategory[0].length > 0) || 
+                (_relatedMatchCategory && _relatedMatchCategory[1] && _relatedMatchCategory[1].length > 0)
+              ){
+                //console.log(`\t\t\thas match key categories..`);
+                // there are match key categories to add
+                // check for core match key relationships
+                if(_relatedEntityIsPrimary) {
+                  //console.log(`\t\t\thas core relationship to primary entity..`);
+                  if(!matchKeyCoreCategoriesByEntityId[ _relatedEntId ] || matchKeyCoreCategoriesByEntityId[ _relatedEntId ] === undefined) {
+                    matchKeyCoreCategoriesByEntityId[ _relatedEntId ] = [];
+                  }
+                  if(matchKeyCoreCategoriesByEntityId[ _relatedEntId ] && matchKeyCoreCategoriesByEntityId[ _relatedEntId ].concat) {
+                    let concatVals = [];
+                    _relatedMatchCategory.forEach((mkArr) => {
+                      concatVals = concatVals.concat(mkArr);
+                    });
+                    matchKeyCoreCategoriesByEntityId[ _relatedEntId ] = matchKeyCoreCategoriesByEntityId[ _relatedEntId ].concat(concatVals);
+                    // de-dupe values
+                    matchKeyCoreCategoriesByEntityId[ _relatedEntId ] = matchKeyCoreCategoriesByEntityId[ _relatedEntId ].filter((value, index, self) => {
+                      return self.indexOf(value) === index;
+                    });
+                  }
+                }
+
+                // now add all tokens regardless
+                if(!matchKeyCategoriesByEntityId[ _relatedEntId ] || matchKeyCategoriesByEntityId[ _relatedEntId ] === undefined) {
+                  matchKeyCategoriesByEntityId[ _relatedEntId ] = [];
+                }
+                if(matchKeyCategoriesByEntityId[ _relatedEntId ] && matchKeyCategoriesByEntityId[ _relatedEntId ].concat) {
+                  matchKeyCategoriesByEntityId[ _relatedEntId ] = matchKeyCategoriesByEntityId[ _relatedEntId ].concat(_relatedMatchCategory[0]).concat(_relatedMatchCategory[1])
+                  // de-dupe values
+                  matchKeyCategoriesByEntityId[ _relatedEntId ] = matchKeyCategoriesByEntityId[ _relatedEntId ].filter((value, index, self) => {
+                    return self.indexOf(value) === index;
+                  });
+                  //relatedMatchKeysByEntityId[ _relatedEntId ].push( _relatedEnt.matchKey );
+                }
+              }
+            }
+            // IF related entity has a match key (not all do since issue #407 since we only fully populate off of focal/primary entity)
+            if(_relatedEnt.MATCH_KEY && _relatedEnt.MATCH_KEY !== undefined && _relatedEnt.MATCH_KEY !== null) {
+              if(!relatedMatchKeysByEntityId[ _relatedEntId ] || relatedMatchKeysByEntityId[ _relatedEntId ] === undefined) {
+                relatedMatchKeysByEntityId[ _relatedEntId ] = [];
+              }
+              if(relatedMatchKeysByEntityId[ _relatedEntId ] && relatedMatchKeysByEntityId[ _relatedEntId ].indexOf && relatedMatchKeysByEntityId[ _relatedEntId ].indexOf(_relatedEnt.MATCH_KEY) < 0) {
+                relatedMatchKeysByEntityId[ _relatedEntId ].push( _relatedEnt.MATCH_KEY );
+              } else if(relatedMatchKeysByEntityId[ _relatedEntId ] && !relatedMatchKeysByEntityId[ _relatedEntId ].indexOf) {
+                // not sure whats going on here
+              }
+            }
+            
+          });
+        }
+      });
+
+      // Add a node for each resolved entity
+      entitiesData.forEach(entNode => {
+        const entityId        = entNode.RESOLVED_ENTITY.ENTITY_ID;
+        const resolvedEntity  = entNode.RESOLVED_ENTITY;
+        const relatedEntities = entNode.RELATED_ENTITIES;
+        const relatedEntRels  = entNode.RELATED_ENTITIES && entNode.RELATED_ENTITIES.filter ? entNode.RELATED_ENTITIES.filter( (relEnt) => {
+          return primaryEntities ? primaryEntities.indexOf(relEnt.ENTITY_ID) >= 0 : false;
+        } ) : undefined;
+        const entityNameLines = this.getNameAsLinesArray(resolvedEntity && resolvedEntity.ENTITY_NAME ? resolvedEntity.ENTITY_NAME : undefined, 10);
+
+        let isPrimaryEntity                 = primaryEntityIds.includes( (entityId as unknown as string)+"")
+        let relatedMatchKeys                = relatedMatchKeysByEntityId[ resolvedEntity.ENTITY_ID ]   ? relatedMatchKeysByEntityId[ resolvedEntity.ENTITY_ID ]     : [];
+        let relatedMatchKeyCategories       = matchKeyCategoriesByEntityId[ resolvedEntity.ENTITY_ID ] ? matchKeyCategoriesByEntityId[ resolvedEntity.ENTITY_ID ]   : [];
+        let coreRelatedMatchKeyCategories   = matchKeyCoreCategoriesByEntityId[ resolvedEntity.ENTITY_ID ] ? matchKeyCoreCategoriesByEntityId[ resolvedEntity.ENTITY_ID ]   : [];
+        let relatedToPrimaryEntityDirectly  = primaryEntityIds.includes( (entityId as unknown as string)+"") ? true : false;
+        let hasCollapsibleRelationships     = false;
+        if(relatedEntities && !isPrimaryEntity) {
+          // check that one of the relationships is to primary
+          relatedEntities.forEach((_re) => {
+            if(primaryEntityIds.includes( (_re.ENTITY_ID as unknown as string)+"")) {
+              relatedToPrimaryEntityDirectly = true;
+            } else if(!queriedEntityIds.includes(_re.ENTITY_ID)){
+              // when entity has a related entity that is not the primary or searched for user can hide/show it
+              hasCollapsibleRelationships = true;
+            }
+          }); 
+        }
+
+        const relColorClasses = [];
+        let dataSourceClasses = [];
+        if(relatedEntRels && relatedEntRels.length) {
+          //console.log('get color classes: ', relatedEntRels);
+          relatedEntRels.forEach( (relEnt: SzSdkRelatedEntity) => {
+            if(relEnt.MATCH_LEVEL_CODE == SzSdkSearchMatchLevel.DISCLOSED) { relColorClasses.push('graph-node-rel-disclosed'); }
+            if(relEnt.MATCH_LEVEL_CODE == SzSdkSearchMatchLevel.POSSIBLE_MATCH) { relColorClasses.push('graph-node-rel-pmatch'); }
+            if(relEnt.MATCH_LEVEL_CODE == SzSdkSearchMatchLevel.POSSIBLY_RELATED) { relColorClasses.push('graph-node-rel-prel'); }
+          });
+        } else if ( primaryEntities.indexOf( resolvedEntity.ENTITY_ID ) > -1 ) {
+          relColorClasses.push('graph-node-rel-primary');
+        } else {
+          //console.warn('no related ent rels for #'+ resolvedEntity.entityId +'.', entNode.relatedEntities, relatedEntRels);
+        }
+        if(resolvedEntity.RECORD_SUMMARY && resolvedEntity.RECORD_SUMMARY.map) {
+          dataSourceClasses = resolvedEntity.RECORD_SUMMARY && resolvedEntity.RECORD_SUMMARY.map ? resolvedEntity.RECORD_SUMMARY.map((ds) => { return (ds.DATA_SOURCE && ds.DATA_SOURCE.toLowerCase) ? `sz-node-ds-${ds.DATA_SOURCE.toLowerCase()}`:`sz-node-ds-${ds.DATA_SOURCE}`; }) : undefined;
+        }
+
+        // entitities who use this entity as it's source
+        // Create Node
+        entityIndex.push(entityId);
+        const features = resolvedEntity.FEATURES;
+        nodes.push({
+          address: features && features['ADDRESS'] && features['ADDRESS'].length > 0 ? features['ADDRESS'][0] : SzRelationshipNetworkComponent.firstOrNull(features, "ADDRESS"),
+          areAllRelatedEntitiesOnDeck: false,
+          coreRelationshipMatchKeyTokens: coreRelatedMatchKeyCategories,
+          dataSources: resolvedEntity.RECORD_SUMMARY && resolvedEntity.RECORD_SUMMARY.map ? resolvedEntity.RECORD_SUMMARY.map((ds) =>  ds.DATA_SOURCE ) : undefined, 
+          dataSourceClasses: dataSourceClasses,
+          entityId: entityId,
+          hasCollapsedRelationships: relatedToPrimaryEntityDirectly && (relatedEntities && relatedEntities.length > 0),
+          hasCollapsibleRelationships: hasCollapsibleRelationships,
+          hasRelatedEdges: (relatedEntities && relatedEntities.length > 0),
+          iconType: SzRelationshipNetworkComponent.getIconType(resolvedEntity),
+          isCoreNode: coreEntityIds.includes(entityId),
+          isHidden: !relatedToPrimaryEntityDirectly,
+          isPrimaryEntity: primaryEntityIds.includes( (entityId as unknown as string)+""),
+          isRelatedToPrimaryEntity: (relatedToPrimaryEntities.indexOf( (entityId as unknown as number) ) > -1),
+          isRemovable: (!coreEntityIds.includes(entityId) && !primaryEntityIds.includes( (entityId as unknown as string)+"") && !queriedEntityIds.includes(entityId)),
+          isQueriedNode: queriedEntityIds.includes(entityId),
+          name: resolvedEntity.ENTITY_NAME,
+          nameAsLines: entityNameLines,
+          nodesVisibleBeforeExpand: [],
+          numberRelated: relatedEntities ? relatedEntities.length : 0,
+          numberRelatedOnDeck: 0,
+          numberRelatedHidden: relatedEntities ? relatedEntities.length : 0,
+          orgName: resolvedEntity.ENTITY_NAME,
+          phone: features && features['PHONE'] && features['PHONE'].length > 0 ? features['PHONE'][0] : SzRelationshipNetworkComponent.firstOrNull(features, "PHONE"),
+          recordSummaries: resolvedEntity.RECORD_SUMMARY,
+          relatedEntities: relatedEntities && relatedEntities.map ? relatedEntities.map((relEnt) => { return relEnt.ENTITY_ID }) : undefined,
+          relatedToPrimaryEntityDirectly: relatedToPrimaryEntityDirectly,
+          relationshipMatchKeys: relatedMatchKeys,
+          relationTypeClasses: relColorClasses,
+          relatedEntitiesData: relatedEntities,
+          relatedVisibleBeforeExpand: [],
+          resolvedEntityData: resolvedEntity,
+          relationshipMatchKeyTokens: relatedMatchKeyCategories,
+          styles: [],
+          visibilityClass: undefined
+        });
+      });
+
+
+    })
+
     const data = (inputs && inputs.data) ? inputs && inputs.data : undefined;
     // if (data && data.data) data = data.data;
 
-    const entityPaths = data ? data.entityPaths : undefined;
-    const entitiesData = data ? data.entities : undefined;
-    const entityIndex = [];
-    const nodes = [];
-    const links = [];
-    const linkIndex = [];
-    const queriedEntityIds = [];
-    const primaryEntityIds = this._entityIds ? this._entityIds : [];
-    const coreEntityIds = [];
-    const coreLinkIds = [];
-    const primaryEntities = this._entityIds && this._entityIds.map ? this._entityIds.map( (_val) => {
-      return parseInt(_val)
-    }) : [];
-    const relatedMatchKeysByEntityId: {[key: number]: string[]} = {};
-    const matchKeyCategoriesByEntityId: {[key: number]: string[]} = {};
-    const matchKeyCoreCategoriesByEntityId: {[key: number]: string[]} = {};
-
-    // grab the directly related to core node entity Ids first
-    let   relatedToPrimaryEntities = [];
-    entitiesData.forEach(entNode => {
-      let _isCore = primaryEntities.indexOf( entNode.resolvedEntity.entityId ) > -1;
-      // grab the directly related entity Ids off this entity
-      if(_isCore && entNode.relatedEntities && entNode.relatedEntities.length > 0) {
-        relatedToPrimaryEntities = relatedToPrimaryEntities.concat( entNode.relatedEntities.map((relEnt) => { return relEnt.entityId; }) );
-      }
-    });
-
-    // Identify queried nodes and the nodes and links that connect them.
-    entityPaths.forEach( (entPath) => {
-      if (!queriedEntityIds.includes(entPath.startEntityId)) {
-        queriedEntityIds.push(entPath.startEntityId);
-      }
-      if (!queriedEntityIds.includes(entPath.endEntityId)) {
-        queriedEntityIds.push(entPath.endEntityId);
-      }
-
-      const pathIds = entPath.entityIds;
-      pathIds.forEach( (pEntId) => {
-        if (!coreEntityIds.includes(pEntId)) {
-          coreEntityIds.push(pEntId);
-        }
-      });
-      pathIds.forEach( (pEntId, pEntInd) => {
-        const linkArr = [pathIds[pEntInd], pathIds[pEntInd + 1]].sort();
-        const linkKey = {firstId: linkArr[0], secondId: linkArr[1]};
-        if (!SzRelationshipNetworkComponent.hasKey(coreLinkIds, linkKey)) {
-          coreLinkIds.push(linkKey);
-        }
-      });
-    });
-    // we have to aggregate match keys first so we have them all on next pass
-    //console.log('-------------------- start match key map routine --------------------');
-    entitiesData.forEach(entNode => {
-      let _resolvedEntId = entNode.resolvedEntity.entityId;
-      //console.log(`\t#${entNode.resolvedEntity.entityId} (${entNode.resolvedEntity.entityName})`,entNode);
-      if(entNode.resolvedEntity) {
-
-      }
-      if(entNode.relatedEntities && entNode.relatedEntities.forEach){
-        entNode.relatedEntities.forEach((_relatedEnt: SzRelatedEntity) => {
-          let _relatedEntId = _relatedEnt.entityId;
-          let _relatedMatchCategory = SzRelationshipNetworkComponent.tokenizeMatchKey(_relatedEnt.matchKey);
-          let _relatedEntityIsPrimary = primaryEntities.indexOf(_relatedEntId) > -1 || primaryEntities.indexOf(_resolvedEntId) > -1;
-          //console.log(`\t\t${_relatedEntId}(${_relatedEnt.entityName}) match keys: ${_relatedEntityIsPrimary}`,_relatedMatchCategory);
-          /*
-          if(_relatedEntityIsPrimary) {
-            // this is a core relationship
-            if(!matchKeyCoreCategoriesByEntityId[ _relatedEntId ] || matchKeyCoreCategoriesByEntityId[ _relatedEntId ] === undefined) {
-              matchKeyCoreCategoriesByEntityId[ _relatedEntId ] = [];
-            }
-            if(matchKeyCoreCategoriesByEntityId[ _relatedEntId ] && matchKeyCoreCategoriesByEntityId[ _relatedEntId ].concat) {
-              let concatVals = [];
-              _relatedMatchCategory.forEach((mkArr) => {
-                concatVals = concatVals.concat(mkArr);
-              });
-
-              matchKeyCoreCategoriesByEntityId[ _relatedEntId ] = matchKeyCoreCategoriesByEntityId[ _relatedEntId ].concat(concatVals);
-              // de-dupe values
-              matchKeyCoreCategoriesByEntityId[ _relatedEntId ] = matchKeyCoreCategoriesByEntityId[ _relatedEntId ].filter((value, index, self) => {
-                return self.indexOf(value) === index;
-              });
-            }
-          }*/
-          if(_relatedMatchCategory && _relatedMatchCategory.length == 2) {
-            //console.log(`\t\t\thas match key categories..`);
-            if(
-              (_relatedMatchCategory && _relatedMatchCategory[0] && _relatedMatchCategory[0].length > 0) || 
-              (_relatedMatchCategory && _relatedMatchCategory[1] && _relatedMatchCategory[1].length > 0)
-            ){
-              //console.log(`\t\t\thas match key categories..`);
-              // there are match key categories to add
-              // check for core match key relationships
-              if(_relatedEntityIsPrimary) {
-                //console.log(`\t\t\thas core relationship to primary entity..`);
-                if(!matchKeyCoreCategoriesByEntityId[ _relatedEntId ] || matchKeyCoreCategoriesByEntityId[ _relatedEntId ] === undefined) {
-                  matchKeyCoreCategoriesByEntityId[ _relatedEntId ] = [];
-                }
-                if(matchKeyCoreCategoriesByEntityId[ _relatedEntId ] && matchKeyCoreCategoriesByEntityId[ _relatedEntId ].concat) {
-                  let concatVals = [];
-                  _relatedMatchCategory.forEach((mkArr) => {
-                    concatVals = concatVals.concat(mkArr);
-                  });
-                  matchKeyCoreCategoriesByEntityId[ _relatedEntId ] = matchKeyCoreCategoriesByEntityId[ _relatedEntId ].concat(concatVals);
-                  // de-dupe values
-                  matchKeyCoreCategoriesByEntityId[ _relatedEntId ] = matchKeyCoreCategoriesByEntityId[ _relatedEntId ].filter((value, index, self) => {
-                    return self.indexOf(value) === index;
-                  });
-                }
-              }
-
-              // now add all tokens regardless
-              if(!matchKeyCategoriesByEntityId[ _relatedEntId ] || matchKeyCategoriesByEntityId[ _relatedEntId ] === undefined) {
-                matchKeyCategoriesByEntityId[ _relatedEntId ] = [];
-              }
-              if(matchKeyCategoriesByEntityId[ _relatedEntId ] && matchKeyCategoriesByEntityId[ _relatedEntId ].concat) {
-                matchKeyCategoriesByEntityId[ _relatedEntId ] = matchKeyCategoriesByEntityId[ _relatedEntId ].concat(_relatedMatchCategory[0]).concat(_relatedMatchCategory[1])
-                // de-dupe values
-                matchKeyCategoriesByEntityId[ _relatedEntId ] = matchKeyCategoriesByEntityId[ _relatedEntId ].filter((value, index, self) => {
-                  return self.indexOf(value) === index;
-                });
-                //relatedMatchKeysByEntityId[ _relatedEntId ].push( _relatedEnt.matchKey );
-              }
-            }
-          }
-          // IF related entity has a match key (not all do since issue #407 since we only fully populate off of focal/primary entity)
-          if(_relatedEnt.matchKey && _relatedEnt.matchKey !== undefined && _relatedEnt.matchKey !== null) {
-            if(!relatedMatchKeysByEntityId[ _relatedEntId ] || relatedMatchKeysByEntityId[ _relatedEntId ] === undefined) {
-              relatedMatchKeysByEntityId[ _relatedEntId ] = [];
-            }
-            if(relatedMatchKeysByEntityId[ _relatedEntId ] && relatedMatchKeysByEntityId[ _relatedEntId ].indexOf && relatedMatchKeysByEntityId[ _relatedEntId ].indexOf(_relatedEnt.matchKey) < 0) {
-              relatedMatchKeysByEntityId[ _relatedEntId ].push( _relatedEnt.matchKey );
-            } else if(relatedMatchKeysByEntityId[ _relatedEntId ] && !relatedMatchKeysByEntityId[ _relatedEntId ].indexOf) {
-              // not sure whats going on here
-            }
-          }
-          
-        });
-      }
-    });
     //console.log(`related Match Keys: `,relatedMatchKeysByEntityId);
     //console.log(`related Match Key Categories: `,matchKeyCategoriesByEntityId);
     //console.log(`related Core Categories: `,matchKeyCoreCategoriesByEntityId);
 
     
     //console.log('-------------------- end match key map routine --------------------');
-
-
-    // Add a node for each resolved entity
-    entitiesData.forEach(entNode => {
-      const entityId        = entNode.resolvedEntity.entityId;
-      const resolvedEntity  = entNode.resolvedEntity;
-      const relatedEntities = entNode.relatedEntities;
-      const relatedEntRels  = entNode.relatedEntities && entNode.relatedEntities.filter ? entNode.relatedEntities.filter( (relEnt) => {
-        return primaryEntities ? primaryEntities.indexOf(relEnt.entityId) >= 0 : false;
-      } ) : undefined;
-      const entityNameLines = this.getNameAsLinesArray(resolvedEntity && resolvedEntity.entityName ? resolvedEntity.entityName : undefined, 10);
-
-      let isPrimaryEntity                 = primaryEntityIds.includes( (entityId as unknown as string)+"")
-      let relatedMatchKeys                = relatedMatchKeysByEntityId[ resolvedEntity.entityId ]   ? relatedMatchKeysByEntityId[ resolvedEntity.entityId ]     : [];
-      let relatedMatchKeyCategories       = matchKeyCategoriesByEntityId[ resolvedEntity.entityId ] ? matchKeyCategoriesByEntityId[ resolvedEntity.entityId ]   : [];
-      let coreRelatedMatchKeyCategories   = matchKeyCoreCategoriesByEntityId[ resolvedEntity.entityId ] ? matchKeyCoreCategoriesByEntityId[ resolvedEntity.entityId ]   : [];
-      let relatedToPrimaryEntityDirectly  = primaryEntityIds.includes( (entityId as unknown as string)+"") ? true : false;
-      let hasCollapsibleRelationships     = false;
-      if(relatedEntities && !isPrimaryEntity) {
-        // check that one of the relationships is to primary
-        relatedEntities.forEach((_re) => {
-          if(primaryEntityIds.includes( (_re.entityId as unknown as string)+"")) {
-            relatedToPrimaryEntityDirectly = true;
-          } else if(!queriedEntityIds.includes(_re.entityId)){
-            // when entity has a related entity that is not the primary or searched for user can hide/show it
-            hasCollapsibleRelationships = true;
-          }
-        }); 
-      }
-
-      const relColorClasses = [];
-      let dataSourceClasses = [];
-      if(relatedEntRels && relatedEntRels.length) {
-        //console.log('get color classes: ', relatedEntRels);
-        relatedEntRels.forEach( (relEnt) => {
-          if(relEnt.relationType == 'DISCLOSED_RELATION') { relColorClasses.push('graph-node-rel-disclosed'); }
-          if(relEnt.relationType == 'POSSIBLE_MATCH') { relColorClasses.push('graph-node-rel-pmatch'); }
-          if(relEnt.relationType == 'POSSIBLE_RELATION') { relColorClasses.push('graph-node-rel-prel'); }
-        });
-      } else if ( primaryEntities.indexOf( resolvedEntity.entityId ) > -1 ) {
-        relColorClasses.push('graph-node-rel-primary');
-      } else {
-        //console.warn('no related ent rels for #'+ resolvedEntity.entityId +'.', entNode.relatedEntities, relatedEntRels);
-      }
-      if(resolvedEntity.recordSummaries && resolvedEntity.recordSummaries.map) {
-        dataSourceClasses = resolvedEntity.recordSummaries && resolvedEntity.recordSummaries.map ? resolvedEntity.recordSummaries.map((ds) => { return (ds.dataSource && ds.dataSource.toLowerCase) ? `sz-node-ds-${ds.dataSource.toLowerCase()}`:`sz-node-ds-${ds.dataSource}`; }) : undefined;
-      }
-
-      // entitities who use this entity as it's source
-      // Create Node
-      entityIndex.push(entityId);
-      const features = resolvedEntity.features;
-      nodes.push({
-        address: resolvedEntity.addressData && resolvedEntity.addressData.length > 0 ? resolvedEntity.addressData[0] : SzRelationshipNetworkComponent.firstOrNull(features, "ADDRESS"),
-        areAllRelatedEntitiesOnDeck: false,
-        coreRelationshipMatchKeyTokens: coreRelatedMatchKeyCategories,
-        dataSources: resolvedEntity.recordSummaries && resolvedEntity.recordSummaries.map ? resolvedEntity.recordSummaries.map((ds) =>  ds.dataSource ) : undefined, 
-        dataSourceClasses: dataSourceClasses,
-        entityId: entityId,
-        hasCollapsedRelationships: relatedToPrimaryEntityDirectly && (relatedEntities && relatedEntities.length > 0),
-        hasCollapsibleRelationships: hasCollapsibleRelationships,
-        hasRelatedEdges: (relatedEntities && relatedEntities.length > 0),
-        iconType: SzRelationshipNetworkComponent.getIconType(resolvedEntity),
-        isCoreNode: coreEntityIds.includes(entityId),
-        isHidden: !relatedToPrimaryEntityDirectly,
-        isPrimaryEntity: primaryEntityIds.includes( (entityId as unknown as string)+""),
-        isRelatedToPrimaryEntity: (relatedToPrimaryEntities.indexOf( (entityId as unknown as number) ) > -1),
-        isRemovable: (!coreEntityIds.includes(entityId) && !primaryEntityIds.includes( (entityId as unknown as string)+"") && !queriedEntityIds.includes(entityId)),
-        isQueriedNode: queriedEntityIds.includes(entityId),
-        name: resolvedEntity.entityName,
-        nameAsLines: entityNameLines,
-        nodesVisibleBeforeExpand: [],
-        numberRelated: relatedEntities ? relatedEntities.length : 0,
-        numberRelatedOnDeck: 0,
-        numberRelatedHidden: relatedEntities ? relatedEntities.length : 0,
-        orgName: resolvedEntity.entityName,
-        phone: resolvedEntity.phoneData && resolvedEntity.phoneData.length > 0 ? resolvedEntity.phoneData[0] : SzRelationshipNetworkComponent.firstOrNull(features, "PHONE"),
-        recordSummaries: resolvedEntity.recordSummaries,
-        relatedEntities: relatedEntities && relatedEntities.map ? relatedEntities.map((relEnt) => { return relEnt.entityId }) : undefined,
-        relatedToPrimaryEntityDirectly: relatedToPrimaryEntityDirectly,
-        relationshipMatchKeys: relatedMatchKeys,
-        relationTypeClasses: relColorClasses,
-        relatedEntitiesData: relatedEntities,
-        relatedVisibleBeforeExpand: [],
-        resolvedEntityData: resolvedEntity,
-        relationshipMatchKeyTokens: relatedMatchKeyCategories,
-        styles: [],
-        visibilityClass: undefined
-      });
-    });
 
     // GRAPH CONSTRUCTED
     return {
@@ -3799,7 +3810,7 @@ export class SzRelationshipNetworkComponent implements AfterViewInit, OnDestroy 
   }
 
 
-  static firstOrNull(features, name) {
+  static firstOrNull(features: SzSdkEntityFeatures, name) {
     return features && features[name] && [name].length !== 0 ? features[name][0]["FEAT_DESC"] : null;
   }
 
@@ -3807,14 +3818,17 @@ export class SzRelationshipNetworkComponent implements AfterViewInit, OnDestroy 
     return usedLinks.filter(key => key.firstId === linkKey.firstId && key.secondId === linkKey.secondId).length !== 0;
   }
 
-  static getIconType(resolvedEntity) {
+  static getIconType(resolvedEntity: SzSdkResolvedEntity) {
     //console.log(`getIconType(${resolvedEntity.entityId})`);
     let retVal = 'default';
-    if(resolvedEntity && resolvedEntity.records) {
-      resolvedEntity.records.slice(0, 9).forEach(element => {
-        if(element.nameOrg || (element.addressData && element.addressData.some((addr) => addr.indexOf('BUSINESS') > -1))) {
+    if(resolvedEntity.IS_BUSINESS) {
+      retVal = 'business';
+    }
+    if(resolvedEntity && resolvedEntity.RECORDS) {
+      resolvedEntity.RECORDS.slice(0, 9).forEach(element => {
+        /*if(element.NAMEORG || (element.FEATURES && element.FEATURES["ADDRESS"] && element.FEATURES["ADDRESS"].some((addr) => addr..indexOf('BUSINESS') > -1))) {
           retVal = 'business';
-        }/* else if(element.gender && (element.gender === 'FEMALE' || element.gender === 'F') ) {
+        }*//* else if(element.gender && (element.gender === 'FEMALE' || element.gender === 'F') ) {
           retVal = 'userFemale';
         } else if(element.gender && (element.gender === 'MALE' || element.gender === 'M') ) {
           retVal = 'userMale';
@@ -3883,70 +3897,78 @@ export class SzRelationshipNetworkComponent implements AfterViewInit, OnDestroy 
   }
 
   /** get array of datasources present in network data */
-  public static getDataSourcesFromEntityNetworkData(data: SzEntityNetworkData): string[] {
+  public static getDataSourcesFromEntityNetworkData(data: SzNetorkGraphCompositeResponse): string[] {
     const _datasources = [];
-    if(data && data.entities && data.entities.map) {
+    if(data && data.NETWORK_RESPONSES && data.NETWORK_RESPONSES.map) {
       // flatten first
-      const entititiesDS = data.entities.map( (entity) => {
-        if(entity.resolvedEntity.recordSummaries && entity.resolvedEntity.recordSummaries.map) {
-          return entity.resolvedEntity.recordSummaries.map( (_ds) => _ds.dataSource);
-        }
-        return entity.resolvedEntity.recordSummaries;
-      });
-      entititiesDS.forEach( (element: string[]) => {
-        if(element && element.forEach) {
-          element.forEach( (_dsString: string) => {
-            if(_datasources.indexOf(_dsString) === -1) {
-              _datasources.push(_dsString);
-            }
-          });
-        }
+      data.NETWORK_RESPONSES.forEach( (networkResponse: SzSdkFindNetworkResponse) => {
+        const entititiesDS = networkResponse.ENTITIES.map( (entity) => {
+          if(entity.RESOLVED_ENTITY.RECORD_SUMMARY && entity.RESOLVED_ENTITY.RECORD_SUMMARY.map) {
+            return entity.RESOLVED_ENTITY.RECORD_SUMMARY.map( (_ds) => _ds.DATA_SOURCE);
+          }
+          return entity.RESOLVED_ENTITY.RECORD_SUMMARY;
+        });
+        entititiesDS.forEach( (element: string[]) => {
+          if(element && element.forEach) {
+            element.forEach( (_dsString: string) => {
+              if(_datasources.indexOf(_dsString) === -1) {
+                _datasources.push(_dsString);
+              }
+            });
+          }
+        });
       });
     }
     return _datasources;
   }
   /** get array of match keys present in network data */
-  public static getMatchKeysFromEntityNetworkData(data: SzEntityNetworkData): string[] {
+  public static getMatchKeysFromEntityNetworkData(data: SzNetorkGraphCompositeResponse): string[] {
     let _matchkeys = [];
-    if(data && data.entities && data.entities.map) {
-      let _entityRelatedMatchKeys = data.entities.map( (entity) => {
-        let retVal = [];
-        if(entity && entity.relatedEntities && entity.relatedEntities.map) {
-          retVal = entity.relatedEntities.map( (relatedEntity: SzRelatedEntity) => {
-            return relatedEntity.matchKey;
-          });
+    if(data && data.NETWORK_RESPONSES && data.NETWORK_RESPONSES.forEach) {
+      data.NETWORK_RESPONSES.forEach((networkResponse: SzSdkFindNetworkResponse)=>{
+        if(networkResponse && networkResponse.ENTITIES && networkResponse.ENTITIES.map) {
+          let _entityRelatedMatchKeys = networkResponse.ENTITIES.map( (entity) => {
+            let retVal = [];
+            if(entity && entity.RELATED_ENTITIES && entity.RELATED_ENTITIES.map) {
+              retVal = entity.RELATED_ENTITIES.map( (relatedEntity: SzSdkRelatedEntity) => {
+                return relatedEntity.MATCH_KEY;
+              });
+            }
+            return retVal;
+          })
+          if(_entityRelatedMatchKeys && _entityRelatedMatchKeys.reduce) {
+            _matchkeys = _entityRelatedMatchKeys.reduce((accumulator, value) => accumulator.concat(value), []);
+          }
         }
-        return retVal;
-      })
-      if(_entityRelatedMatchKeys && _entityRelatedMatchKeys.reduce) {
-        _matchkeys = _entityRelatedMatchKeys.reduce((accumulator, value) => accumulator.concat(value), []);
-      }
-      if(_matchkeys && _matchkeys.filter) {
-        _matchkeys = _matchkeys.filter((value, index, self) => {
-          return self.indexOf(value) === index;
-        });
-      }
+      });
+    }
+    // de-dupe match keys
+    if(_matchkeys && _matchkeys.filter) {
+      _matchkeys = _matchkeys.filter((value, index, self) => {
+        return self.indexOf(value) === index;
+      });
     }
     return _matchkeys;
   }
   /** get array of match keys present in network data */
-  public static getEntityMatchKeysFromEntityNetworkData(data: SzEntityNetworkData, coreEntityIds?: SzEntityIdentifier[]): {entityId: string|number, value: string, isCoreRelationship: boolean}[] {
+  public static getEntityMatchKeysFromEntityNetworkData(data: SzNetorkGraphCompositeResponse, coreEntityIds?: SzEntityIdentifier[]): {entityId: string|number, value: string, isCoreRelationship: boolean}[] {
     let _matchkeys = [];
     let _entitiesOnDeck   = [];
-    if(data && data.entities && data.entities.map) {
+    if(data && data.NETWORK_RESPONSES && data.NETWORK_RESPONSES.forEach) {
+      data.NETWORK_RESPONSES.forEach((networkResponse: SzSdkFindNetworkResponse)=>{
       // first build a array of all entity Ids present
-      _entitiesOnDeck     = data.entities.map((entity: SzEntityData) => {
-        return entity.resolvedEntity.entityId;
+      _entitiesOnDeck     = networkResponse.ENTITIES.map((entity: SzFindNetworkEntity) => {
+        return entity.RESOLVED_ENTITY;
       });
       if(coreEntityIds) {
         coreEntityIds = coreEntityIds.map(parseSzIdentifier);
       }
-      let _entityRelatedMatchKeys = data.entities.map( (entity) => {
+      let _entityRelatedMatchKeys = networkResponse.ENTITIES.map( (entity: SzFindNetworkEntity) => {
         let retVal = [];
-        if(entity && entity.relatedEntities && entity.relatedEntities.map) {
-          retVal = entity.relatedEntities.map( (relatedEntity: SzRelatedEntity) => {
-            let isCoreRelationship = coreEntityIds && coreEntityIds.indexOf ? coreEntityIds.indexOf( entity.resolvedEntity.entityId ) > -1 : false;
-            return { entityId: relatedEntity.entityId, value: relatedEntity.matchKey, isCoreRelationship: isCoreRelationship, coreEntities: coreEntityIds, relSource: entity.resolvedEntity.entityId};
+        if(entity && entity.RELATED_ENTITIES && entity.RELATED_ENTITIES.map) {
+          retVal = entity.RELATED_ENTITIES.map( (relatedEntity: SzSdkRelatedEntity) => {
+            let isCoreRelationship = coreEntityIds && coreEntityIds.indexOf ? coreEntityIds.indexOf( entity.RESOLVED_ENTITY.ENTITY_ID ) > -1 : false;
+            return { entityId: relatedEntity.ENTITY_ID, value: relatedEntity.MATCH_KEY, isCoreRelationship: isCoreRelationship, coreEntities: coreEntityIds, relSource: entity.RESOLVED_ENTITY.ENTITY_ID};
           });
         }
         return retVal;
@@ -3964,6 +3986,7 @@ export class SzRelationshipNetworkComponent implements AfterViewInit, OnDestroy 
           return _entitiesOnDeck.indexOf(value.entityId as number) > -1;
         });
       }
+      });
     }
     return _matchkeys;
   }
@@ -4064,13 +4087,42 @@ export class SzRelationshipNetworkComponent implements AfterViewInit, OnDestroy 
 
     return [disclosedKeys, derived_keys]
   }
+  public static responseHasEntities(data: SzNetorkGraphCompositeResponse): boolean {
+    let retVal        = false;
+    if(data && data.NETWORK_RESPONSES) {
+      data.NETWORK_RESPONSES.forEach((networkResponse) => {
+        if(networkResponse.ENTITIES && networkResponse.ENTITIES.length > 0) {
+          retVal = true;
+        }
+      })
+    }
+    return retVal;
+  }
+  public static getEntityIdsFromNetworkData(data: SzNetorkGraphCompositeResponse): Set<number> {
+    let retVal = new Set<number>();
+    if(data.NETWORK_RESPONSES && data.NETWORK_RESPONSES.forEach) {
+      data.NETWORK_RESPONSES.forEach((networkResponse: SzSdkFindNetworkResponse)=>{
+        networkResponse.ENTITIES.forEach((_rEntData: SzFindNetworkEntity) => {
+          // for each entity 
+          retVal.add(_rEntData.RESOLVED_ENTITY.ENTITY_ID);
+          //entitiesById[_rEntData.resolvedEntity.entityId] = 1;
+          if(_rEntData && _rEntData.RELATED_ENTITIES && _rEntData.RELATED_ENTITIES.forEach) {
+            _rEntData.RELATED_ENTITIES.forEach((_rEntRel) => {
+              retVal.add(_rEntRel.ENTITY_ID);
+            });
+          }
+        });
+      });
+    }
+    return retVal;
+  }
   /**
    * Takes the data from a graph request and scans all entities found for relationship match keys.
    * match keys found are broken in to constituant tokens and classified as either 
    * "DISCLOSED" or "DERIVED" types. The members of the return value for "DERIVED" or "DISCLOSED" are
    * arrays of the entity ids found in the data that have that match key token present.
    */
-  public static getMatchKeyTokensFromEntityData(data: SzEntityNetworkData, focalEntityIds?: SzEntityIdentifier[]) {
+  public static getMatchKeyTokensFromEntityData(data: SzNetorkGraphCompositeResponse, focalEntityIds?: SzEntityIdentifier[]) {
     let retValue: undefined | SzEntityNetworkMatchKeyTokens = {
       DISCLOSED: {},
       DERIVED: {}

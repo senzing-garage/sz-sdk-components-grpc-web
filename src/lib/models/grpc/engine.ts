@@ -16,11 +16,12 @@ export interface SzSdkEntityFeature {
     USAGE_TYPE?: string,
     LABEL?: string
 }
+export interface SzSdkEntityFeatures {[key: string]: SzSdkEntityFeature[]}
 export interface SzSdkSearchRecordSummary {DATA_SOURCE: string, RECORD_COUNT: number}
 export interface SzSdkSearchResolvedEntity{
     ENTITY_ID: number,
     ENTITY_NAME: string,
-    FEATURES?: {[key: string]: SzSdkEntityFeature[]},
+    FEATURES?: SzSdkEntityFeatures,
     RECORDS?: {DATA_SOURCE: string, RECORD_ID: string}[],
     RECORD_SUMMARY?: SzSdkSearchRecordSummary[]
 }
@@ -45,24 +46,25 @@ export interface SzSdkSearchResponse {
 }
 
 export interface SzSdkEntityBaseRecord {
-    "RECORD_ID": string,
-    "DATA_SOURCE": string,
+    RECORD_ID: string,
+    DATA_SOURCE: string,
 }
 export interface SzSdkEntityRelatedRecord extends SzSdkEntityBaseRecord {}
 export interface SzSdkEntityRecord extends SzSdkEntityBaseRecord {
-    "INTERNAL_ID"?: number,
-    "MATCH_KEY"?: string,
-    "MATCH_LEVEL_CODE"?: SzSdkSearchMatchLevel,
-    "ERRULE_CODE"?: string,
-    "FIRST_SEEN_DT"?: string,
-    "LAST_SEEN_DT"?: string,
-    "FEATURES"?: {[key: string]: SzSdkEntityFeature[]}
+    INTERNAL_ID?: number,
+    MATCH_KEY?: string,
+    MATCH_LEVEL_CODE?: SzSdkSearchMatchLevel,
+    ERRULE_CODE?: string,
+    FIRST_SEEN_DT?: string,
+    LAST_SEEN_DT?: string,
+    FEATURES?: SzSdkEntityFeatures,
+    NAMEORG?: string
 }
 
 export interface SzSdkEntityRecordSummary {
-    "DATA_SOURCE": string,
-    "RECORD_COUNT": number,
-    "TOP_RECORD_IDS"?: Array<string>;
+    DATA_SOURCE: string,
+    RECORD_COUNT: number,
+    TOP_RECORD_IDS?: Array<string>;
 }
 
 export interface SzSdkBaseEntity {
@@ -81,7 +83,8 @@ export interface SzSdkRelatedEntity  extends SzSdkBaseEntity {
 }
 
 export interface SzSdkResolvedEntity extends SzSdkBaseEntity {
-    FEATURES?: {[key: string]: SzSdkEntityFeature[]},
+    IS_BUSINESS?: boolean,
+    FEATURES?: SzSdkEntityFeatures,
     RECORDS?: SzSdkEntityRecord[],
 }
 
@@ -91,20 +94,22 @@ export interface SzSdkEntityResponse {
 }
 
 export interface SzSdkFindNetworkNetworkLink {
-    "MIN_ENTITY_ID": number,
-    "MAX_ENTITY_ID": number,
-    "MATCH_LEVEL_CODE": SzSdkSearchMatchLevel,
-    "MATCH_KEY": string,
-    "ERRULE_CODE"?: string,
-    "IS_DISCLOSED"?: 0 | 1,
-    "IS_AMBIGUOUS"?: 0 | 1
+    MIN_ENTITY_ID: number,
+    MAX_ENTITY_ID: number,
+    MATCH_LEVEL_CODE: SzSdkSearchMatchLevel,
+    MATCH_KEY: string,
+    ERRULE_CODE?: string,
+    IS_DISCLOSED?: 0 | 1,
+    IS_AMBIGUOUS?: 0 | 1
+}
+
+export interface SzFindNetworkEntity {
+    RELATED_ENTITIES: SzSdkRelatedEntity[],
+    RESOLVED_ENTITY: SzSdkResolvedEntity
 }
 
 export interface SzSdkFindNetworkResponse {
-    ENTITIES: {
-        RELATED_ENTITIES: SzSdkRelatedEntity[],
-        RESOLVED_ENTITY: SzSdkResolvedEntity
-    }[],
+    ENTITIES: SzFindNetworkEntity[],
     ENTITY_NETWORK_LINKS: SzSdkFindNetworkNetworkLink[],
     ENTITY_PATHS: any
 }

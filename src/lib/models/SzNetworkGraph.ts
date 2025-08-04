@@ -5,3 +5,7 @@ export interface SzNetorkGraphCompositeResponse {
     NETWORK_RESPONSES: SzSdkFindNetworkResponse[]
 }
 
+export interface SzNetworkGraphInputs {
+    data: SzNetorkGraphCompositeResponse
+    showLinkLabels: boolean;
+}
