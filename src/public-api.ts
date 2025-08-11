@@ -37,7 +37,7 @@ export * from './lib/services/sz-how-ui.service';
   */
 
 //export * from '../deprecated/search/sz-search/sz-search.component';
-//export { SzSearchByIdComponent, SzSearchByIdFormParams } from '../deprecated/search/sz-search/sz-search-by-id.component';
+export { SzSearchByIdGrpcComponent, SzSearchByIdFormParams } from './lib/search-grpc/sz-search/sz-search-by-id.component';
 export { SzEntityRecordViewerComponent } from './lib/record/sz-entity-record-viewer.component';
 //export * from './lib/search/sz-search-results/sz-search-results.component';
 //export * from './lib/search/sz-search-result-card/sz-search-result-card.component';
@@ -126,12 +126,15 @@ export * from './lib/configuration/sz-product-info/sz-product-info.component';
 export * from './lib/import/sz-import-files.component';
 export { SzSearchGrpcComponent } from './lib/search-grpc/sz-search/sz-search.component';
 export { SzSearchResultsGrpcComponent } from './lib/search-grpc/sz-search-results/sz-search-results.component';
-export { SzEntityDetailComponentGrpc } from './lib/entity-grpc/detail/sz-entity-detail.component';
+export { SzEntityDetailGrpcComponent } from './lib/entity-grpc/detail/sz-entity-detail.component';
 
 // models
 export * from './lib/models/grpc/config';
 export * from './lib/models/grpc/engine';
 export * from './lib/models/grpc/product';
+export * from './lib/models/SzFeatureTypes';
+export * from './lib/models/SzNetworkGraph';
+export * from './lib/models/SzResumeEntity';
 // services
 export { SzGrpcConfig } from './lib/services/grpc/config.service';
 export { SzGrpcConfigManagerService } from './lib/services/grpc/configManager.service';

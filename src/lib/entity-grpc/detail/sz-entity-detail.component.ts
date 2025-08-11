@@ -71,7 +71,7 @@ import { SzEntityDetailGraphComponent } from './sz-entity-detail-graph/sz-entity
       SzEntityDetailGraphComponent
     ]
 })
-export class SzEntityDetailComponentGrpc implements OnInit, OnDestroy, AfterViewInit {
+export class SzEntityDetailGrpcComponent implements OnInit, OnDestroy, AfterViewInit {
   /** subscription to notify subscribers to unbind */
   public unsubscribe$ = new Subject<void>();
   /** @internal */
